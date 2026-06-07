@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import products from '../data/products'
+import useCartStore from '../store/cartStore'
 
 const categories = ['ALL', 'TOPS', 'ACCESSORIES']
 const sortOptions = ['Default', 'Price: Low to High', 'Price: High to Low', 'Newest']
@@ -17,6 +18,9 @@ function Shop() {
   const [hoveredId, setHoveredId] = useState(null)
   const [showFilters, setShowFilters] = useState(false)
   const [maxPrice, setMaxPrice] = useState(500)
+  const [addedId, setAddedId] = useState(null)
+
+  const addToCart = useCartStore((state) => state.addToCart)
 
   let filtered = activeCategory === 'ALL'
     ? products
@@ -27,6 +31,14 @@ function Shop() {
   if (activeSort === 'Price: Low to High') filtered = [...filtered].sort((a, b) => a.price - b.price)
   if (activeSort === 'Price: High to Low') filtered = [...filtered].sort((a, b) => b.price - a.price)
   if (activeSort === 'Newest') filtered = [...filtered].reverse()
+
+  const handleAddToCart = (e, product) => {
+    e.preventDefault()
+    const defaultSize = product.sizes[0]
+    addToCart(product, defaultSize, 1)
+    setAddedId(product.id)
+    setTimeout(() => setAddedId(null), 2000)
+  }
 
   return (
     <div className="bg-black min-h-screen flex flex-col">
@@ -90,10 +102,6 @@ function Shop() {
               {showFilters ? <X size={14} /> : <SlidersHorizontal size={14} />}
               {showFilters ? 'Close' : 'Filter'}
             </button>
-
-            <p className="text-zinc-600 text-xs tracking-wider">
-              {filtered.length} Products
-            </p>
           </div>
         </div>
 
@@ -183,15 +191,17 @@ function Shop() {
                   <p className="text-red-500 text-sm font-medium mb-3">
                     ${product.price}.00
                   </p>
+
+                  {/* Add to Cart — always visible */}
                   <button
-                    onClick={(e) => e.preventDefault()}
+                    onClick={(e) => handleAddToCart(e, product)}
                     className={`w-full text-xs tracking-widest uppercase py-3 border transition-all duration-300 ${
-                      hoveredId === product.id
-                        ? 'border-red-500 text-red-500 hover:bg-red-500 hover:text-black'
-                        : 'border-transparent text-transparent pointer-events-none'
+                      addedId === product.id
+                        ? 'border-green-500 text-green-500'
+                        : 'border-red-500 text-red-500 hover:bg-red-500 hover:text-black'
                     }`}
                   >
-                    Add to Cart
+                    {addedId === product.id ? 'Added ✓' : 'Add to Cart'}
                   </button>
                 </div>
 

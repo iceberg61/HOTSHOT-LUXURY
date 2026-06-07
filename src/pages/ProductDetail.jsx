@@ -4,6 +4,7 @@ import { Heart, ShoppingCart, ArrowLeft } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import products from '../data/products'
+import useCartStore from '../store/cartStore'
 
 function ProductDetail() {
   const { id } = useParams()
@@ -12,9 +13,21 @@ function ProductDetail() {
   const [selectedSize, setSelectedSize] = useState(null)
   const [quantity, setQuantity] = useState(1)
   const [wishlisted, setWishlisted] = useState(false)
+  const [added, setAdded] = useState(false)
 
-  // Related products — same category, exclude current
+  const addToCart = useCartStore((state) => state.addToCart)
+
   const related = products.filter((p) => p.category === product?.category && p.id !== product?.id).slice(0, 4)
+
+  const handleAddToCart = () => {
+    if (!selectedSize) {
+      alert('Please select a size')
+      return
+    }
+    addToCart(product, selectedSize, quantity)
+    setAdded(true)
+    setTimeout(() => setAdded(false), 2000)
+  }
 
   if (!product) {
     return (
@@ -86,7 +99,6 @@ function ProductDetail() {
               </p>
             </div>
 
-            {/* Divider */}
             <div className="border-t border-zinc-800" />
 
             {/* Description */}
@@ -94,7 +106,6 @@ function ProductDetail() {
               {product.description}
             </p>
 
-            {/* Divider */}
             <div className="border-t border-zinc-800" />
 
             {/* Size Selector */}
@@ -155,9 +166,16 @@ function ProductDetail() {
 
             {/* Action Buttons */}
             <div className="flex items-center gap-4">
-              <button className="flex-1 flex items-center justify-center gap-3 bg-red-500 text-white text-xs tracking-[0.3em] uppercase py-4 hover:bg-red-600 transition-all duration-300">
+              <button
+                onClick={handleAddToCart}
+                className={`flex-1 flex items-center justify-center gap-3 text-xs tracking-[0.3em] uppercase py-4 transition-all duration-300 ${
+                  added
+                    ? 'bg-green-600 text-white'
+                    : 'bg-red-500 text-white hover:bg-red-600'
+                }`}
+              >
                 <ShoppingCart size={16} />
-                Add to Cart
+                {added ? 'Added to Cart ✓' : 'Add to Cart'}
               </button>
               <button
                 onClick={() => setWishlisted(!wishlisted)}

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Heart, Eye } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import products from '../data/products'
+import useCartStore from '../store/cartStore'
 
 const tabs = ['ALL', 'TOPS', 'ACCESSORIES']
 
@@ -11,10 +12,21 @@ const ICON_HIDDEN = 'opacity-0 translate-x-4'
 function ProductGrid() {
   const [activeTab, setActiveTab] = useState('ALL')
   const [hoveredId, setHoveredId] = useState(null)
+  const [addedId, setAddedId] = useState(null)
+
+  const addToCart = useCartStore((state) => state.addToCart)
 
   const filtered = activeTab === 'ALL'
     ? products
     : products.filter((p) => p.category === activeTab)
+
+  const handleAddToCart = (e, product) => {
+    e.preventDefault()
+    const defaultSize = product.sizes[0]
+    addToCart(product, defaultSize, 1)
+    setAddedId(product.id)
+    setTimeout(() => setAddedId(null), 2000)
+  }
 
   return (
     <section className="bg-black py-20 px-8">
@@ -106,14 +118,14 @@ function ProductGrid() {
                   ${product.price}.00
                 </p>
                 <button
-                  onClick={(e) => e.preventDefault()}
+                  onClick={(e) => handleAddToCart(e, product)}
                   className={`w-full text-xs tracking-widest uppercase py-3 border transition-all duration-300 ${
-                    hoveredId === product.id
-                      ? 'border-red-500 text-red-500 hover:bg-red-500 hover:text-black'
-                      : 'border-transparent text-transparent pointer-events-none'
+                    addedId === product.id
+                      ? 'border-green-500 text-green-500'
+                      : 'border-red-500 text-red-500 hover:bg-red-500 hover:text-black'
                   }`}
                 >
-                  Add to Cart
+                  {addedId === product.id ? 'Added ✓' : 'Add to Cart'}
                 </button>
               </div>
 
