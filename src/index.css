@@ -1,0 +1,7 @@
+@import "tailwindcss";
+
+@layer utilities {
+  .translate-x-slide {
+    transform: translateX(1rem);
+  }
+}
