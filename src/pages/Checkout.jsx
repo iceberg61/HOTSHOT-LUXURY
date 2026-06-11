@@ -3,24 +3,31 @@ import { Link, useNavigate } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import useCartStore from '../store/cartStore'
+import useAuthStore from '../store/authStore'
+import { createOrder, verifyPayment } from '../api/orderApi'
 
 function Checkout() {
   const { items, getTotalPrice, clearCart } = useCartStore()
+  const { user } = useAuthStore()
   const navigate = useNavigate()
 
   const [form, setForm] = useState({
-    firstName: '', lastName: '', email: '', phone: '',
+    firstName: user?.firstName || '',
+    lastName: user?.lastName || '',
+    email: user?.email || '',
+    phone: '',
     address: '', city: '', state: '', zip: '', country: '',
     paymentMethod: 'card',
-    cardNumber: '', cardName: '', cardExpiry: '', cardCVV: '',
   })
 
   const [errors, setErrors] = useState({})
   const [placing, setPlacing] = useState(false)
+  const [serverError, setServerError] = useState('')
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
     setErrors({ ...errors, [e.target.name]: '' })
+    setServerError('')
   }
 
   const validate = () => {
@@ -33,27 +40,142 @@ function Checkout() {
     if (!form.city) newErrors.city = 'Required'
     if (!form.state) newErrors.state = 'Required'
     if (!form.country) newErrors.country = 'Required'
-    if (form.paymentMethod === 'card') {
-      if (!form.cardNumber) newErrors.cardNumber = 'Required'
-      if (!form.cardName) newErrors.cardName = 'Required'
-      if (!form.cardExpiry) newErrors.cardExpiry = 'Required'
-      if (!form.cardCVV) newErrors.cardCVV = 'Required'
-    }
     return newErrors
   }
 
-  const handlePlaceOrder = () => {
+  const handleFlutterwavePayment = (order) => {
+    if (!window.FlutterwaveCheckout) {
+      setServerError('Payment system not loaded. Please refresh the page and try again.')
+      setPlacing(false)
+      return
+    }
+
+    const txRef = `HSL-${Date.now()}`
+
+    // Save txRef to order immediately
+    fetch(`${import.meta.env.VITE_API_URL}/api/orders/${order._id}/save-ref`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(user?.token ? { Authorization: `Bearer ${user.token}` } : {}),
+      },
+      body: JSON.stringify({ txRef }),
+    })
+
+    window.FlutterwaveCheckout({
+      public_key: import.meta.env.VITE_FLW_PUBLIC_KEY,
+      tx_ref: txRef,
+      amount: getTotalPrice(),
+      currency: 'NGN',
+      payment_options: 'card,banktransfer,ussd,account',
+      customer: {
+        email: form.email,
+        phone_number: form.phone,
+        name: `${form.firstName} ${form.lastName}`,
+      },
+      customizations: {
+        title: 'Hotshot Luxury',
+        description: 'Payment for your order',
+      },
+      callback: async (response) => {
+        console.log('Flutterwave response:', response)
+        if (
+          response.status === 'successful' ||
+          response.status === 'completed'
+        ) {
+          try {
+            setPlacing(true)
+            await verifyPayment(order._id, response.transaction_id, user?.token)
+            clearCart()
+            navigate(`/order-confirmation/${order._id}`)
+          } catch {
+            clearCart()
+            navigate(`/order-confirmation/${order._id}`)
+          }
+        } else if (response.status === 'pending') {
+          clearCart()
+          navigate(`/order-confirmation/${order._id}`)
+        } else {
+          setServerError('Payment not completed. Your order ID: ' + order._id)
+          setPlacing(false)
+        }
+      },
+      onclose: async () => {
+        try {
+          const orderCheck = await fetch(
+            `${import.meta.env.VITE_API_URL}/api/orders/${order._id}`,
+            {
+              headers: user?.token
+                ? { Authorization: `Bearer ${user.token}` }
+                : {},
+            }
+          )
+          const orderData = await orderCheck.json()
+          if (orderData.paymentStatus === 'paid' || orderData.status === 'confirmed') {
+            clearCart()
+            navigate(`/order-confirmation/${order._id}`)
+          } else {
+            setServerError('Payment window closed. Your order ID is: ' + order._id)
+            setPlacing(false)
+          }
+        } catch {
+          setServerError('Payment window closed. Your order ID is: ' + order._id)
+          setPlacing(false)
+        }
+      },
+    })
+  }
+
+  const handlePlaceOrder = async () => {
     const newErrors = validate()
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors)
       window.scrollTo({ top: 0, behavior: 'smooth' })
       return
     }
+
+    if (items.length === 0) {
+      setServerError('Your cart is empty')
+      return
+    }
+
     setPlacing(true)
-    setTimeout(() => {
-      clearCart()
-      navigate('/order-confirmation')
-    }, 2000)
+    setServerError('')
+
+    try {
+      const orderData = {
+        items: items.map((item) => ({
+          name: item.name,
+          price: item.price,
+          image: item.image,
+          size: item.size,
+          quantity: item.quantity,
+          product: item._id,
+        })),
+        shippingAddress: {
+          firstName: form.firstName,
+          lastName: form.lastName,
+          email: form.email,
+          phone: form.phone,
+          address: form.address,
+          city: form.city,
+          state: form.state,
+          zip: form.zip,
+          country: form.country,
+        },
+        paymentMethod: form.paymentMethod,
+        totalPrice: getTotalPrice(),
+      }
+
+      const order = await createOrder(orderData, user?.token)
+
+      setPlacing(false)
+      handleFlutterwavePayment(order)
+
+    } catch {
+      setServerError('Unable to place order. Please try again.')
+      setPlacing(false)
+    }
   }
 
   const inputClass = (field) =>
@@ -88,6 +210,13 @@ function Checkout() {
 
       {/* Content */}
       <div className="flex-1 max-w-7xl mx-auto w-full px-8 py-16">
+
+        {serverError && (
+          <div className="bg-red-500/10 border border-red-500 px-4 py-3 mb-8">
+            <p className="text-red-500 text-xs tracking-wider">{serverError}</p>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
 
           {/* Left — Form */}
@@ -99,7 +228,6 @@ function Checkout() {
                 <span className="bg-red-500 text-white text-xs w-6 h-6 flex items-center justify-center font-black">1</span>
                 <h2 className="text-white text-sm font-black tracking-[0.3em] uppercase">Shipping Information</h2>
               </div>
-
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <input name="firstName" value={form.firstName} onChange={handleChange} placeholder="First Name *" className={inputClass('firstName')} />
@@ -146,8 +274,7 @@ function Checkout() {
                 <h2 className="text-white text-sm font-black tracking-[0.3em] uppercase">Payment Method</h2>
               </div>
 
-              {/* Payment Toggle */}
-              <div className="flex gap-3 mb-6">
+              <div className="flex gap-3 mb-6 flex-wrap">
                 {['card', 'transfer'].map((method) => (
                   <button
                     key={method}
@@ -158,48 +285,35 @@ function Checkout() {
                         : 'border-zinc-700 text-zinc-400 hover:border-white hover:text-white'
                     }`}
                   >
-                    {method === 'card' ? 'Credit / Debit Card' : 'Bank Transfer'}
+                    {method === 'card' ? '💳 Pay with Flutterwave' : '🏦 Bank Transfer'}
                   </button>
                 ))}
               </div>
 
-              {/* Card Fields */}
               {form.paymentMethod === 'card' && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="md:col-span-2">
-                    <input name="cardNumber" value={form.cardNumber} onChange={handleChange} placeholder="Card Number *" maxLength={19} className={inputClass('cardNumber')} />
-                    {errors.cardNumber && <p className="text-red-500 text-xs mt-1">{errors.cardNumber}</p>}
-                  </div>
-                  <div className="md:col-span-2">
-                    <input name="cardName" value={form.cardName} onChange={handleChange} placeholder="Name on Card *" className={inputClass('cardName')} />
-                    {errors.cardName && <p className="text-red-500 text-xs mt-1">{errors.cardName}</p>}
-                  </div>
-                  <div>
-                    <input name="cardExpiry" value={form.cardExpiry} onChange={handleChange} placeholder="MM / YY *" maxLength={5} className={inputClass('cardExpiry')} />
-                    {errors.cardExpiry && <p className="text-red-500 text-xs mt-1">{errors.cardExpiry}</p>}
-                  </div>
-                  <div>
-                    <input name="cardCVV" value={form.cardCVV} onChange={handleChange} placeholder="CVV *" maxLength={4} className={inputClass('cardCVV')} />
-                    {errors.cardCVV && <p className="text-red-500 text-xs mt-1">{errors.cardCVV}</p>}
+                <div className="bg-zinc-950 border border-zinc-800 p-6">
+                  <p className="text-zinc-400 text-xs tracking-wider leading-relaxed">
+                    You will be redirected to Flutterwave's secure payment page to complete your payment. We accept cards, USSD, and bank transfers.
+                  </p>
+                  <div className="flex items-center gap-2 mt-4">
+                    <div className="w-2 h-2 bg-green-500 rounded-full" />
+                    <p className="text-green-500 text-xs tracking-wider">Secured by Flutterwave</p>
                   </div>
                 </div>
               )}
 
-              {/* Bank Transfer */}
               {form.paymentMethod === 'transfer' && (
                 <div className="bg-zinc-950 border border-zinc-800 p-6">
-                  <p className="text-zinc-400 text-xs tracking-wider leading-relaxed mb-4">
-                    Make your payment directly to our bank account. Use your order ID as reference. Your order will be confirmed once payment is verified.
+                  <p className="text-zinc-400 text-xs tracking-wider leading-relaxed">
+                    You will be redirected to Flutterwave's secure payment page where you can complete your payment via bank transfer, USSD, or card.
                   </p>
-                  <div className="flex flex-col gap-2">
-                    <p className="text-white text-xs tracking-wider"><span className="text-zinc-500">Bank:</span> First Bank Nigeria</p>
-                    <p className="text-white text-xs tracking-wider"><span className="text-zinc-500">Account Name:</span> Hotshot Luxury Ltd</p>
-                    <p className="text-white text-xs tracking-wider"><span className="text-zinc-500">Account Number:</span> 0123456789</p>
+                  <div className="flex items-center gap-2 mt-4">
+                    <div className="w-2 h-2 bg-green-500 rounded-full" />
+                    <p className="text-green-500 text-xs tracking-wider">Secured by Flutterwave</p>
                   </div>
                 </div>
               )}
             </div>
-
           </div>
 
           {/* Right — Order Summary */}
@@ -209,10 +323,9 @@ function Checkout() {
                 Order Summary
               </h2>
 
-              {/* Items */}
               <div className="flex flex-col gap-4 mb-6 max-h-64 overflow-y-auto">
                 {items.map((item, index) => (
-                  <div key={`${item.id}-${item.size}-${index}`} className="flex gap-3 items-center">
+                  <div key={`${item._id}-${item.size}-${index}`} className="flex gap-3 items-center">
                     <div className="w-14 h-14 bg-zinc-900 border border-zinc-800 overflow-hidden shrink-0">
                       <img
                         src={item.image}
@@ -231,7 +344,6 @@ function Checkout() {
                 ))}
               </div>
 
-              {/* Totals */}
               <div className="flex flex-col gap-3 border-t border-zinc-800 pt-4 mb-6">
                 <div className="flex items-center justify-between">
                   <p className="text-zinc-400 text-xs tracking-wider">Subtotal</p>
@@ -247,23 +359,22 @@ function Checkout() {
                 </div>
               </div>
 
-              {/* Place Order */}
               <button
                 onClick={handlePlaceOrder}
                 disabled={placing || items.length === 0}
                 className={`w-full text-xs tracking-[0.3em] uppercase py-4 transition-all duration-300 ${
                   placing
-                    ? 'bg-green-600 text-white cursor-not-allowed'
+                    ? 'bg-zinc-700 text-zinc-400 cursor-not-allowed'
                     : items.length === 0
                     ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed'
                     : 'bg-red-500 text-white hover:bg-red-600'
                 }`}
               >
-                {placing ? 'Placing Order...' : 'Place Order'}
+                {placing ? 'Processing...' : form.paymentMethod === 'card' ? 'Pay Now' : 'Place Order'}
               </button>
 
               <p className="text-zinc-600 text-xs tracking-wider text-center mt-4">
-                🔒 Secure checkout — your data is protected
+                🔒 Secured by Flutterwave
               </p>
 
             </div>

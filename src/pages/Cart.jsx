@@ -64,12 +64,12 @@ function Cart() {
               {/* Items */}
               {items.map((item, index) => (
                 <div
-                  key={`${item.id}-${item.size}-${index}`}
+                  key={`${item._id}-${item.size}-${index}`}
                   className="grid grid-cols-1 md:grid-cols-5 gap-4 items-center py-6 border-b border-zinc-800"
                 >
                   {/* Product — image + info */}
                   <div className="flex items-center gap-4 md:col-span-2">
-                    <Link to={`/product/${item.id}`} className="shrink-0">
+                    <Link to={`/product/${item._id}`} className="shrink-0">
                       <div className="w-20 h-20 bg-zinc-900 border border-zinc-800 overflow-hidden hover:border-red-500 transition-colors">
                         <img
                           src={item.image}
@@ -86,7 +86,7 @@ function Cart() {
                         Size: {item.size}
                       </p>
                       <button
-                        onClick={() => removeFromCart(item.id, item.size)}
+                        onClick={() => removeFromCart(item._id, item.size)}
                         className="flex items-center gap-1 text-zinc-600 text-xs tracking-wider hover:text-red-500 transition-colors mt-2"
                       >
                         <Trash2 size={12} />
@@ -105,7 +105,7 @@ function Cart() {
                   <div className="flex items-center md:justify-center">
                     <div className="flex items-center border border-zinc-700">
                       <button
-                        onClick={() => updateQuantity(item.id, item.size, item.quantity - 1)}
+                        onClick={() => updateQuantity(item._id, item.size, item.quantity - 1)}
                         className="px-3 py-2 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-all text-sm"
                       >
                         −
@@ -114,7 +114,7 @@ function Cart() {
                         {item.quantity}
                       </span>
                       <button
-                        onClick={() => updateQuantity(item.id, item.size, item.quantity + 1)}
+                        onClick={() => updateQuantity(item._id, item.size, item.quantity + 1)}
                         className="px-3 py-2 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-all text-sm"
                       >
                         +

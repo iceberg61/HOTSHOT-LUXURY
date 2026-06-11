@@ -56,7 +56,7 @@ function CartDrawer({ isOpen, onClose }) {
           ) : (
             <div className="flex flex-col gap-4">
               {items.map((item, index) => (
-                <div key={`${item.id}-${item.size}-${index}`} className="flex gap-4 border-b border-zinc-800 pb-4">
+                <div key={`${item._id}-${item.size}-${index}`} className="flex gap-4 border-b border-zinc-800 pb-4">
 
                   {/* Image */}
                   <div className="w-20 h-20 bg-zinc-900 overflow-hidden shrink-0 border border-zinc-800">
@@ -79,7 +79,7 @@ function CartDrawer({ isOpen, onClose }) {
                         </p>
                       </div>
                       <button
-                        onClick={() => removeFromCart(item.id, item.size)}
+                        onClick={() => removeFromCart(item._id, item.size)}
                         className="text-zinc-600 hover:text-red-500 transition-colors shrink-0"
                       >
                         <Trash2 size={14} />
@@ -90,7 +90,7 @@ function CartDrawer({ isOpen, onClose }) {
                     <div className="flex items-center justify-between mt-2">
                       <div className="flex items-center border border-zinc-700">
                         <button
-                          onClick={() => updateQuantity(item.id, item.size, item.quantity - 1)}
+                          onClick={() => updateQuantity(item._id, item.size, item.quantity - 1)}
                           className="px-3 py-1 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all text-sm"
                         >
                           −
@@ -99,7 +99,7 @@ function CartDrawer({ isOpen, onClose }) {
                           {item.quantity}
                         </span>
                         <button
-                          onClick={() => updateQuantity(item.id, item.size, item.quantity + 1)}
+                          onClick={() => updateQuantity(item._id, item.size, item.quantity + 1)}
                           className="px-3 py-1 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all text-sm"
                         >
                           +

@@ -1,8 +1,10 @@
-import { Link } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 
 function OrderConfirmation() {
+  const { id } = useParams()
+
   return (
     <div className="bg-black min-h-screen flex flex-col">
       <Navbar />
@@ -15,9 +17,15 @@ function OrderConfirmation() {
           <h1 className="text-white text-4xl font-black uppercase mb-4">
             Thank You!
           </h1>
-          <p className="text-zinc-400 text-sm tracking-wider leading-relaxed mb-10">
+          <p className="text-zinc-400 text-sm tracking-wider leading-relaxed mb-4">
             Your order has been received and is being processed. You will receive a confirmation email shortly.
           </p>
+          {id && (
+            <div className="bg-zinc-950 border border-zinc-800 px-4 py-3 mb-8">
+              <p className="text-zinc-500 text-xs tracking-wider mb-1">Order ID</p>
+              <p className="text-white text-xs font-bold tracking-wider break-all">{id}</p>
+            </div>
+          )}
           <div className="flex items-center justify-center gap-4 flex-wrap">
             <Link
               to="/shop"

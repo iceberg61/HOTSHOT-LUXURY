@@ -5,12 +5,12 @@ const useCartStore = create((set, get) => ({
 
   addToCart: (product, size, quantity) => {
     const existing = get().items.find(
-      (item) => item.id === product.id && item.size === size
+      (item) => item._id === product._id && item.size === size
     )
     if (existing) {
       set({
         items: get().items.map((item) =>
-          item.id === product.id && item.size === size
+          item._id === product._id && item.size === size
             ? { ...item, quantity: item.quantity + quantity }
             : item
         ),
@@ -20,15 +20,15 @@ const useCartStore = create((set, get) => ({
     }
   },
 
-  removeFromCart: (id, size) => {
-    set({ items: get().items.filter((item) => !(item.id === id && item.size === size)) })
+  removeFromCart: (_id, size) => {
+    set({ items: get().items.filter((item) => !(item._id === _id && item.size === size)) })
   },
 
-  updateQuantity: (id, size, quantity) => {
+  updateQuantity: (_id, size, quantity) => {
     if (quantity < 1) return
     set({
       items: get().items.map((item) =>
-        item.id === id && item.size === size
+        item._id === _id && item.size === size
           ? { ...item, quantity }
           : item
       ),

@@ -1,15 +1,18 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Heart, ShoppingCart, ArrowLeft } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
-import products from '../data/products'
 import useCartStore from '../store/cartStore'
+import { fetchProductById, fetchProducts } from '../api/productApi'
 
 function ProductDetail() {
   const { id } = useParams()
-  const product = products.find((p) => p.id === Number(id))
 
+  const [product, setProduct] = useState(null)
+  const [related, setRelated] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
   const [selectedSize, setSelectedSize] = useState(null)
   const [quantity, setQuantity] = useState(1)
   const [wishlisted, setWishlisted] = useState(false)
@@ -17,7 +20,25 @@ function ProductDetail() {
 
   const addToCart = useCartStore((state) => state.addToCart)
 
-  const related = products.filter((p) => p.category === product?.category && p.id !== product?.id).slice(0, 4)
+  useEffect(() => {
+    const loadProduct = async () => {
+      try {
+        setLoading(true)
+        setSelectedSize(null)
+        setQuantity(1)
+        const data = await fetchProductById(id)
+        setProduct(data)
+        // Fetch related products
+        const all = await fetchProducts({ category: data.category })
+        setRelated(all.filter((p) => p._id !== id).slice(0, 4))
+      } catch (err) {
+        setError(err.message)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadProduct()
+  }, [id])
 
   const handleAddToCart = () => {
     if (!selectedSize) {
@@ -29,7 +50,22 @@ function ProductDetail() {
     setTimeout(() => setAdded(false), 2000)
   }
 
-  if (!product) {
+  if (loading) {
+    return (
+      <div className="bg-black min-h-screen flex flex-col">
+        <Navbar />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+            <p className="text-zinc-600 text-xs tracking-widest uppercase">Loading product...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    )
+  }
+
+  if (error || !product) {
     return (
       <div className="bg-black min-h-screen flex flex-col">
         <Navbar />
@@ -71,7 +107,7 @@ function ProductDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
 
           {/* Left — Image */}
-          <div className="flex flex-col gap-4">
+          <div>
             <div className="bg-zinc-950 border border-zinc-800 overflow-hidden" style={{ height: '550px' }}>
               <img
                 src={product.image}
@@ -81,10 +117,9 @@ function ProductDetail() {
             </div>
           </div>
 
-          {/* Right — Product Info */}
+          {/* Right — Info */}
           <div className="flex flex-col gap-6">
 
-            {/* Tag + Name */}
             <div>
               {product.tag && (
                 <span className="inline-block bg-red-500 text-white text-[10px] tracking-widest px-3 py-1 uppercase mb-4">
@@ -94,16 +129,18 @@ function ProductDetail() {
               <h1 className="text-white text-4xl font-black uppercase tracking-wider mb-2">
                 {product.name}
               </h1>
-              <p className="text-red-500 text-2xl font-bold">
-                ${product.price}.00
-              </p>
+              <p className="text-red-500 text-2xl font-bold">${product.price}.00</p>
             </div>
 
             <div className="border-t border-zinc-800" />
 
-            {/* Description */}
             <p className="text-zinc-400 text-sm tracking-wider leading-relaxed">
               {product.description}
+            </p>
+
+            {/* Stock status */}
+            <p className={`text-xs tracking-widest uppercase ${product.inStock ? 'text-green-500' : 'text-red-500'}`}>
+              {product.inStock ? `In Stock (${product.countInStock} left)` : 'Out of Stock'}
             </p>
 
             <div className="border-t border-zinc-800" />
@@ -111,9 +148,7 @@ function ProductDetail() {
             {/* Size Selector */}
             <div>
               <div className="flex items-center justify-between mb-4">
-                <p className="text-white text-xs font-bold tracking-[0.3em] uppercase">
-                  Select Size
-                </p>
+                <p className="text-white text-xs font-bold tracking-[0.3em] uppercase">Select Size</p>
                 <button className="text-red-500 text-xs tracking-widest uppercase hover:text-white transition-colors">
                   Size Guide
                 </button>
@@ -134,48 +169,41 @@ function ProductDetail() {
                 ))}
               </div>
               {!selectedSize && (
-                <p className="text-zinc-600 text-xs tracking-wider mt-2">
-                  Please select a size
-                </p>
+                <p className="text-zinc-600 text-xs tracking-wider mt-2">Please select a size</p>
               )}
             </div>
 
             {/* Quantity */}
             <div>
-              <p className="text-white text-xs font-bold tracking-[0.3em] uppercase mb-4">
-                Quantity
-              </p>
-              <div className="flex items-center gap-0 w-fit border border-zinc-700">
+              <p className="text-white text-xs font-bold tracking-[0.3em] uppercase mb-4">Quantity</p>
+              <div className="flex items-center w-fit border border-zinc-700">
                 <button
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                  className="px-4 py-3 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-all duration-300 text-sm"
-                >
-                  −
-                </button>
-                <span className="px-6 py-3 text-white text-xs tracking-widest border-x border-zinc-700">
-                  {quantity}
-                </span>
+                  className="px-4 py-3 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-all text-sm"
+                >−</button>
+                <span className="px-6 py-3 text-white text-xs border-x border-zinc-700">{quantity}</span>
                 <button
-                  onClick={() => setQuantity((q) => q + 1)}
-                  className="px-4 py-3 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-all duration-300 text-sm"
-                >
-                  +
-                </button>
+                  onClick={() => setQuantity((q) => Math.min(product.countInStock, q + 1))}
+                  className="px-4 py-3 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-all text-sm"
+                >+</button>
               </div>
             </div>
 
-            {/* Action Buttons */}
+            {/* Buttons */}
             <div className="flex items-center gap-4">
               <button
                 onClick={handleAddToCart}
+                disabled={!product.inStock}
                 className={`flex-1 flex items-center justify-center gap-3 text-xs tracking-[0.3em] uppercase py-4 transition-all duration-300 ${
                   added
                     ? 'bg-green-600 text-white'
-                    : 'bg-red-500 text-white hover:bg-red-600'
+                    : product.inStock
+                    ? 'bg-red-500 text-white hover:bg-red-600'
+                    : 'bg-zinc-800 text-zinc-600 cursor-not-allowed'
                 }`}
               >
                 <ShoppingCart size={16} />
-                {added ? 'Added to Cart ✓' : 'Add to Cart'}
+                {added ? 'Added to Cart ✓' : product.inStock ? 'Add to Cart' : 'Out of Stock'}
               </button>
               <button
                 onClick={() => setWishlisted(!wishlisted)}
@@ -189,10 +217,9 @@ function ProductDetail() {
               </button>
             </div>
 
-            {/* Back to shop */}
             <Link
               to="/shop"
-              className="flex items-center gap-2 text-zinc-600 text-xs tracking-widest uppercase hover:text-red-500 transition-colors duration-300 w-fit"
+              className="flex items-center gap-2 text-zinc-600 text-xs tracking-widest uppercase hover:text-red-500 transition-colors w-fit"
             >
               <ArrowLeft size={14} />
               Back to Shop
@@ -208,15 +235,13 @@ function ProductDetail() {
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-12">
               <p className="text-red-500 text-xs tracking-[0.4em] uppercase mb-3">More Like This</p>
-              <h2 className="text-white text-3xl font-black uppercase tracking-wider">
-                Related Products
-              </h2>
+              <h2 className="text-white text-3xl font-black uppercase tracking-wider">Related Products</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               {related.map((item) => (
                 <Link
-                  to={`/product/${item.id}`}
-                  key={item.id}
+                  to={`/product/${item._id}`}
+                  key={item._id}
                   className="group block bg-zinc-950 border border-zinc-800 hover:border-red-500 transition-all duration-300 rounded-lg overflow-hidden"
                 >
                   <div className="overflow-hidden" style={{ height: '220px' }}>
@@ -228,12 +253,8 @@ function ProductDetail() {
                     />
                   </div>
                   <div className="p-4">
-                    <h3 className="text-white text-xs font-bold tracking-wider uppercase mb-1">
-                      {item.name}
-                    </h3>
-                    <p className="text-red-500 text-xs font-medium">
-                      ${item.price}.00
-                    </p>
+                    <h3 className="text-white text-xs font-bold tracking-wider uppercase mb-1">{item.name}</h3>
+                    <p className="text-red-500 text-xs font-medium">${item.price}.00</p>
                   </div>
                 </Link>
               ))}

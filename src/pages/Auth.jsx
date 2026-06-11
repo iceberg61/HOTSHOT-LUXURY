@@ -3,21 +3,26 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Eye, EyeOff } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import { registerUser, loginUser } from '../api/authApi'
+import useAuthStore from '../store/authStore'
 
 function Auth() {
   const [mode, setMode] = useState('login')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [serverError, setServerError] = useState('')
 
   const [form, setForm] = useState({
     firstName: '', lastName: '', email: '', password: '', confirmPassword: ''
   })
   const [errors, setErrors] = useState({})
   const navigate = useNavigate()
+  const setUser = useAuthStore((state) => state.setUser)
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value })
     setErrors({ ...errors, [e.target.name]: '' })
+    setServerError('')
   }
 
   const validate = () => {
@@ -33,17 +38,36 @@ function Auth() {
     return newErrors
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const newErrors = validate()
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors)
       return
     }
     setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
+    setServerError('')
+    try {
+      let user
+      if (mode === 'register') {
+        user = await registerUser({
+          firstName: form.firstName,
+          lastName: form.lastName,
+          email: form.email,
+          password: form.password,
+        })
+      } else {
+        user = await loginUser({
+          email: form.email,
+          password: form.password,
+        })
+      }
+      setUser(user)
       navigate('/')
-    }, 1500)
+    } catch (err) {
+      setServerError(err.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   const inputClass = (field) =>
@@ -89,7 +113,7 @@ function Auth() {
           {/* Toggle */}
           <div className="flex mb-6 border border-zinc-800">
             <button
-              onClick={() => { setMode('login'); setErrors({}) }}
+              onClick={() => { setMode('login'); setErrors({}); setServerError('') }}
               className={`flex-1 py-3 text-xs tracking-widest uppercase transition-all duration-300 ${
                 mode === 'login' ? 'bg-red-500 text-white' : 'text-zinc-400 hover:text-white'
               }`}
@@ -97,7 +121,7 @@ function Auth() {
               Login
             </button>
             <button
-              onClick={() => { setMode('register'); setErrors({}) }}
+              onClick={() => { setMode('register'); setErrors({}); setServerError('') }}
               className={`flex-1 py-3 text-xs tracking-widest uppercase transition-all duration-300 ${
                 mode === 'register' ? 'bg-red-500 text-white' : 'text-zinc-400 hover:text-white'
               }`}
@@ -106,10 +130,16 @@ function Auth() {
             </button>
           </div>
 
+          {/* Server Error */}
+          {serverError && (
+            <div className="bg-red-500/10 border border-red-500 px-4 py-3 mb-4">
+              <p className="text-red-500 text-xs tracking-wider">{serverError}</p>
+            </div>
+          )}
+
           {/* Fields */}
           <div className="flex flex-col gap-3">
 
-            {/* Register only — name fields — stacked on mobile */}
             {mode === 'register' && (
               <>
                 <div>
@@ -135,7 +165,6 @@ function Auth() {
               </>
             )}
 
-            {/* Email */}
             <div>
               <input
                 name="email"
@@ -148,7 +177,6 @@ function Auth() {
               {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
             </div>
 
-            {/* Password */}
             <div className="relative">
               <input
                 name="password"
@@ -167,7 +195,6 @@ function Auth() {
               {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
             </div>
 
-            {/* Confirm Password */}
             {mode === 'register' && (
               <div className="relative">
                 <input
@@ -184,20 +211,21 @@ function Auth() {
               </div>
             )}
 
-            {/* Forgot Password */}
             {mode === 'login' && (
               <div className="text-right">
-                <Link to="/forgot-password" className="text-zinc-500 text-xs tracking-wider hover:text-red-500 transition-colors">
-                    Forgot Password?
+                <Link
+                  to="/forgot-password"
+                  className="text-zinc-500 text-xs tracking-wider hover:text-red-500 transition-colors"
+                >
+                  Forgot Password?
                 </Link>
               </div>
             )}
 
-            {/* Submit */}
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className={`w-full text-xs tracking-[0.3em] uppercase py-4 transition-all duration-300 mt-1 ${
+              className={`w-full text-xs tracking-[0.3em] uppercase py-4 transition-all duration-300 mt-2 ${
                 loading
                   ? 'bg-zinc-700 text-zinc-400 cursor-not-allowed'
                   : 'bg-red-500 text-white hover:bg-red-600'
@@ -209,19 +237,17 @@ function Auth() {
               }
             </button>
 
-            {/* Divider */}
             <div className="flex items-center gap-3 my-1">
               <div className="flex-1 h-px bg-zinc-800" />
               <span className="text-zinc-600 text-xs tracking-widest uppercase">or</span>
               <div className="flex-1 h-px bg-zinc-800" />
             </div>
 
-            {/* Switch mode */}
             <p className="text-zinc-500 text-xs tracking-wider text-center">
               {mode === 'login' ? (
                 <>Don't have an account?{' '}
                   <button
-                    onClick={() => { setMode('register'); setErrors({}) }}
+                    onClick={() => { setMode('register'); setErrors({}); setServerError('') }}
                     className="text-red-500 hover:text-white transition-colors"
                   >
                     Register here
@@ -230,7 +256,7 @@ function Auth() {
               ) : (
                 <>Already have an account?{' '}
                   <button
-                    onClick={() => { setMode('login'); setErrors({}) }}
+                    onClick={() => { setMode('login'); setErrors({}); setServerError('') }}
                     className="text-red-500 hover:text-white transition-colors"
                   >
                     Login here

@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Heart, Eye } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import products from '../data/products'
 import useCartStore from '../store/cartStore'
+import { fetchProducts } from '../api/productApi'
 
 const tabs = ['ALL', 'TOPS', 'ACCESSORIES']
 
@@ -10,21 +10,34 @@ const ICON_VISIBLE = 'opacity-100 translate-x-0'
 const ICON_HIDDEN = 'opacity-0 translate-x-4'
 
 function ProductGrid() {
+  const [products, setProducts] = useState([])
+  const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('ALL')
   const [hoveredId, setHoveredId] = useState(null)
   const [addedId, setAddedId] = useState(null)
 
   const addToCart = useCartStore((state) => state.addToCart)
 
-  const filtered = activeTab === 'ALL'
-    ? products
-    : products.filter((p) => p.category === activeTab)
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        setLoading(true)
+        const data = await fetchProducts({ category: activeTab })
+        setProducts(data)
+      } catch (err) {
+        console.error(err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadProducts()
+  }, [activeTab])
 
   const handleAddToCart = (e, product) => {
     e.preventDefault()
     const defaultSize = product.sizes[0]
     addToCart(product, defaultSize, 1)
-    setAddedId(product.id)
+    setAddedId(product._id)
     setTimeout(() => setAddedId(null), 2000)
   }
 
@@ -64,74 +77,79 @@ function ProductGrid() {
           ))}
         </div>
 
+        {/* Loading */}
+        {loading && (
+          <div className="flex items-center justify-center py-20">
+            <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+          </div>
+        )}
+
         {/* Product Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {filtered.map((product) => (
-            <Link
-              to={`/product/${product.id}`}
-              key={product.id}
-              className="group relative bg-zinc-950 rounded-lg overflow-hidden border border-zinc-800 hover:border-red-500 transition-all duration-300 block"
-              onMouseEnter={() => setHoveredId(product.id)}
-              onMouseLeave={() => setHoveredId(null)}
-            >
-              {/* Tag */}
-              {product.tag && (
-                <span className="absolute top-3 left-3 z-10 bg-red-500 text-white text-[10px] tracking-widest px-2 py-1 uppercase">
-                  {product.tag}
-                </span>
-              )}
+        {!loading && (
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {products.map((product) => (
+              <Link
+                to={`/product/${product._id}`}
+                key={product._id}
+                className="group relative bg-zinc-950 rounded-lg overflow-hidden border border-zinc-800 hover:border-red-500 transition-all duration-300 block"
+                onMouseEnter={() => setHoveredId(product._id)}
+                onMouseLeave={() => setHoveredId(null)}
+              >
+                {product.tag && (
+                  <span className="absolute top-3 left-3 z-10 bg-red-500 text-white text-[10px] tracking-widest px-2 py-1 uppercase">
+                    {product.tag}
+                  </span>
+                )}
 
-              {/* Wishlist + View icons */}
-              <div className={`absolute top-3 right-3 z-10 flex flex-col gap-2 transition-all duration-300 ${
-                hoveredId === product.id ? ICON_VISIBLE : ICON_HIDDEN
-              }`}>
-                <button
-                  onClick={(e) => e.preventDefault()}
-                  className="bg-black border border-zinc-600 p-2.5 hover:border-red-500 hover:text-red-500 text-zinc-400 transition-all duration-300"
-                >
-                  <Heart size={20} />
-                </button>
-                <button
-                  onClick={(e) => e.preventDefault()}
-                  className="bg-black border border-zinc-600 p-2.5 hover:border-red-500 hover:text-red-500 text-zinc-400 transition-all duration-300"
-                >
-                  <Eye size={20} />
-                </button>
-              </div>
+                <div className={`absolute top-3 right-3 z-10 flex flex-col gap-2 transition-all duration-300 ${
+                  hoveredId === product._id ? ICON_VISIBLE : ICON_HIDDEN
+                }`}>
+                  <button
+                    onClick={(e) => e.preventDefault()}
+                    className="bg-black border border-zinc-600 p-2.5 hover:border-red-500 hover:text-red-500 text-zinc-400 transition-all duration-300"
+                  >
+                    <Heart size={20} />
+                  </button>
+                  <button
+                    onClick={(e) => e.preventDefault()}
+                    className="bg-black border border-zinc-600 p-2.5 hover:border-red-500 hover:text-red-500 text-zinc-400 transition-all duration-300"
+                  >
+                    <Eye size={20} />
+                  </button>
+                </div>
 
-              {/* Image */}
-              <div className="overflow-hidden bg-zinc-900" style={{ height: '280px' }}>
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }}
-                  className="group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
+                <div className="overflow-hidden bg-zinc-900" style={{ height: '280px' }}>
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }}
+                    className="group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
 
-              {/* Info */}
-              <div className="p-4">
-                <h3 className="text-white text-sm font-bold tracking-wider uppercase mb-1">
-                  {product.name}
-                </h3>
-                <p className="text-red-500 text-sm font-medium mb-3">
-                  ${product.price}.00
-                </p>
-                <button
-                  onClick={(e) => handleAddToCart(e, product)}
-                  className={`w-full text-xs tracking-widest uppercase py-3 border transition-all duration-300 ${
-                    addedId === product.id
-                      ? 'border-green-500 text-green-500'
-                      : 'border-red-500 text-red-500 hover:bg-red-500 hover:text-black'
-                  }`}
-                >
-                  {addedId === product.id ? 'Added ✓' : 'Add to Cart'}
-                </button>
-              </div>
+                <div className="p-4">
+                  <h3 className="text-white text-sm font-bold tracking-wider uppercase mb-1">
+                    {product.name}
+                  </h3>
+                  <p className="text-red-500 text-sm font-medium mb-3">
+                    ${product.price}.00
+                  </p>
+                  <button
+                    onClick={(e) => handleAddToCart(e, product)}
+                    className={`w-full text-xs tracking-widest uppercase py-3 border transition-all duration-300 ${
+                      addedId === product._id
+                        ? 'border-green-500 text-green-500'
+                        : 'border-red-500 text-red-500 hover:bg-red-500 hover:text-black'
+                    }`}
+                  >
+                    {addedId === product._id ? 'Added ✓' : 'Add to Cart'}
+                  </button>
+                </div>
 
-            </Link>
-          ))}
-        </div>
+              </Link>
+            ))}
+          </div>
+        )}
 
       </div>
     </section>
