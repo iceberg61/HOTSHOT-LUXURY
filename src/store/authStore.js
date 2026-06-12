@@ -8,7 +8,15 @@ const useAuthStore = create((set) => ({
     set({ user })
   },
 
-  logout: () => {
+  logout: async () => {
+    try {
+      await fetch(`${import.meta.env.VITE_API_URL}/api/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      })
+    } catch (err) {
+      console.error(err)
+    }
     localStorage.removeItem('hotshotUser')
     set({ user: null })
   },

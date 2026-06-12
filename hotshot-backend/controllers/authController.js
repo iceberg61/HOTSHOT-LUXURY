@@ -1,84 +1,89 @@
-import process from 'process'
 import jwt from 'jsonwebtoken'
 import User from '../models/User.js'
+import process from 'process'
 
-// Generate JWT
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRE,
   })
 }
 
-// @desc    Register user
-// @route   POST /api/auth/register
-// @access  Public
+const setCookie = (res, token) => {
+  res.cookie('token', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'none',
+    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+  })
+}
+
 const register = async (req, res) => {
   const { firstName, lastName, email, password } = req.body
 
-  // Check if user exists
-    const userExists = await User.findOne({ email })
-    if (userExists) {
+  const userExists = await User.findOne({ email })
+  if (userExists) {
     res.status(400).json({ message: 'User already exists' })
     return
-    }
+  }
 
-  // Create user
   const user = await User.create({ firstName, lastName, email, password })
 
   if (user) {
+    const token = generateToken(user._id)
+    setCookie(res, token)
     res.status(201).json({
-        _id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        isAdmin: user.isAdmin,
-        token: generateToken(user._id),
+      _id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      token,
     })
-    } else {
-        res.status(400).json({ message: 'Invalid user data' })
-    }
+  } else {
+    res.status(400).json({ message: 'Invalid user data' })
+  }
 }
 
-// @desc    Login user
-// @route   POST /api/auth/login
-// @access  Public
 const login = async (req, res) => {
   const { email, password } = req.body
 
-  // Find user
   const user = await User.findOne({ email })
 
   if (user && (await user.matchPassword(password))) {
+    const token = generateToken(user._id)
+    setCookie(res, token)
     res.json({
       _id: user._id,
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
       isAdmin: user.isAdmin,
-      token: generateToken(user._id),
+      token,
     })
   } else {
-    res.status(401)
-    throw new Error('Invalid email or password')
+    res.status(401).json({ message: 'Invalid email or password' })
   }
 }
 
-// @desc    Get logged in user profile
-// @route   GET /api/auth/profile
-// @access  Private
+const logout = async (req, res) => {
+  res.cookie('token', '', {
+    httpOnly: true,
+    expires: new Date(0),
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'none',
+  })
+  res.json({ message: 'Logged out successfully' })
+}
+
 const getProfile = async (req, res) => {
   const user = await User.findById(req.user._id).select('-password')
   if (user) {
     res.json(user)
   } else {
-    res.status(404)
-    throw new Error('User not found')
+    res.status(404).json({ message: 'User not found' })
   }
 }
 
-// @desc    Update user profile
-// @route   PUT /api/auth/profile
-// @access  Private
 const updateProfile = async (req, res) => {
   const user = await User.findById(req.user._id)
 
@@ -86,30 +91,27 @@ const updateProfile = async (req, res) => {
     user.firstName = req.body.firstName || user.firstName
     user.lastName = req.body.lastName || user.lastName
     user.email = req.body.email || user.email
-    if (req.body.password) {
-      user.password = req.body.password
-    }
+    if (req.body.password) user.password = req.body.password
+
     const updatedUser = await user.save()
+    const token = generateToken(updatedUser._id)
+    setCookie(res, token)
     res.json({
       _id: updatedUser._id,
       firstName: updatedUser.firstName,
       lastName: updatedUser.lastName,
       email: updatedUser.email,
       isAdmin: updatedUser.isAdmin,
-      token: generateToken(updatedUser._id),
+      token,
     })
   } else {
-    res.status(404)
-    throw new Error('User not found')
+    res.status(404).json({ message: 'User not found' })
   }
 }
 
-// @desc    Get all users
-// @route   GET /api/auth/users
-// @access  Private/Admin
 const getAllUsers = async (req, res) => {
   const users = await User.find({}).select('-password').sort({ createdAt: -1 })
   res.json(users)
 }
 
-export { register, login, getProfile, updateProfile, getAllUsers }
+export { register, login, logout, getProfile, updateProfile, getAllUsers }

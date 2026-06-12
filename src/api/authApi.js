@@ -15,25 +15,29 @@ export const registerUser = async (userData) => {
   const res = await fetch(`${API_URL}/api/auth/register`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
     body: JSON.stringify(userData),
   })
   return handleResponse(res)
 }
+
 
 // Login
 export const loginUser = async (userData) => {
   const res = await fetch(`${API_URL}/api/auth/login`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
     body: JSON.stringify(userData),
   })
   return handleResponse(res)
 }
 
-// Get profile
+// Get Profile
 export const getProfile = async (token) => {
   const res = await fetch(`${API_URL}/api/auth/profile`, {
     headers: { Authorization: `Bearer ${token}` },
+    credentials: 'include',
   })
   return handleResponse(res)
 }
