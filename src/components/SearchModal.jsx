@@ -61,7 +61,7 @@ function SearchModal({ isOpen, onClose }) {
 
           {/* Search Input */}
           <div className="flex items-center gap-4 border-b border-zinc-700 pb-4">
-            <Search size={20} className="text-red-500 flex-shrink-0" />
+            <Search size={20} className="text-red-500 shrink-0" />
             <input
               ref={inputRef}
               type="text"
@@ -72,7 +72,7 @@ function SearchModal({ isOpen, onClose }) {
             />
             <button
               onClick={onClose}
-              className="text-zinc-400 hover:text-white transition-colors flex-shrink-0"
+              className="text-zinc-400 hover:text-white transition-colors shrink-0"
             >
               <X size={20} />
             </button>
@@ -105,7 +105,7 @@ function SearchModal({ isOpen, onClose }) {
                     onClick={onClose}
                     className="flex items-center gap-4 p-3 hover:bg-zinc-900 transition-colors group"
                   >
-                    <div className="w-12 h-12 bg-zinc-900 overflow-hidden flex-shrink-0 border border-zinc-800 group-hover:border-red-500 transition-colors">
+                    <div className="w-12 h-12 bg-zinc-900 overflow-hidden shrink-0 border border-zinc-800 group-hover:border-red-500 transition-colors">
                       <img
                         src={product.image}
                         alt={product.name}
@@ -118,7 +118,7 @@ function SearchModal({ isOpen, onClose }) {
                       </p>
                       <p className="text-zinc-500 text-xs mt-1">{product.category}</p>
                     </div>
-                    <p className="text-red-500 text-xs font-bold flex-shrink-0">
+                    <p className="text-red-500 text-xs font-bold shrink-0">
                       ${product.price}.00
                     </p>
                   </Link>

@@ -46,12 +46,12 @@ function CartDrawer({ isOpen, onClose }) {
             <div className="flex flex-col items-center justify-center h-full gap-4">
               <ShoppingBag size={48} className="text-zinc-700" />
               <p className="text-zinc-600 text-xs tracking-widest uppercase">Your cart is empty</p>
-              <button
-                onClick={onClose}
+              <Link
+                to="/shop"
                 className="border border-red-500 text-red-500 text-xs tracking-widest uppercase px-6 py-3 hover:bg-red-500 hover:text-black transition-all duration-300"
               >
                 Continue Shopping
-              </button>
+              </Link>
             </div>
           ) : (
             <div className="flex flex-col gap-4">
