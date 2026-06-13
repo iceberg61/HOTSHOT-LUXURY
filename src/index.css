@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+html, body {
+  overflow-x: hidden;
+}
+
 @layer utilities {
   .translate-x-slide {
     transform: translateX(1rem);

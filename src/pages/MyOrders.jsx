@@ -51,14 +51,14 @@ function MyOrders() {
       <Navbar />
 
       {/* Hero Banner */}
-      <div className="relative bg-zinc-950 border-b border-zinc-900 pt-32 pb-16 px-8 overflow-hidden">
-        <div className="absolute inset-0 flex items-center pointer-events-none select-none">
-          <p className="text-zinc-900 text-[10rem] font-black uppercase tracking-widest opacity-40 whitespace-nowrap">
+      <div className="relative bg-zinc-950 border-b border-zinc-900 pt-24 sm:pt-32 pb-10 sm:pb-16 px-4 sm:px-8 overflow-hidden">
+        <div className="absolute inset-0 flex items-center pointer-events-none select-none overflow-hidden">
+          <p className="text-zinc-900 text-[5rem] sm:text-[10rem] font-black uppercase tracking-widest opacity-40 whitespace-nowrap">
             ORDERS
           </p>
         </div>
         <div className="relative z-10 max-w-7xl mx-auto">
-          <h1 className="text-white text-6xl md:text-8xl font-black uppercase">
+          <h1 className="text-white text-4xl sm:text-6xl md:text-8xl font-black uppercase">
             My <span className="text-red-500">Orders</span>
           </h1>
           <div className="flex items-center gap-2 mt-4">
@@ -72,7 +72,7 @@ function MyOrders() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-8 py-16">
+      <div className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-8 py-10 sm:py-16">
 
         {/* Loading */}
         {loading && (
@@ -189,7 +189,7 @@ function MyOrders() {
                     <div className="flex flex-col gap-4 mb-6">
                       {order.items.map((item, index) => (
                         <div key={index} className="flex items-center gap-4">
-                          <div className="w-14 h-14 bg-zinc-900 border border-zinc-800 overflow-hidden flex-shrink-0">
+                          <div className="w-14 h-14 bg-zinc-900 border border-zinc-800 overflow-hidden shrink-0">
                             <img
                               src={item.image}
                               alt={item.name}
@@ -200,7 +200,7 @@ function MyOrders() {
                             <p className="text-white text-xs font-bold tracking-wider uppercase">{item.name}</p>
                             <p className="text-zinc-500 text-xs mt-1">Size: {item.size} · Qty: {item.quantity}</p>
                           </div>
-                          <p className="text-red-500 text-xs font-bold flex-shrink-0">
+                          <p className="text-red-500 text-xs font-bold shrink-0">
                             ${(item.price * item.quantity).toFixed(2)}
                           </p>
                         </div>

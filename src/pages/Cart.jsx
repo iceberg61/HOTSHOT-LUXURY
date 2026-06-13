@@ -12,17 +12,17 @@ function Cart() {
       <Navbar />
 
       {/* Hero Banner */}
-      <div className="relative bg-zinc-950 border-b border-zinc-900 pt-32 pb-16 px-8 overflow-hidden">
-        <div className="absolute inset-0 flex items-center pointer-events-none select-none">
-          <p className="text-zinc-900 text-[10rem] font-black uppercase tracking-widest opacity-40 whitespace-nowrap">
+      <div className="relative bg-zinc-950 border-b border-zinc-900 pt-24 sm:pt-32 pb-10 sm:pb-16 px-4 sm:px-8 overflow-hidden">
+        <div className="absolute inset-0 flex items-center pointer-events-none select-none overflow-hidden">
+          <p className="text-zinc-900 text-[5rem] sm:text-[10rem] font-black uppercase tracking-widest opacity-40 whitespace-nowrap">
             CART
           </p>
         </div>
         <div className="relative z-10 max-w-7xl mx-auto">
-          <h1 className="text-white text-6xl md:text-8xl font-black uppercase">
+          <h1 className="text-white text-4xl sm:text-6xl md:text-8xl font-black uppercase">
             Your <span className="text-red-500">Cart</span>
           </h1>
-          <div className="flex items-center gap-2 mt-4">
+          <div className="flex items-center gap-2 mt-3">
             <Link to="/" className="text-red-500 text-xs tracking-widest uppercase hover:text-white transition-colors">
               Home
             </Link>
@@ -33,7 +33,7 @@ function Cart() {
       </div>
 
       {/* Content */}
-      <div className="flex-1 max-w-7xl mx-auto w-full px-8 py-16">
+      <div className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-8 py-10 sm:py-16">
 
         {items.length === 0 ? (
           /* Empty State */

@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import {
-  LayoutDashboard, ShoppingBag, Package, Users, LogOut, Menu, X
-} from 'lucide-react'
+import { LayoutDashboard, ShoppingBag, Package, Users, MessageSquare, LogOut, Menu, X } from 'lucide-react'
+
 import useAuthStore from '../../store/authStore'
 
 const navLinks = [
@@ -10,6 +9,7 @@ const navLinks = [
   { name: 'Orders', path: '/admin/orders', icon: ShoppingBag },
   { name: 'Products', path: '/admin/products', icon: Package },
   { name: 'Customers', path: '/admin/customers', icon: Users },
+  { name: 'Contacts', path: '/admin/contacts', icon: MessageSquare },
 ]
 
 function AdminLayout({ children }) {

@@ -8,7 +8,7 @@ import SEO from '../components/SEO'
 
 function Home() {
   return (
-    <div className="bg-black min-h-screen flex flex-col">
+    <div className="bg-black min-h-screen flex flex-col overflow-x-hidden">
       <SEO
         title="Home"
         description="Where high-octane attitude meets timeless luxury. Shop limited drops and exclusive streetwear."
@@ -25,4 +25,3 @@ function Home() {
 }
 
 export default Home
-
