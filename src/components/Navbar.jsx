@@ -80,6 +80,9 @@ function Navbar() {
                   <Link to="/orders" onClick={handleLinkClick} className="text-zinc-400 text-xs px-4 py-3 hover:text-red-500 hover:bg-zinc-900 tracking-wider transition-colors">
                     My Orders
                   </Link>
+                  <Link to="/wishlist" onClick={handleLinkClick} className="text-zinc-400 text-xs px-4 py-3 hover:text-red-500 hover:bg-zinc-900 tracking-wider transition-colors">
+                    My Wishlist
+                  </Link>
                   {user.isAdmin && (
                     <Link to="/admin" onClick={handleLinkClick} className="text-zinc-400 text-xs px-4 py-3 hover:text-red-500 hover:bg-zinc-900 tracking-wider transition-colors border-t border-zinc-800">
                       Admin Dashboard

@@ -17,6 +17,8 @@ import AdminProducts from './pages/admin/AdminProducts'
 import AdminCustomers from './pages/admin/AdminCustomers'
 import NotFound from './pages/NotFound'
 import AdminContacts from './pages/admin/AdminContacts'
+import Wishlist from './pages/Wishlist'
+
 
 
 
@@ -41,6 +43,7 @@ function App() {
         <Route path="/admin/products" element={<AdminRoute><AdminProducts /></AdminRoute>} />
         <Route path="/admin/customers" element={<AdminRoute><AdminCustomers /></AdminRoute>} />
         <Route path="/admin/contacts" element={<AdminRoute><AdminContacts /></AdminRoute>} />
+        <Route path="/wishlist" element={<Wishlist />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>

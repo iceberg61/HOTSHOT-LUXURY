@@ -10,6 +10,8 @@ const productSchema = new mongoose.Schema({
   tag: { type: String, enum: ['NEW', 'LIMITED', null], default: null },
   inStock: { type: Boolean, default: true },
   countInStock: { type: Number, default: 10 },
+  rating: { type: Number, default: 0 },
+  numReviews: { type: Number, default: 0 },
 }, { timestamps: true })
 
 const Product = mongoose.model('Product', productSchema)

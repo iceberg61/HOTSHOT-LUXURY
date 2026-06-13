@@ -6,6 +6,9 @@ import Footer from '../components/Footer'
 import useCartStore from '../store/cartStore'
 import { fetchProducts } from '../api/productApi'
 import SEO from '../components/SEO'
+import useAuthStore from '../store/authStore'
+import useWishlistStore from '../store/wishlistStore'
+import QuickView from '../components/QuickView'
 
 const categories = ['ALL', 'TOPS', 'ACCESSORIES']
 const sortOptions = ['Default', 'Price: Low to High', 'Price: High to Low', 'Newest']
@@ -23,7 +26,9 @@ function Shop() {
   const [showFilters, setShowFilters] = useState(false)
   const [maxPrice, setMaxPrice] = useState(500)
   const [addedId, setAddedId] = useState(null)
-
+  const { user } = useAuthStore()
+  const { fetchWishlist, addItem, removeItem, isWishlisted } = useWishlistStore()
+  const [quickViewProduct, setQuickViewProduct] = useState(null)
   const addToCart = useCartStore((state) => state.addToCart)
 
   // Fetch products from backend
@@ -48,6 +53,28 @@ function Shop() {
     addToCart(product, defaultSize, 1)
     setAddedId(product._id)
     setTimeout(() => setAddedId(null), 2000)
+  }
+
+  useEffect(() => {
+    if (user) fetchWishlist(user.token)
+  }, [user, fetchWishlist])
+
+  const handleWishlist = async (e, product) => {
+    e.preventDefault()
+    if (!user) {
+      window.location.assign('/login')
+      return
+    }
+    if (isWishlisted(product._id)) {
+      await removeItem(user.token, product._id)
+    } else {
+      await addItem(user.token, product._id)
+    }
+  }
+
+  const handleQuickView = (e, product) => {
+    e.preventDefault()
+    setQuickViewProduct(product)
   }
 
   return (
@@ -201,13 +228,17 @@ function Shop() {
                   hoveredId === product._id ? ICON_VISIBLE : ICON_HIDDEN
                 }`}>
                   <button
-                    onClick={(e) => e.preventDefault()}
-                    className="bg-black border border-zinc-600 p-2.5 hover:border-red-500 hover:text-red-500 text-zinc-400 transition-all duration-300"
+                    onClick={(e) => handleWishlist(e, product)}
+                    className={`border p-2.5 transition-all duration-300 ${
+                      isWishlisted(product._id)
+                        ? 'bg-red-500 border-red-500 text-white'
+                        : 'bg-black border-zinc-600 text-zinc-400 hover:border-red-500 hover:text-red-500'
+                    }`}
                   >
-                    <Heart size={18} />
+                    <Heart size={18} fill={isWishlisted(product._id) ? 'currentColor' : 'none'} />
                   </button>
                   <button
-                    onClick={(e) => e.preventDefault()}
+                    onClick={(e) => handleQuickView(e, product)}
                     className="bg-black border border-zinc-600 p-2.5 hover:border-red-500 hover:text-red-500 text-zinc-400 transition-all duration-300"
                   >
                     <Eye size={18} />
@@ -244,6 +275,13 @@ function Shop() {
               </Link>
             ))}
           </div>
+        )}
+
+        {quickViewProduct && (
+          <QuickView
+            product={quickViewProduct}
+            onClose={() => setQuickViewProduct(null)}
+          />
         )}
       </div>
 

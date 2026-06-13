@@ -4,8 +4,11 @@ import { Heart, ShoppingCart, ArrowLeft } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import useCartStore from '../store/cartStore'
+import useAuthStore from '../store/authStore'
 import { fetchProductById, fetchProducts } from '../api/productApi'
 import SEO from '../components/SEO'
+import { getProductReviews, createReview } from '../api/reviewApi'
+import useWishlistStore from '../store/wishlistStore'
 
 function ProductDetail() {
   const { id } = useParams()
@@ -16,22 +19,43 @@ function ProductDetail() {
   const [error, setError] = useState(null)
   const [selectedSize, setSelectedSize] = useState(null)
   const [quantity, setQuantity] = useState(1)
-  const [wishlisted, setWishlisted] = useState(false)
   const [added, setAdded] = useState(false)
-
+  const [reviews, setReviews] = useState([])
+  const [reviewForm, setReviewForm] = useState({ name: '', rating: 5, comment: '' })
+  const [reviewLoading, setReviewLoading] = useState(false)
+  const [reviewError, setReviewError] = useState('')
+  const [reviewSuccess, setReviewSuccess] = useState('')
+  const { fetchWishlist, addItem, removeItem, isWishlisted } = useWishlistStore()
+  const user = useAuthStore((state) => state.user)
   const addToCart = useCartStore((state) => state.addToCart)
+
+
+
+  useEffect(() => {
+    if (user) fetchWishlist(user.token)
+  }, [user, fetchWishlist])
 
   useEffect(() => {
     const loadProduct = async () => {
       try {
         setLoading(true)
+        setError(null)
         setSelectedSize(null)
         setQuantity(1)
-        const data = await fetchProductById(id)
+
+        // Load product and reviews in parallel
+        const [data, reviewsData] = await Promise.all([
+          fetchProductById(id),
+          getProductReviews(id),
+        ])
+
         setProduct(data)
-        // Fetch related products
+        setReviews(reviewsData)
+
+        // Load related separately after product is set
         const all = await fetchProducts({ category: data.category })
         setRelated(all.filter((p) => p._id !== id).slice(0, 4))
+
       } catch (err) {
         setError(err.message)
       } finally {
@@ -40,6 +64,35 @@ function ProductDetail() {
     }
     loadProduct()
   }, [id])
+
+  const handleWishlist = async () => {
+    if (!user) { window.location.href = '/login'; return }
+    if (isWishlisted(product._id)) {
+      await removeItem(user.token, product._id)
+    } else {
+      await addItem(user.token, product._id)
+    }
+  }
+
+  const handleReviewSubmit = async () => {
+    if (!reviewForm.name || !reviewForm.comment) {
+      setReviewError('Name and comment are required')
+      return
+    }
+    setReviewLoading(true)
+    setReviewError('')
+    try {
+      const newReview = await createReview(id, reviewForm)
+      setReviews([newReview, ...reviews])
+      setReviewForm({ name: '', rating: 5, comment: '' })
+      setReviewSuccess('Review submitted successfully!')
+      setTimeout(() => setReviewSuccess(''), 3000)
+    } catch (err) {
+      setReviewError(err.message)
+    } finally {
+      setReviewLoading(false)
+    }
+  }
 
   const handleAddToCart = () => {
     if (!selectedSize) {
@@ -50,6 +103,8 @@ function ProductDetail() {
     setAdded(true)
     setTimeout(() => setAdded(false), 2000)
   }
+
+  
 
   if (loading) {
     return (
@@ -213,14 +268,14 @@ function ProductDetail() {
                 {added ? 'Added to Cart ✓' : product.inStock ? 'Add to Cart' : 'Out of Stock'}
               </button>
               <button
-                onClick={() => setWishlisted(!wishlisted)}
+                onClick={handleWishlist}
                 className={`border p-4 transition-all duration-300 ${
-                  wishlisted
+                  isWishlisted(product._id)
                     ? 'border-red-500 text-red-500 bg-red-500/10'
                     : 'border-zinc-700 text-zinc-400 hover:border-red-500 hover:text-red-500'
                 }`}
               >
-                <Heart size={18} fill={wishlisted ? 'currentColor' : 'none'} />
+                <Heart size={18} fill={isWishlisted(product._id) ? 'currentColor' : 'none'} />
               </button>
             </div>
 
@@ -269,6 +324,127 @@ function ProductDetail() {
           </div>
         </div>
       )}
+
+      {/* Reviews Section */}
+        <div className="border-t border-zinc-900 px-4 sm:px-8 py-16">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+
+              {/* Left — Reviews List */}
+              <div>
+                <h2 className="text-white text-2xl font-black uppercase tracking-wider mb-2">
+                  Reviews
+                </h2>
+                <p className="text-zinc-500 text-xs tracking-wider mb-8">
+                  {reviews.length} {reviews.length === 1 ? 'review' : 'reviews'}
+                  {product.numReviews > 0 && (
+                    <span className="ml-2 text-yellow-500">
+                      {'★'.repeat(Math.round(product.rating))}{'☆'.repeat(5 - Math.round(product.rating))}
+                      {' '}{product.rating?.toFixed(1)}
+                    </span>
+                  )}
+                </p>
+
+                {reviews.length === 0 ? (
+                  <p className="text-zinc-600 text-xs tracking-widest uppercase">
+                    No reviews yet — be the first!
+                  </p>
+                ) : (
+                  <div className="flex flex-col gap-6">
+                    {reviews.map((review) => (
+                      <div key={review._id} className="border-b border-zinc-900 pb-6">
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-white text-xs font-bold tracking-wider uppercase">
+                            {review.name}
+                          </p>
+                          <p className="text-zinc-600 text-xs">
+                            {new Date(review.createdAt).toLocaleDateString()}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-1 mb-3">
+                          {[1,2,3,4,5].map((star) => (
+                            <span key={star} className={`text-sm ${star <= review.rating ? 'text-yellow-500' : 'text-zinc-700'}`}>★</span>
+                          ))}
+                        </div>
+                        <p className="text-zinc-400 text-xs tracking-wider leading-relaxed">
+                          {review.comment}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Right — Write Review */}
+              <div>
+                <h2 className="text-white text-2xl font-black uppercase tracking-wider mb-8">
+                  Write a Review
+                </h2>
+
+                {reviewSuccess && (
+                  <div className="bg-green-500/10 border border-green-500 px-4 py-3 mb-4">
+                    <p className="text-green-500 text-xs tracking-wider">{reviewSuccess}</p>
+                  </div>
+                )}
+                {reviewError && (
+                  <div className="bg-red-500/10 border border-red-500 px-4 py-3 mb-4">
+                    <p className="text-red-500 text-xs tracking-wider">{reviewError}</p>
+                  </div>
+                )}
+
+                <div className="flex flex-col gap-4">
+                  <div>
+                    <label className="text-zinc-500 text-xs tracking-widest uppercase mb-2 block">Your Name *</label>
+                    <input
+                      value={reviewForm.name}
+                      onChange={(e) => setReviewForm({ ...reviewForm, name: e.target.value })}
+                      placeholder="John Doe"
+                      className="w-full bg-zinc-900 border border-zinc-800 text-white text-xs px-4 py-3 tracking-wider placeholder-zinc-600 focus:outline-none focus:border-red-500 transition-colors"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-zinc-500 text-xs tracking-widest uppercase mb-2 block">Rating *</label>
+                    <div className="flex items-center gap-2">
+                      {[1,2,3,4,5].map((star) => (
+                        <button
+                          key={star}
+                          onClick={() => setReviewForm({ ...reviewForm, rating: star })}
+                          className={`text-2xl transition-colors ${star <= reviewForm.rating ? 'text-yellow-500' : 'text-zinc-700 hover:text-yellow-500'}`}
+                        >
+                          ★
+                        </button>
+                      ))}
+                      <span className="text-zinc-500 text-xs ml-2">{reviewForm.rating}/5</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-zinc-500 text-xs tracking-widest uppercase mb-2 block">Comment *</label>
+                    <textarea
+                      value={reviewForm.comment}
+                      onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
+                      placeholder="Share your experience with this product..."
+                      rows={5}
+                      className="w-full bg-zinc-900 border border-zinc-800 text-white text-xs px-4 py-3 tracking-wider placeholder-zinc-600 focus:outline-none focus:border-red-500 transition-colors resize-none"
+                    />
+                  </div>
+
+                  <button
+                    onClick={handleReviewSubmit}
+                    disabled={reviewLoading}
+                    className={`w-full text-xs tracking-[0.3em] uppercase py-4 transition-all duration-300 ${
+                      reviewLoading ? 'bg-zinc-700 text-zinc-400 cursor-not-allowed' : 'bg-red-500 text-white hover:bg-red-600'
+                    }`}
+                  >
+                    {reviewLoading ? 'Submitting...' : 'Submit Review'}
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
 
       <Footer />
     </div>

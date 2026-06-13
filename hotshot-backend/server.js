@@ -15,6 +15,8 @@ import { errorHandler, notFound } from './middleware/errorMiddleware.js'
 import cookieParser from 'cookie-parser'
 import contactRoutes from './routes/contactRoutes.js'
 import uploadRoutes from './routes/uploadRoutes.js'
+import reviewRoutes from './routes/reviewRoutes.js'
+import wishlistRoutes from './routes/wishlistRoutes.js'
 
 
 
@@ -24,6 +26,8 @@ dotenv.config()
 connectDB()
 
 const app = express()
+
+app.set('trust proxy', 1)
 
 // ── Security Headers ──────────────────────────────
 app.use(helmet({
@@ -98,12 +102,14 @@ app.use('/api/products', apiLimiter, productRoutes)
 app.use('/api/orders', orderLimiter, orderRoutes)
 app.use('/api/contact', contactRoutes)
 app.use('/api/upload', uploadRoutes)
+app.use('/api/reviews', apiLimiter, reviewRoutes)
+app.use('/api/wishlist', apiLimiter, wishlistRoutes)
 // Health check
 app.get('/', (req, res) => {
   res.json({ message: 'Hotshot Luxury API is running' })
 })
 
-app.set('trust proxy', 1)
+
 
 // ── Error Handling ────────────────────────────────
 app.use(notFound)

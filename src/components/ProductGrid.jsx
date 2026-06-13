@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import { Heart, Eye } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import useCartStore from '../store/cartStore'
+import useAuthStore from '../store/authStore'
+import useWishlistStore from '../store/wishlistStore'
 import { fetchProducts } from '../api/productApi'
+import QuickView from './QuickView'
 
 const tabs = ['ALL', 'TOPS', 'ACCESSORIES']
-
 const ICON_VISIBLE = 'opacity-100 translate-x-0'
 const ICON_HIDDEN = 'opacity-0 translate-x-4'
 
@@ -15,8 +17,16 @@ function ProductGrid() {
   const [activeTab, setActiveTab] = useState('ALL')
   const [hoveredId, setHoveredId] = useState(null)
   const [addedId, setAddedId] = useState(null)
+  const [quickViewProduct, setQuickViewProduct] = useState(null)
 
+  const navigate = useNavigate()
   const addToCart = useCartStore((state) => state.addToCart)
+  const { user } = useAuthStore()
+  const { fetchWishlist, addItem, removeItem, isWishlisted } = useWishlistStore()
+
+  useEffect(() => {
+    if (user) fetchWishlist(user.token)
+  }, [user, fetchWishlist])
 
   useEffect(() => {
     const loadProducts = async () => {
@@ -35,24 +45,37 @@ function ProductGrid() {
 
   const handleAddToCart = (e, product) => {
     e.preventDefault()
-    const defaultSize = product.sizes[0]
-    addToCart(product, defaultSize, 1)
+    addToCart(product, product.sizes[0], 1)
     setAddedId(product._id)
     setTimeout(() => setAddedId(null), 2000)
   }
 
+  const handleWishlist = async (e, product) => {
+    e.preventDefault()
+    if (!user) {
+      navigate('/login')
+      return
+    }
+    if (isWishlisted(product._id)) {
+      await removeItem(user.token, product._id)
+    } else {
+      await addItem(user.token, product._id)
+    }
+  }
+
+  const handleQuickView = (e, product) => {
+    e.preventDefault()
+    setQuickViewProduct(product)
+  }
+
   return (
-    <section className="bg-black py-20 px-8">
+    <section className="bg-black py-20 px-4 sm:px-8">
       <div className="max-w-7xl mx-auto">
 
         {/* Header */}
         <div className="text-center mb-12">
-          <p className="text-red-500 text-xs tracking-[0.4em] uppercase mb-3">
-            Best Selling
-          </p>
-          <h2 className="text-white text-4xl font-black uppercase tracking-wider mb-4">
-            The Drop
-          </h2>
+          <p className="text-red-500 text-xs tracking-[0.4em] uppercase mb-3">Best Selling</p>
+          <h2 className="text-white text-4xl font-black uppercase tracking-wider mb-4">The Drop</h2>
           <div className="flex items-center justify-center gap-2">
             <div className="w-16 h-px bg-zinc-700" />
             <div className="w-2 h-2 border border-red-500 rotate-45" />
@@ -77,15 +100,11 @@ function ProductGrid() {
           ))}
         </div>
 
-        {/* Loading */}
-        {loading && (
+        {loading ? (
           <div className="flex items-center justify-center py-20">
             <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
           </div>
-        )}
-
-        {/* Product Grid */}
-        {!loading && (
+        ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {products.map((product) => (
               <Link
@@ -101,23 +120,29 @@ function ProductGrid() {
                   </span>
                 )}
 
+                {/* Icons */}
                 <div className={`absolute top-3 right-3 z-10 flex flex-col gap-2 transition-all duration-300 ${
                   hoveredId === product._id ? ICON_VISIBLE : ICON_HIDDEN
                 }`}>
                   <button
-                    onClick={(e) => e.preventDefault()}
-                    className="bg-black border border-zinc-600 p-2.5 hover:border-red-500 hover:text-red-500 text-zinc-400 transition-all duration-300"
+                    onClick={(e) => handleWishlist(e, product)}
+                    className={`border p-2.5 transition-all duration-300 ${
+                      isWishlisted(product._id)
+                        ? 'bg-red-500 border-red-500 text-white'
+                        : 'bg-black border-zinc-600 text-zinc-400 hover:border-red-500 hover:text-red-500'
+                    }`}
                   >
-                    <Heart size={20} />
+                    <Heart size={18} fill={isWishlisted(product._id) ? 'currentColor' : 'none'} />
                   </button>
                   <button
-                    onClick={(e) => e.preventDefault()}
+                    onClick={(e) => handleQuickView(e, product)}
                     className="bg-black border border-zinc-600 p-2.5 hover:border-red-500 hover:text-red-500 text-zinc-400 transition-all duration-300"
                   >
-                    <Eye size={20} />
+                    <Eye size={18} />
                   </button>
                 </div>
 
+                {/* Image */}
                 <div className="overflow-hidden bg-zinc-900" style={{ height: '280px' }}>
                   <img
                     src={product.image}
@@ -127,13 +152,21 @@ function ProductGrid() {
                   />
                 </div>
 
+                {/* Info */}
                 <div className="p-4">
                   <h3 className="text-white text-sm font-bold tracking-wider uppercase mb-1">
                     {product.name}
                   </h3>
-                  <p className="text-red-500 text-sm font-medium mb-3">
-                    ${product.price}.00
-                  </p>
+                  {/* Star rating */}
+                  {product.numReviews > 0 && (
+                    <div className="flex items-center gap-1 mb-2">
+                      {[1,2,3,4,5].map((star) => (
+                        <span key={star} className={`text-xs ${star <= Math.round(product.rating) ? 'text-yellow-500' : 'text-zinc-700'}`}>★</span>
+                      ))}
+                      <span className="text-zinc-600 text-xs ml-1">({product.numReviews})</span>
+                    </div>
+                  )}
+                  <p className="text-red-500 text-sm font-medium mb-3">${product.price}.00</p>
                   <button
                     onClick={(e) => handleAddToCart(e, product)}
                     className={`w-full text-xs tracking-widest uppercase py-3 border transition-all duration-300 ${
@@ -145,13 +178,19 @@ function ProductGrid() {
                     {addedId === product._id ? 'Added ✓' : 'Add to Cart'}
                   </button>
                 </div>
-
               </Link>
             ))}
           </div>
         )}
-
       </div>
+
+      {/* Quick View Modal */}
+      {quickViewProduct && (
+        <QuickView
+          product={quickViewProduct}
+          onClose={() => setQuickViewProduct(null)}
+        />
+      )}
     </section>
   )
 }
