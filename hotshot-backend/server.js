@@ -14,6 +14,9 @@ import orderRoutes from './routes/orderRoutes.js'
 import { errorHandler, notFound } from './middleware/errorMiddleware.js'
 import cookieParser from 'cookie-parser'
 import contactRoutes from './routes/contactRoutes.js'
+import uploadRoutes from './routes/uploadRoutes.js'
+
+
 
 
 
@@ -94,6 +97,7 @@ app.use('/api/auth',  authRoutes)
 app.use('/api/products', apiLimiter, productRoutes)
 app.use('/api/orders', orderLimiter, orderRoutes)
 app.use('/api/contact', contactRoutes)
+app.use('/api/upload', uploadRoutes)
 // Health check
 app.get('/', (req, res) => {
   res.json({ message: 'Hotshot Luxury API is running' })
