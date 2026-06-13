@@ -4,25 +4,19 @@ import Product from '../models/Product.js'
 // @route   GET /api/products
 // @access  Public
 const getProducts = async (req, res) => {
-  const { category, sort, maxPrice, search } = req.query
+  const { category, sort, maxPrice, search, tag } = req.query
 
   let query = {}
 
-  if (category && category !== 'ALL') {
-    query.category = category
-  }
-
-  if (maxPrice) {
-    query.price = { $lte: Number(maxPrice) }
-  }
-
-  // Search by name or description
+  if (category && category !== 'ALL') query.category = category
+  if (maxPrice) query.price = { $lte: Number(maxPrice) }
   if (search) {
     query.$or = [
       { name: { $regex: search, $options: 'i' } },
       { description: { $regex: search, $options: 'i' } },
     ]
   }
+  if (tag) query.tag = tag
 
   let products = await Product.find(query)
 
