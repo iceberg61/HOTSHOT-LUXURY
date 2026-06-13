@@ -143,7 +143,8 @@ const forgotPassword = async (req, res) => {
   try {
     await sendPasswordResetEmail(email, otp)
     res.json({ message: 'If that email exists, a reset code has been sent' })
-  } catch {
+  } catch (err) {
+    console.error('Email error details:', err.message, err)
     user.resetOTP = undefined
     user.resetOTPExpiry = undefined
     await user.save()
