@@ -1,5 +1,6 @@
 
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import API_URL from '../api/config'
 
 function Footer() {
@@ -54,11 +55,16 @@ function Footer() {
               Shopping
             </h4>
             <ul className="flex flex-col gap-3">
-              {['All Products', 'New Arrivals', 'Exclusive Drops', 'Accessories'].map((item) => (
-                <li key={item}>
-                  <a href="#" className="text-zinc-500 text-xs tracking-wider hover:text-red-500 transition-colors duration-300">
-                    {item}
-                  </a>
+              {[
+                { name: 'All Products', path: '/shop' },
+                { name: 'New Arrivals', path: '/shop' },
+                { name: 'Exclusive Drops', path: '/shop' },
+                { name: 'Accessories', path: '/shop' },
+              ].map((item) => (
+                <li key={item.name}>
+                  <Link to={item.path} className="text-zinc-500 text-xs tracking-wider hover:text-red-500 transition-colors duration-300">
+                    {item.name}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -70,11 +76,17 @@ function Footer() {
               About Store
             </h4>
             <ul className="flex flex-col gap-3">
-              {['About Us', 'Order Tracking', 'Privacy Policy', 'Returns & Refunds', 'Help & FAQ'].map((item) => (
-                <li key={item}>
-                  <a href="#" className="text-zinc-500 text-xs tracking-wider hover:text-red-500 transition-colors duration-300">
-                    {item}
-                  </a>
+              {[
+                { name: 'About Us', path: '/experience' },
+                { name: 'Size Guide', path: '/size-guide' },
+                { name: 'Privacy Policy', path: '/privacy-policy' },
+                { name: 'Returns & Refunds', path: '/returns' },
+                { name: 'Help & FAQ', path: '/contact' },
+              ].map((item) => (
+                <li key={item.name}>
+                  <Link to={item.path} className="text-zinc-500 text-xs tracking-wider hover:text-red-500 transition-colors duration-300">
+                    {item.name}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -156,10 +168,14 @@ function Footer() {
             Copyright © 2026 <span className="text-white font-bold">Hotshot Luxury</span>. All Rights Reserved.
           </p>
           <div className="flex items-center gap-6">
-            {['Privacy Policy', 'Terms & Conditions', 'Returns'].map((item) => (
-              <a key={item} href="#" className="text-zinc-600 text-xs tracking-wider hover:text-red-500 transition-colors duration-300">
-                {item}
-              </a>
+            {[
+              { name: 'Privacy Policy', path: '/privacy-policy' },
+              { name: 'Terms & Conditions', path: '/terms' },
+              { name: 'Returns', path: '/returns' },
+            ].map((item) => (
+              <Link key={item.name} to={item.path} className="text-zinc-600 text-xs tracking-wider hover:text-red-500 transition-colors duration-300">
+                {item.name}
+              </Link>
             ))}
           </div>
         </div>

@@ -18,6 +18,11 @@ import AdminCustomers from './pages/admin/AdminCustomers'
 import NotFound from './pages/NotFound'
 import AdminContacts from './pages/admin/AdminContacts'
 import Wishlist from './pages/Wishlist'
+import SizeGuide from './pages/SizeGuide'
+import PrivacyPolicy from './pages/PrivacyPolicy'
+import Terms from './pages/Terms'
+import Returns from './pages/Returns'
+
 
 
 
@@ -44,6 +49,11 @@ function App() {
         <Route path="/admin/customers" element={<AdminRoute><AdminCustomers /></AdminRoute>} />
         <Route path="/admin/contacts" element={<AdminRoute><AdminContacts /></AdminRoute>} />
         <Route path="/wishlist" element={<Wishlist />} />
+        <Route path="/experience" element={<Experience />} />
+        <Route path="/size-guide" element={<SizeGuide />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<Terms />} />
+        <Route path="/returns" element={<Returns />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
