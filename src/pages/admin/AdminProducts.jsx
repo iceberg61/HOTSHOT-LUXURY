@@ -19,6 +19,7 @@ function AdminProducts() {
   const [form, setForm] = useState(emptyForm)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [uploading, setUploading] = useState(false)
 
   // declare as function declaration so it is hoisted for useEffect
   async function loadProducts() {
@@ -37,6 +38,29 @@ function AdminProducts() {
     const t = setTimeout(() => { loadProducts() })
     return () => clearTimeout(t)
   }, [])
+
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+    setUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append('image', file)
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/upload`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${user.token}` },
+        body: formData,
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message)
+      setForm({ ...form, image: data.url })
+    } catch (err) {
+      setError('Image upload failed: ' + err.message)
+    } finally {
+      setUploading(false)
+    }
+  }
 
   const handleEdit = (product) => {
     setEditProduct(product)
@@ -146,10 +170,10 @@ function AdminProducts() {
                     <label className="text-zinc-500 text-xs tracking-widest uppercase mb-2 block">Price *</label>
                     <input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: e.target.value })} placeholder="229" className={inputClass} />
                   </div>
-                  <div className="sm:col-span-2">
+                  {/* <div className="sm:col-span-2">
                     <label className="text-zinc-500 text-xs tracking-widest uppercase mb-2 block">Image Path *</label>
                     <input value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} placeholder="/images/product.jpg" className={inputClass} />
-                  </div>
+                  </div> */}
                   <div className="sm:col-span-2">
                     <label className="text-zinc-500 text-xs tracking-widest uppercase mb-2 block">Description *</label>
                     <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} placeholder="Product description" rows={3} className={`${inputClass} resize-none`} />
@@ -183,11 +207,57 @@ function AdminProducts() {
                   </div>
                 </div>
 
-                {form.image && (
-                  <div className="w-20 h-20 bg-zinc-900 overflow-hidden border border-zinc-700">
-                    <img src={form.image} alt="preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                  </div>
-                )}
+                {/* Image Upload */}
+                <div className="sm:col-span-2">
+                  <label className="text-zinc-500 text-xs tracking-widest uppercase mb-2 block">
+                    Product Image *
+                  </label>
+
+                  {/* Image Preview */}
+                  {form.image && (
+                    <div className="relative w-full h-48 bg-zinc-900 border border-zinc-700 overflow-hidden mb-3">
+                      <img
+                        src={form.image}
+                        alt="preview"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }}
+                      />
+                      <button
+                        onClick={() => setForm({ ...form, image: '' })}
+                        className="absolute top-2 right-2 bg-black border border-zinc-700 p-1.5 text-zinc-400 hover:text-red-500 hover:border-red-500 transition-all"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  )}
+
+                  {/* File Picker */}
+                  {!form.image && (
+                    <label className={`flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-zinc-700 hover:border-red-500 transition-colors cursor-pointer bg-zinc-900 ${uploading ? 'opacity-50 cursor-not-allowed' : ''}`}>
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/jpg,image/png,image/webp"
+                        onChange={handleImageUpload}
+                        disabled={uploading}
+                        className="hidden"
+                      />
+                      {uploading ? (
+                        <div className="flex flex-col items-center gap-2">
+                          <div className="w-6 h-6 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+                          <p className="text-zinc-500 text-xs tracking-wider">Uploading...</p>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col items-center gap-2">
+                          <div className="w-8 h-8 border border-zinc-600 flex items-center justify-center">
+                            <Plus size={16} className="text-zinc-400" />
+                          </div>
+                          <p className="text-zinc-400 text-xs tracking-wider">Click to upload image</p>
+                          <p className="text-zinc-600 text-xs">JPG, PNG, WEBP — max 5MB</p>
+                        </div>
+                      )}
+                    </label>
+                  )}
+
+                </div>
 
                 <div className="flex items-center gap-3 pt-2">
                   <button
