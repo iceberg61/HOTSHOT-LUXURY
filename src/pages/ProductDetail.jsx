@@ -5,6 +5,7 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import useCartStore from '../store/cartStore'
 import { fetchProductById, fetchProducts } from '../api/productApi'
+import SEO from '../components/SEO'
 
 function ProductDetail() {
   const { id } = useParams()
@@ -85,6 +86,12 @@ function ProductDetail() {
 
   return (
     <div className="bg-black min-h-screen flex flex-col">
+      <SEO
+        title={product.name}
+        description={product.description}
+        image={product.image}
+        url={`/product/${product._id}`}
+      />
       <Navbar />
 
       {/* Breadcrumb */}

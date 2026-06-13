@@ -5,6 +5,7 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import useCartStore from '../store/cartStore'
 import { fetchProducts } from '../api/productApi'
+import SEO from '../components/SEO'
 
 const categories = ['ALL', 'TOPS', 'ACCESSORIES']
 const sortOptions = ['Default', 'Price: Low to High', 'Price: High to Low', 'Newest']
@@ -51,6 +52,11 @@ function Shop() {
 
   return (
     <div className="bg-black min-h-screen flex flex-col">
+      <SEO
+        title="Shop The Collection"
+        description="Browse the full Hotshot Luxury collection. Tops, accessories and limited edition drops."
+        url="/shop"
+      />
       <Navbar />
 
       {/* Hero Banner */}

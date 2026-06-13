@@ -1,11 +1,12 @@
 import API_URL from './config'
 
 // Get all products
-export const fetchProducts = async ({ category, sort, maxPrice } = {}) => {
+export const fetchProducts = async ({ category, sort, maxPrice, search } = {}) => {
   const params = new URLSearchParams()
   if (category && category !== 'ALL') params.append('category', category)
   if (sort && sort !== 'Default') params.append('sort', sort)
   if (maxPrice) params.append('maxPrice', maxPrice)
+  if (search) params.append('search', search)
 
   const res = await fetch(`${API_URL}/api/products?${params}`)
   if (!res.ok) throw new Error('Failed to fetch products')

@@ -4,23 +4,28 @@ import Product from '../models/Product.js'
 // @route   GET /api/products
 // @access  Public
 const getProducts = async (req, res) => {
-  const { category, sort, maxPrice } = req.query
+  const { category, sort, maxPrice, search } = req.query
 
   let query = {}
 
-  // Filter by category
   if (category && category !== 'ALL') {
     query.category = category
   }
 
-  // Filter by max price
   if (maxPrice) {
     query.price = { $lte: Number(maxPrice) }
   }
 
+  // Search by name or description
+  if (search) {
+    query.$or = [
+      { name: { $regex: search, $options: 'i' } },
+      { description: { $regex: search, $options: 'i' } },
+    ]
+  }
+
   let products = await Product.find(query)
 
-  // Sort
   if (sort === 'Price: Low to High') products = products.sort((a, b) => a.price - b.price)
   if (sort === 'Price: High to Low') products = products.sort((a, b) => b.price - a.price)
   if (sort === 'Newest') products = products.sort((a, b) => b.createdAt - a.createdAt)

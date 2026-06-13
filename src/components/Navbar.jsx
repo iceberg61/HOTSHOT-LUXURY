@@ -4,6 +4,9 @@ import { Link, useLocation } from 'react-router-dom'
 import useCartStore from '../store/cartStore'
 import CartDrawer from './CartDrawer'
 import useAuthStore from '../store/authStore'
+import SearchModal from './SearchModal'
+
+
 
 const links = [
   { name: 'COLLECTION', path: '/shop' },
@@ -17,6 +20,7 @@ function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const totalItems = useCartStore((state) => state.getTotalItems())
   const location = useLocation()
+  const [searchOpen, setSearchOpen] = useState(false)
 
   // Close menu on route change
   const handleLinkClick = () => setMenuOpen(false)
@@ -56,7 +60,9 @@ function Navbar() {
 
           {/* Icons */}
           <div className="flex items-center gap-4 sm:gap-6">
-            <Search className="text-zinc-400 hover:text-white cursor-pointer transition-colors hidden sm:block" size={18} />
+            <button onClick={() => setSearchOpen(true)}>
+              <Search className="text-zinc-400 hover:text-white cursor-pointer transition-colors hidden sm:block" size={18} />
+            </button>
             {user ? (
               <div className="relative group">
                 <button className="flex items-center gap-2">
@@ -184,15 +190,16 @@ function Navbar() {
             </div>
 
             {/* Search on mobile */}
-            <div className="flex items-center border border-zinc-800 mt-4 mx-0">
-              <input
-                type="text"
-                placeholder="Search products..."
-                className="flex-1 bg-transparent text-white text-xs px-4 py-3 placeholder-zinc-600 focus:outline-none tracking-wider"
-              />
-              <button className="px-4 py-3 text-zinc-400 hover:text-red-500 transition-colors">
+            <div
+              className="flex items-center border border-zinc-800 mt-4 mx-0 cursor-pointer"
+              onClick={() => { setSearchOpen(true); setMenuOpen(false) }}
+            >
+              <div className="flex-1 text-zinc-600 text-xs px-4 py-3 tracking-wider">
+                Search products...
+              </div>
+              <div className="px-4 py-3 text-zinc-400">
                 <Search size={16} />
-              </button>
+              </div>
             </div>
 
           </div>
@@ -201,6 +208,7 @@ function Navbar() {
       </nav>
 
       <CartDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
+      <SearchModal isOpen={searchOpen} onClose={() => setSearchOpen(false)} />
     </>
   )
 }

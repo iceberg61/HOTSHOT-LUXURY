@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import API_URL from '../api/config'
+import SEO from '../components/SEO'
 
 function Contact() {
   const [form, setForm] = useState({
@@ -43,6 +44,11 @@ function Contact() {
 
   return (
     <div className="bg-black min-h-screen flex flex-col">
+      <SEO
+        title="Contact Us"
+        description="Get in touch with Hotshot Luxury. We'd love to hear from you."
+        url="/contact"
+      />
       <Navbar />
 
       {/* Hero Banner */}
