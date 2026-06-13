@@ -1,5 +1,6 @@
 import Order from '../models/Order.js'
 import process from 'process'
+import { sendOrderConfirmationEmail } from '../utils/emailService.js'
 // import Product from '../models/Product.js'
 
 // @desc    Create order
@@ -21,6 +22,13 @@ const createOrder = async (req, res) => {
     totalPrice,
     paymentStatus: 'pending',
   })
+
+  // Send confirmation email
+  try {
+    await sendOrderConfirmationEmail(order)
+  } catch (err) {
+    console.error('Order email error:', err)
+  }
 
   res.status(201).json(order)
 }

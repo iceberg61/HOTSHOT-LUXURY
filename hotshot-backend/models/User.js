@@ -7,6 +7,8 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true, lowercase: true, trim: true },
   password: { type: String, required: true, minlength: 6 },
   isAdmin: { type: Boolean, default: false },
+  resetOTP: { type: String },
+  resetOTPExpiry: { type: Date },
 }, { timestamps: true })
 
 // Hash password before saving

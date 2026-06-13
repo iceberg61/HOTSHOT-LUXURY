@@ -1,6 +1,8 @@
 import jwt from 'jsonwebtoken'
 import User from '../models/User.js'
 import process from 'process'
+import crypto from 'crypto'
+import { sendPasswordResetEmail } from '../utils/emailService.js'
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -114,4 +116,92 @@ const getAllUsers = async (req, res) => {
   res.json(users)
 }
 
-export { register, login, logout, getProfile, updateProfile, getAllUsers }
+
+const forgotPassword = async (req, res) => {
+  const { email } = req.body
+
+  if (!email) {
+    res.status(400).json({ message: 'Email is required' })
+    return
+  }
+
+  const user = await User.findOne({ email })
+  if (!user) {
+    // Don't reveal if email exists
+    res.json({ message: 'If that email exists, a reset code has been sent' })
+    return
+  }
+
+  // Generate 6 digit OTP
+  const otp = Math.floor(100000 + Math.random() * 900000).toString()
+  const otpExpiry = new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
+
+  user.resetOTP = crypto.createHash('sha256').update(otp).digest('hex')
+  user.resetOTPExpiry = otpExpiry
+  await user.save()
+
+  try {
+    await sendPasswordResetEmail(email, otp)
+    res.json({ message: 'If that email exists, a reset code has been sent' })
+  } catch {
+    user.resetOTP = undefined
+    user.resetOTPExpiry = undefined
+    await user.save()
+    res.status(500).json({ message: 'Email could not be sent' })
+  }
+}
+
+const verifyOTP = async (req, res) => {
+  const { email, otp } = req.body
+
+  if (!email || !otp) {
+    res.status(400).json({ message: 'Email and OTP are required' })
+    return
+  }
+
+  const hashedOTP = crypto.createHash('sha256').update(otp).digest('hex')
+
+  const user = await User.findOne({
+    email,
+    resetOTP: hashedOTP,
+    resetOTPExpiry: { $gt: Date.now() },
+  })
+
+  if (!user) {
+    res.status(400).json({ message: 'Invalid or expired code' })
+    return
+  }
+
+  res.json({ message: 'OTP verified', verified: true })
+}
+
+const resetPassword = async (req, res) => {
+  const { email, otp, password } = req.body
+
+  if (!email || !otp || !password) {
+    res.status(400).json({ message: 'All fields are required' })
+    return
+  }
+
+  const hashedOTP = crypto.createHash('sha256').update(otp).digest('hex')
+
+  const user = await User.findOne({
+    email,
+    resetOTP: hashedOTP,
+    resetOTPExpiry: { $gt: Date.now() },
+  })
+
+  if (!user) {
+    res.status(400).json({ message: 'Invalid or expired code' })
+    return
+  }
+
+  user.password = password
+  user.resetOTP = undefined
+  user.resetOTPExpiry = undefined
+  await user.save()
+
+  res.json({ message: 'Password reset successful' })
+}
+
+export { register, login, logout, getProfile, updateProfile, getAllUsers, forgotPassword, verifyOTP, resetPassword }

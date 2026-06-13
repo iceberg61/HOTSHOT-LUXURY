@@ -1,4 +1,31 @@
+
+import { useState } from 'react'
+import API_URL from '../api/config'
+
 function Footer() {
+  const [newsletterEmail, setNewsletterEmail] = useState('')
+  const [newsletterStatus, setNewsletterStatus] = useState('')
+  const [newsletterLoading, setNewsletterLoading] = useState(false)
+
+  const handleNewsletter = async () => {
+    if (!newsletterEmail) return
+    setNewsletterLoading(true)
+    try {
+      const res = await fetch(`${API_URL}/api/contact/newsletter`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: newsletterEmail }),
+      })
+      const data = await res.json()
+      setNewsletterStatus(data.message)
+      setNewsletterEmail('')
+    } catch {
+      setNewsletterStatus('Something went wrong. Try again.')
+    } finally {
+      setNewsletterLoading(false)
+    }
+  }
+
   return (
     <footer className="bg-zinc-950 border-t border-zinc-900 pt-16 pb-8 px-8">
       <div className="max-w-7xl mx-auto">
@@ -63,16 +90,26 @@ function Footer() {
             </p>
 
             {/* Email Input */}
-            <div className="flex items-center border border-zinc-700 hover:border-red-500 transition-colors duration-300 mb-8">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="bg-transparent text-white text-xs px-4 py-3 flex-1 placeholder-zinc-600 focus:outline-none tracking-wider"
-              />
-              <button className="px-4 py-3 text-zinc-400 hover:text-red-500 transition-colors duration-300">
-                →
-              </button>
-            </div>
+            {newsletterStatus ? (
+              <p className="text-green-500 text-xs tracking-wider">{newsletterStatus}</p>
+            ) : (
+              <div className="flex items-center border border-zinc-700 hover:border-red-500 transition-colors duration-300 mb-2">
+                <input
+                  type="email"
+                  value={newsletterEmail}
+                  onChange={(e) => setNewsletterEmail(e.target.value)}
+                  placeholder="Enter your email"
+                  className="bg-transparent text-white text-xs px-4 py-3 flex-1 placeholder-zinc-600 focus:outline-none tracking-wider"
+                />
+                <button
+                  onClick={handleNewsletter}
+                  disabled={newsletterLoading}
+                  className="px-4 py-3 text-zinc-400 hover:text-red-500 transition-colors duration-300"
+                >
+                  {newsletterLoading ? '...' : '→'}
+                </button>
+              </div>
+            )}
 
             {/* Follow */}
             <h4 className="text-white text-xs font-bold tracking-[0.3em] uppercase mb-4">

@@ -2,14 +2,16 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
+import API_URL from '../api/config'
 
 function ForgotPassword() {
-  const [step, setStep] = useState('email') // email → otp → reset → done
+  const [step, setStep] = useState('email')
   const [email, setEmail] = useState('')
   const [otp, setOtp] = useState(['', '', '', '', '', ''])
   const [passwords, setPasswords] = useState({ password: '', confirm: '' })
   const [errors, setErrors] = useState({})
   const [loading, setLoading] = useState(false)
+  const [serverError, setServerError] = useState('')
 
   const inputClass = (field) =>
     `w-full bg-zinc-900 border text-white text-xs px-4 py-4 tracking-wider placeholder-zinc-600 focus:outline-none transition-colors ${
@@ -17,11 +19,25 @@ function ForgotPassword() {
     }`
 
   // Step 1 — Submit email
-  const handleEmailSubmit = () => {
+  const handleEmailSubmit = async () => {
     if (!email) { setErrors({ email: 'Required' }); return }
     if (!/\S+@\S+\.\S+/.test(email)) { setErrors({ email: 'Invalid email' }); return }
     setLoading(true)
-    setTimeout(() => { setLoading(false); setStep('otp') }, 1500)
+    setServerError('')
+    try {
+      const res = await fetch(`${API_URL}/api/auth/forgot-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message)
+      setStep('otp')
+    } catch (err) {
+      setServerError(err.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   // Step 2 — OTP input
@@ -40,14 +56,28 @@ function ForgotPassword() {
     }
   }
 
-  const handleOtpSubmit = () => {
+  const handleOtpSubmit = async () => {
     if (otp.join('').length < 6) { setErrors({ otp: 'Enter all 6 digits' }); return }
     setLoading(true)
-    setTimeout(() => { setLoading(false); setStep('reset') }, 1500)
+    setServerError('')
+    try {
+      const res = await fetch(`${API_URL}/api/auth/verify-otp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp: otp.join('') }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message)
+      setStep('reset')
+    } catch (err) {
+      setServerError(err.message)
+    } finally {
+      setLoading(false)
+    }
   }
 
   // Step 3 — New password
-  const handleResetSubmit = () => {
+  const handleResetSubmit = async () => {
     const newErrors = {}
     if (!passwords.password) newErrors.password = 'Required'
     if (passwords.password.length < 6) newErrors.password = 'Min 6 characters'
@@ -55,7 +85,38 @@ function ForgotPassword() {
     if (passwords.password !== passwords.confirm) newErrors.confirm = 'Passwords do not match'
     if (Object.keys(newErrors).length > 0) { setErrors(newErrors); return }
     setLoading(true)
-    setTimeout(() => { setLoading(false); setStep('done') }, 1500)
+    setServerError('')
+    try {
+      const res = await fetch(`${API_URL}/api/auth/reset-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, otp: otp.join(''), password: passwords.password }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message)
+      setStep('done')
+    } catch (err) {
+      setServerError(err.message)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleResend = async () => {
+    setLoading(true)
+    setServerError('')
+    try {
+      await fetch(`${API_URL}/api/auth/forgot-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      setServerError('New code sent!')
+    } catch {
+      setServerError('Could not resend. Try again.')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -74,13 +135,9 @@ function ForgotPassword() {
             Reset <span className="text-red-500">Password</span>
           </h1>
           <div className="flex items-center gap-2 mt-3">
-            <Link to="/" className="text-red-500 text-xs tracking-widest uppercase hover:text-white transition-colors">
-              Home
-            </Link>
+            <Link to="/" className="text-red-500 text-xs tracking-widest uppercase hover:text-white transition-colors">Home</Link>
             <span className="text-zinc-600 text-xs">»</span>
-            <Link to="/login" className="text-red-500 text-xs tracking-widest uppercase hover:text-white transition-colors">
-              Login
-            </Link>
+            <Link to="/login" className="text-red-500 text-xs tracking-widest uppercase hover:text-white transition-colors">Login</Link>
             <span className="text-zinc-600 text-xs">»</span>
             <span className="text-zinc-400 text-xs tracking-widest uppercase">Reset Password</span>
           </div>
@@ -104,18 +161,27 @@ function ForgotPassword() {
                 }`}>
                   {['email', 'otp', 'reset', 'done'].indexOf(step) > i ? '✓' : i + 1}
                 </div>
-                {i < 3 && <div className={`w-8 h-px ${['email', 'otp', 'reset', 'done'].indexOf(step) > i ? 'bg-green-600' : 'bg-zinc-800'}`} />}
+                {i < 3 && (
+                  <div className={`w-8 h-px ${['email', 'otp', 'reset', 'done'].indexOf(step) > i ? 'bg-green-600' : 'bg-zinc-800'}`} />
+                )}
               </div>
             ))}
           </div>
+
+          {/* Server Error */}
+          {serverError && (
+            <div className={`border px-4 py-3 mb-4 ${serverError === 'New code sent!' ? 'bg-green-500/10 border-green-500' : 'bg-red-500/10 border-red-500'}`}>
+              <p className={`text-xs tracking-wider ${serverError === 'New code sent!' ? 'text-green-500' : 'text-red-500'}`}>
+                {serverError}
+              </p>
+            </div>
+          )}
 
           {/* Step 1 — Email */}
           {step === 'email' && (
             <div className="flex flex-col gap-4">
               <div className="text-center mb-4">
-                <h2 className="text-white text-lg font-black uppercase tracking-wider mb-2">
-                  Forgot Password?
-                </h2>
+                <h2 className="text-white text-lg font-black uppercase tracking-wider mb-2">Forgot Password?</h2>
                 <p className="text-zinc-500 text-xs tracking-wider leading-relaxed">
                   Enter your email and we'll send you a reset code.
                 </p>
@@ -149,21 +215,18 @@ function ForgotPassword() {
           {step === 'otp' && (
             <div className="flex flex-col gap-4">
               <div className="text-center mb-4">
-                <h2 className="text-white text-lg font-black uppercase tracking-wider mb-2">
-                  Enter Code
-                </h2>
+                <h2 className="text-white text-lg font-black uppercase tracking-wider mb-2">Enter Code</h2>
                 <p className="text-zinc-500 text-xs tracking-wider leading-relaxed">
                   We sent a 6-digit code to <span className="text-red-500">{email}</span>
                 </p>
               </div>
-
-              {/* OTP boxes */}
               <div className="flex items-center justify-center gap-2 sm:gap-3">
                 {otp.map((digit, index) => (
                   <input
                     key={index}
                     id={`otp-${index}`}
                     type="text"
+                    inputMode="numeric"
                     maxLength={1}
                     value={digit}
                     onChange={(e) => handleOtpChange(e.target.value, index)}
@@ -175,7 +238,6 @@ function ForgotPassword() {
                 ))}
               </div>
               {errors.otp && <p className="text-red-500 text-xs text-center">{errors.otp}</p>}
-
               <button
                 onClick={handleOtpSubmit}
                 disabled={loading}
@@ -185,9 +247,9 @@ function ForgotPassword() {
               >
                 {loading ? 'Verifying...' : 'Verify Code'}
               </button>
-
               <button
-                onClick={() => { setLoading(true); setTimeout(() => setLoading(false), 1000) }}
+                onClick={handleResend}
+                disabled={loading}
                 className="text-zinc-500 text-xs tracking-wider text-center hover:text-red-500 transition-colors"
               >
                 Didn't get the code? Resend
@@ -199,12 +261,8 @@ function ForgotPassword() {
           {step === 'reset' && (
             <div className="flex flex-col gap-4">
               <div className="text-center mb-4">
-                <h2 className="text-white text-lg font-black uppercase tracking-wider mb-2">
-                  New Password
-                </h2>
-                <p className="text-zinc-500 text-xs tracking-wider">
-                  Choose a strong password for your account.
-                </p>
+                <h2 className="text-white text-lg font-black uppercase tracking-wider mb-2">New Password</h2>
+                <p className="text-zinc-500 text-xs tracking-wider">Choose a strong password for your account.</p>
               </div>
               <div>
                 <input
@@ -245,9 +303,7 @@ function ForgotPassword() {
                 <span className="text-white text-2xl">✓</span>
               </div>
               <div>
-                <h2 className="text-white text-lg font-black uppercase tracking-wider mb-2">
-                  Password Updated!
-                </h2>
+                <h2 className="text-white text-lg font-black uppercase tracking-wider mb-2">Password Updated!</h2>
                 <p className="text-zinc-500 text-xs tracking-wider leading-relaxed">
                   Your password has been reset successfully. You can now login with your new password.
                 </p>

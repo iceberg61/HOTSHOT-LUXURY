@@ -13,6 +13,9 @@ import productRoutes from './routes/productRoutes.js'
 import orderRoutes from './routes/orderRoutes.js'
 import { errorHandler, notFound } from './middleware/errorMiddleware.js'
 import cookieParser from 'cookie-parser'
+import contactRoutes from './routes/contactRoutes.js'
+
+
 
 dotenv.config()
 connectDB()
@@ -20,7 +23,10 @@ connectDB()
 const app = express()
 
 // ── Security Headers ──────────────────────────────
-app.use(helmet())
+app.use(helmet({
+  contentSecurityPolicy: false,
+  crossOriginEmbedderPolicy: false,
+}))
 
 // ── CORS ──────────────────────────────────────────
 const corsOptions = {
@@ -66,13 +72,13 @@ const apiLimiter = rateLimit({
 })
 
 // Auth limiter — 10 attempts per 15 minutes
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 10,
-  message: { message: 'Too many login attempts, please try again later' },
-  standardHeaders: true,
-  legacyHeaders: false,
-})
+// const authLimiter = rateLimit({
+//   windowMs: 15 * 60 * 1000,
+//   max: 10,
+//   message: { message: 'Too many login attempts, please try again later' },
+//   standardHeaders: true,
+//   legacyHeaders: false,
+// })
 
 // Order limiter — 20 orders per hour
 const orderLimiter = rateLimit({
@@ -84,14 +90,16 @@ const orderLimiter = rateLimit({
 })
 
 // ── Routes ────────────────────────────────────────
-app.use('/api/auth', authLimiter, authRoutes)
+app.use('/api/auth',  authRoutes)
 app.use('/api/products', apiLimiter, productRoutes)
 app.use('/api/orders', orderLimiter, orderRoutes)
-
+app.use('/api/contact', contactRoutes)
 // Health check
 app.get('/', (req, res) => {
   res.json({ message: 'Hotshot Luxury API is running' })
 })
+
+app.set('trust proxy', 1)
 
 // ── Error Handling ────────────────────────────────
 app.use(notFound)

@@ -74,9 +74,14 @@ function Navbar() {
                   <Link to="/orders" onClick={handleLinkClick} className="text-zinc-400 text-xs px-4 py-3 hover:text-red-500 hover:bg-zinc-900 tracking-wider transition-colors">
                     My Orders
                   </Link>
+                  {user.isAdmin && (
+                    <Link to="/admin" onClick={handleLinkClick} className="text-zinc-400 text-xs px-4 py-3 hover:text-red-500 hover:bg-zinc-900 tracking-wider transition-colors border-t border-zinc-800">
+                      Admin Dashboard
+                    </Link>
+                  )}
                   <button
                     onClick={() => { logout(); handleLinkClick() }}
-                    className="text-left text-zinc-400 text-xs px-4 py-3 hover:text-red-500 hover:bg-zinc-900 tracking-wider transition-colors"
+                    className="text-left text-zinc-400 text-xs px-4 py-3 hover:text-red-500 hover:bg-zinc-900 tracking-wider transition-colors border-t border-zinc-800"
                   >
                     Logout
                   </button>
@@ -129,21 +134,53 @@ function Navbar() {
             ))}
 
             {/* Mobile extras */}
-            <div className="flex items-center gap-4 pt-6 px-4">
-              <Link
-                to="/login"
-                onClick={handleLinkClick}
-                className="flex-1 border border-zinc-700 text-zinc-400 text-xs tracking-widest uppercase py-3 text-center hover:border-white hover:text-white transition-all duration-300"
-              >
-                Login
-              </Link>
-              <Link
-                to="/register"
-                onClick={handleLinkClick}
-                className="flex-1 bg-red-500 text-white text-xs tracking-widest uppercase py-3 text-center hover:bg-red-600 transition-all duration-300"
-              >
-                Register
-              </Link>
+            <div className="flex flex-col gap-2 pt-6 px-4">
+              {user ? (
+                <>
+                  <p className="text-zinc-600 text-xs tracking-wider px-4">
+                    Hi, {user.firstName}
+                  </p>
+                  <Link
+                    to="/orders"
+                    onClick={handleLinkClick}
+                    className="border border-zinc-700 text-zinc-400 text-xs tracking-widest uppercase py-3 text-center hover:border-white hover:text-white transition-all duration-300"
+                  >
+                    My Orders
+                  </Link>
+                  {user.isAdmin && (
+                    <Link
+                      to="/admin"
+                      onClick={handleLinkClick}
+                      className="border border-red-500 text-red-500 text-xs tracking-widest uppercase py-3 text-center hover:bg-red-500 hover:text-black transition-all duration-300"
+                    >
+                      Admin Dashboard
+                    </Link>
+                  )}
+                  <button
+                    onClick={() => { logout(); handleLinkClick() }}
+                    className="border border-zinc-700 text-zinc-400 text-xs tracking-widest uppercase py-3 text-center hover:border-red-500 hover:text-red-500 transition-all duration-300"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <div className="flex items-center gap-4">
+                  <Link
+                    to="/login"
+                    onClick={handleLinkClick}
+                    className="flex-1 border border-zinc-700 text-zinc-400 text-xs tracking-widest uppercase py-3 text-center hover:border-white hover:text-white transition-all duration-300"
+                  >
+                    Login
+                  </Link>
+                  <Link
+                    to="/register"
+                    onClick={handleLinkClick}
+                    className="flex-1 bg-red-500 text-white text-xs tracking-widest uppercase py-3 text-center hover:bg-red-600 transition-all duration-300"
+                  >
+                    Register
+                  </Link>
+                </div>
+              )}
             </div>
 
             {/* Search on mobile */}

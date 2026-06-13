@@ -1,26 +1,35 @@
+import { useState } from 'react'
+import { Link } from 'react-router-dom'
+import API_URL from '../api/config'
+
 function Collection() {
+  const [email, setEmail] = useState('')
+  const [status, setStatus] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const handleSubscribe = async () => {
+    if (!email) return
+    setLoading(true)
+    try {
+      const res = await fetch(`${API_URL}/api/contact/newsletter`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      const data = await res.json()
+      setStatus(data.message)
+      setEmail('')
+    } catch {
+      setStatus('Something went wrong. Try again.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const products = [
-    {
-      id: 1,
-      name: 'Long Sleeve',
-      price: '$399.00',
-      tag: 'LIMITED DROP',
-      image: '/images/long-sleeve.jpeg',
-    },
-    {
-      id: 2,
-      name: 'Long Sleeve G',
-      price: '$229.00',
-      tag: 'LIMITED DROP',
-      image: '/images/long-sleeve-g.jpeg',
-    },
-    {
-      id: 3,
-      name: 'Head Warmer',
-      price: '$489.00',
-      tag: 'LIMITED DROP',
-      image: '/images/head-warmer.jpeg',
-    },
+    { id: 1, name: 'Long Sleeve', price: '$399.00', tag: 'LIMITED DROP', image: '/images/long-sleeve.jpeg' },
+    { id: 2, name: 'Long Sleeve G', price: '$229.00', tag: 'LIMITED DROP', image: '/images/long-sleeve-g.jpeg' },
+    { id: 3, name: 'Head Warmer', price: '$489.00', tag: 'LIMITED DROP', image: '/images/head-warmer.jpeg' },
   ]
 
   return (
@@ -37,8 +46,11 @@ function Collection() {
 
           {/* Products — 3 columns */}
           {products.map((product) => (
-            <div key={product.id} className="group cursor-pointer">
-
+            <Link
+              to="/shop"
+              key={product.id}
+              className="group cursor-pointer"
+            >
               {/* Image Box */}
               <div className="h-64 overflow-hidden border border-zinc-800 group-hover:border-red-500 transition-all duration-300">
                 <img
@@ -55,16 +67,13 @@ function Collection() {
                   <p className="text-white text-xs tracking-widest uppercase font-bold">
                     {product.name}
                   </p>
-                  <p className="text-zinc-400 text-xs mt-1">
-                    {product.price}
-                  </p>
+                  <p className="text-zinc-400 text-xs mt-1">{product.price}</p>
                 </div>
                 <span className="bg-red-500 text-white text-[10px] tracking-widest px-2 py-1 uppercase">
                   {product.tag}
                 </span>
               </div>
-
-            </div>
+            </Link>
           ))}
 
           {/* VIP Verification Box */}
@@ -74,19 +83,32 @@ function Collection() {
                 VIP Verification
               </h3>
               <p className="text-zinc-500 text-xs tracking-wider mt-1">
-                Signup for exclusions and accents.
+                Signup for exclusive drops and accents.
               </p>
             </div>
 
-            <input
-              type="email"
-              placeholder="Enter your address"
-              className="bg-zinc-900 border border-zinc-700 text-white text-xs px-4 py-3 tracking-wider placeholder-zinc-600 focus:outline-none focus:border-red-500 transition-colors"
-            />
-
-            <button className="bg-red-500 text-white text-xs tracking-[0.3em] uppercase py-3 hover:bg-red-600 transition-colors duration-300">
-              [ REQUEST ACCESS ]
-            </button>
+            {status ? (
+              <p className="text-green-500 text-xs tracking-wider">{status}</p>
+            ) : (
+              <>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email"
+                  className="bg-zinc-900 border border-zinc-700 text-white text-xs px-4 py-3 tracking-wider placeholder-zinc-600 focus:outline-none focus:border-red-500 transition-colors"
+                />
+                <button
+                  onClick={handleSubscribe}
+                  disabled={loading}
+                  className={`text-white text-xs tracking-[0.3em] uppercase py-3 transition-colors duration-300 ${
+                    loading ? 'bg-zinc-700 cursor-not-allowed' : 'bg-red-500 hover:bg-red-600'
+                  }`}
+                >
+                  {loading ? 'Joining...' : '[ REQUEST ACCESS ]'}
+                </button>
+              </>
+            )}
           </div>
 
         </div>
