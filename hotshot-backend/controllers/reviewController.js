@@ -66,4 +66,12 @@ const deleteReview = async (req, res) => {
   res.json({ message: 'Review removed' })
 }
 
-export { getProductReviews, createReview, deleteReview }
+// @desc    Get all reviews (admin)
+// @route   GET /api/reviews
+// @access  Private/Admin
+const getAllReviews = async (req, res) => {
+  const reviews = await Review.find({}).sort({ createdAt: -1 })
+  res.json(reviews)
+}
+
+export { getProductReviews, createReview, deleteReview, getAllReviews }

@@ -22,14 +22,17 @@ import SizeGuide from './pages/SizeGuide'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import Terms from './pages/Terms'
 import Returns from './pages/Returns'
-
-
+import ScrollToTop from './components/ScrollToTop'
+import ScrollToTopButton from './components/ScrollToTopButton'
+import AdminReviews from './pages/admin/AdminReviews'
 
 
 
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
+      <ScrollToTopButton />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/shop" element={<Shop />} />
@@ -54,6 +57,7 @@ function App() {
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/returns" element={<Returns />} />
+        <Route path="/admin/reviews" element={<AdminRoute><AdminReviews /></AdminRoute>} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
