@@ -34,7 +34,7 @@ function CartDrawer({ isOpen, onClose }) {
           </div>
           <button
             onClick={onClose}
-            className="border border-zinc-700 p-2 text-zinc-400 hover:border-red-500 hover:text-red-500 transition-all duration-300"
+            className="border border-zinc-700 p-2 rounded-lg text-zinc-400 hover:border-red-500 hover:text-red-500 transition-all duration-300"
           >
             <X size={16} />
           </button>
@@ -48,7 +48,7 @@ function CartDrawer({ isOpen, onClose }) {
               <p className="text-zinc-600 text-xs tracking-widest uppercase">Your cart is empty</p>
               <Link
                 to="/shop"
-                className="border border-red-500 text-red-500 text-xs tracking-widest uppercase px-6 py-3 hover:bg-red-500 hover:text-black transition-all duration-300"
+                className="border rounded-lg border-red-500 text-red-500 text-xs tracking-widest uppercase px-6 py-3 hover:bg-red-500 hover:text-black transition-all duration-300"
               >
                 Continue Shopping
               </Link>
@@ -56,10 +56,10 @@ function CartDrawer({ isOpen, onClose }) {
           ) : (
             <div className="flex flex-col gap-4">
               {items.map((item, index) => (
-                <div key={`${item._id}-${item.size}-${index}`} className="flex gap-4 border-b border-zinc-800 pb-4">
+                <div key={`${item._id}-${item.size}-${index}`} className="flex rounded-lg gap-4 border-b border-zinc-800 pb-4">
 
                   {/* Image */}
-                  <div className="w-20 h-20 bg-zinc-900 overflow-hidden shrink-0 border border-zinc-800">
+                  <div className="w-20 h-20 bg-zinc-900 overflow-hidden shrink-0 border rounded-lg border-zinc-800">
                     <img
                       src={item.image}
                       alt={item.name}
@@ -88,7 +88,7 @@ function CartDrawer({ isOpen, onClose }) {
 
                     {/* Quantity + Price */}
                     <div className="flex items-center justify-between mt-2">
-                      <div className="flex items-center border border-zinc-700">
+                      <div className="flex items-center border border-zinc-700 rounded-lg">
                         <button
                           onClick={() => updateQuantity(item._id, item.size, item.quantity - 1)}
                           className="px-3 py-1 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all text-sm"
@@ -141,14 +141,14 @@ function CartDrawer({ isOpen, onClose }) {
             <Link
               to="/cart"
               onClick={onClose}
-              className="w-full border border-zinc-700 text-white text-xs tracking-[0.3em] uppercase py-3 text-center hover:border-white transition-all duration-300"
+              className="w-full border border-zinc-700 rounded-lg text-white text-xs tracking-[0.3em] uppercase py-3 text-center hover:border-white transition-all duration-300"
             >
               View Cart
             </Link>
             <Link
               to="/checkout"
               onClick={onClose}
-              className="w-full bg-red-500 text-white text-xs tracking-[0.3em] uppercase py-3 text-center hover:bg-red-600 transition-all duration-300"
+              className="w-full bg-red-500 rounded-lg text-white text-xs tracking-[0.3em] uppercase py-3 text-center hover:bg-red-600 transition-all duration-300"
             >
               Checkout
             </Link>

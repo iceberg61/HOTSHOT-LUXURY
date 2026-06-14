@@ -49,7 +49,7 @@ function SizeGuide() {
               { label: 'Waist', desc: 'Measure around your natural waistline, keeping the tape comfortably loose.' },
               { label: 'Hip', desc: 'Measure around the fullest part of your hips, about 8 inches below your waist.' },
             ].map((item) => (
-              <div key={item.label} className="bg-zinc-950 border border-zinc-800 p-6">
+              <div key={item.label} className="bg-zinc-950 border rounded-lg border-zinc-800 p-6">
                 <p className="text-red-500 text-xs tracking-widest uppercase font-bold mb-3">{item.label}</p>
                 <p className="text-zinc-400 text-xs tracking-wider leading-relaxed">{item.desc}</p>
               </div>
@@ -62,8 +62,8 @@ function SizeGuide() {
           <p className="text-red-500 text-xs tracking-[0.4em] uppercase mb-4">Clothing</p>
           <h2 className="text-white text-2xl font-black uppercase tracking-wider mb-6">Tops & Hoodies</h2>
           <p className="text-zinc-500 text-xs tracking-wider mb-6">All measurements in inches.</p>
-          <div className="overflow-x-auto">
-            <table className="w-full bg-zinc-950 border border-zinc-800">
+          <div className="overflow-x-auto rounded-lg border border-zinc-800">
+            <table className="w-full bg-zinc-950 border  border-zinc-800">
               <thead>
                 <tr className="border-b border-zinc-800">
                   {['Size', 'Chest', 'Waist', 'Hip'].map((h) => (
@@ -90,7 +90,7 @@ function SizeGuide() {
         <div className="mb-16">
           <p className="text-red-500 text-xs tracking-[0.4em] uppercase mb-4">Accessories</p>
           <h2 className="text-white text-2xl font-black uppercase tracking-wider mb-6">Caps & Headwear</h2>
-          <div className="bg-zinc-950 border border-zinc-800 p-6">
+          <div className="bg-zinc-950 border rounded-lg border-zinc-800 p-6">
             <p className="text-zinc-400 text-xs tracking-wider leading-relaxed mb-4">
               All Hotshot Luxury caps are <span className="text-white font-bold">ONE SIZE</span> with an adjustable snapback fit. They comfortably fit head circumferences from <span className="text-white font-bold">54cm to 62cm</span>.
             </p>
@@ -111,7 +111,7 @@ function SizeGuide() {
               { fit: 'Sleeveless', desc: 'Cut slim and athletic. If between sizes, size up for comfort.' },
               { fit: 'Long Sleeves', desc: 'True to size with room through the body. Perfect layering piece.' },
             ].map((item) => (
-              <div key={item.fit} className="bg-zinc-950 border border-zinc-800 p-5 flex gap-4">
+              <div key={item.fit} className="bg-zinc-950 border rounded-lg border-zinc-800 p-5 flex gap-4">
                 <div className="w-1 bg-red-500 shrink-0" />
                 <div>
                   <p className="text-white text-xs font-black uppercase tracking-wider mb-2">{item.fit}</p>
@@ -123,11 +123,11 @@ function SizeGuide() {
         </div>
 
         {/* Still unsure */}
-        <div className="bg-zinc-950 border border-zinc-800 p-8 text-center">
+        <div className="bg-zinc-950 border rounded-lg border-zinc-800 p-8 text-center">
           <p className="text-red-500 text-xs tracking-[0.4em] uppercase mb-3">Need Help?</p>
           <h3 className="text-white text-xl font-black uppercase tracking-wider mb-4">Still Unsure About Your Size?</h3>
           <p className="text-zinc-500 text-xs tracking-wider mb-6">Contact us and we'll help you find the perfect fit.</p>
-          <Link to="/contact" className="bg-red-500 text-white text-xs tracking-[0.3em] uppercase px-8 py-4 hover:bg-red-600 transition-all duration-300">
+          <Link to="/contact" className="bg-red-500 rounded-lg text-white text-xs tracking-[0.3em] uppercase px-8 py-4 hover:bg-red-600 transition-all duration-300">
             Contact Us
           </Link>
         </div>

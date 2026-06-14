@@ -75,7 +75,7 @@ function AdminReviews() {
         ) : (
           <div className="flex flex-col gap-3">
             {reviews.map((review) => (
-              <div key={review._id} className="bg-black border border-zinc-800 p-4 sm:p-6">
+              <div key={review._id} className="bg-black border rounded-lg border-zinc-800 p-4 sm:p-6">
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3 flex-wrap mb-2">
@@ -101,7 +101,7 @@ function AdminReviews() {
                   <button
                     onClick={() => handleDelete(review._id)}
                     disabled={deletingId === review._id}
-                    className={`shrink-0 p-2 border border-zinc-700 transition-all duration-300 ${
+                    className={`shrink-0 p-2 border rounded-lg border-zinc-700 transition-all duration-300 ${
                       deletingId === review._id
                         ? 'opacity-50 cursor-not-allowed text-zinc-600'
                         : 'text-zinc-400 hover:border-red-500 hover:text-red-500'

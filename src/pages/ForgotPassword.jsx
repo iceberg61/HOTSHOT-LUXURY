@@ -14,7 +14,7 @@ function ForgotPassword() {
   const [serverError, setServerError] = useState('')
 
   const inputClass = (field) =>
-    `w-full bg-zinc-900 border text-white text-xs px-4 py-4 tracking-wider placeholder-zinc-600 focus:outline-none transition-colors ${
+    `w-full bg-zinc-900 border rounded-lg text-white text-xs px-4 py-4 tracking-wider placeholder-zinc-600 focus:outline-none transition-colors ${
       errors[field] ? 'border-red-500' : 'border-zinc-800 focus:border-red-500'
     }`
 
@@ -152,7 +152,7 @@ function ForgotPassword() {
           <div className="flex items-center justify-center gap-2 mb-10">
             {['email', 'otp', 'reset', 'done'].map((s, i) => (
               <div key={s} className="flex items-center gap-2">
-                <div className={`w-6 h-6 flex items-center justify-center text-xs font-black transition-all duration-300 ${
+                <div className={`w-6 h-6 flex items-center rounded-lg justify-center text-xs font-black transition-all duration-300 ${
                   step === s
                     ? 'bg-red-500 text-white'
                     : ['email', 'otp', 'reset', 'done'].indexOf(step) > i
@@ -170,7 +170,7 @@ function ForgotPassword() {
 
           {/* Server Error */}
           {serverError && (
-            <div className={`border px-4 py-3 mb-4 ${serverError === 'New code sent!' ? 'bg-green-500/10 border-green-500' : 'bg-red-500/10 border-red-500'}`}>
+            <div className={`border rounded-lg px-4 py-3 mb-4 ${serverError === 'New code sent!' ? 'bg-green-500/10 border-green-500' : 'bg-red-500/10 border-red-500'}`}>
               <p className={`text-xs tracking-wider ${serverError === 'New code sent!' ? 'text-green-500' : 'text-red-500'}`}>
                 {serverError}
               </p>
@@ -199,7 +199,7 @@ function ForgotPassword() {
               <button
                 onClick={handleEmailSubmit}
                 disabled={loading}
-                className={`w-full text-xs tracking-[0.3em] uppercase py-4 transition-all duration-300 ${
+                className={`w-full text-xs tracking-[0.3em] uppercase py-4 transition-all duration-300 rounded-lg ${
                   loading ? 'bg-zinc-700 text-zinc-400 cursor-not-allowed' : 'bg-red-500 text-white hover:bg-red-600'
                 }`}
               >
@@ -231,7 +231,7 @@ function ForgotPassword() {
                     value={digit}
                     onChange={(e) => handleOtpChange(e.target.value, index)}
                     onKeyDown={(e) => handleOtpKeyDown(e, index)}
-                    className={`w-10 h-12 sm:w-12 sm:h-14 text-center bg-zinc-900 border text-white text-lg font-black focus:outline-none transition-colors ${
+                    className={`w-10 h-12 sm:w-12 sm:h-14 text-center bg-zinc-900 border rounded-lg text-white text-lg font-black focus:outline-none transition-colors ${
                       digit ? 'border-red-500' : 'border-zinc-800 focus:border-red-500'
                     }`}
                   />
@@ -241,7 +241,7 @@ function ForgotPassword() {
               <button
                 onClick={handleOtpSubmit}
                 disabled={loading}
-                className={`w-full text-xs tracking-[0.3em] uppercase py-4 transition-all duration-300 ${
+                className={`w-full text-xs tracking-[0.3em] uppercase py-4 transition-all duration-300 rounded-lg ${
                   loading ? 'bg-zinc-700 text-zinc-400 cursor-not-allowed' : 'bg-red-500 text-white hover:bg-red-600'
                 }`}
               >
@@ -250,7 +250,7 @@ function ForgotPassword() {
               <button
                 onClick={handleResend}
                 disabled={loading}
-                className="text-zinc-500 text-xs tracking-wider text-center hover:text-red-500 transition-colors"
+                className="text-zinc-500 text-xs tracking-wider text-center hover:text-red-500 transition-colors rounded-lg"
               >
                 Didn't get the code? Resend
               </button>
@@ -287,7 +287,7 @@ function ForgotPassword() {
               <button
                 onClick={handleResetSubmit}
                 disabled={loading}
-                className={`w-full text-xs tracking-[0.3em] uppercase py-4 transition-all duration-300 ${
+                className={`w-full text-xs tracking-[0.3em] uppercase py-4 transition-all duration-300 rounded-lg ${
                   loading ? 'bg-zinc-700 text-zinc-400 cursor-not-allowed' : 'bg-red-500 text-white hover:bg-red-600'
                 }`}
               >
@@ -299,7 +299,7 @@ function ForgotPassword() {
           {/* Step 4 — Done */}
           {step === 'done' && (
             <div className="flex flex-col items-center gap-6 text-center">
-              <div className="w-16 h-16 bg-green-600 flex items-center justify-center">
+              <div className="w-16 h-16 bg-green-600 flex items-center justify-center rounded-lg">
                 <span className="text-white text-2xl">✓</span>
               </div>
               <div>
@@ -310,7 +310,7 @@ function ForgotPassword() {
               </div>
               <Link
                 to="/login"
-                className="w-full bg-red-500 text-white text-xs tracking-[0.3em] uppercase py-4 text-center hover:bg-red-600 transition-all duration-300"
+                className="w-full bg-red-500 text-white text-xs tracking-[0.3em] uppercase py-4 text-center hover:bg-red-600 transition-all duration-300 rounded-lg"
               >
                 Back to Login
               </Link>

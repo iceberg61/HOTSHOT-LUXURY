@@ -42,7 +42,7 @@ function Cart() {
             <p className="text-zinc-600 text-xs tracking-widest uppercase">Your cart is empty</p>
             <Link
               to="/shop"
-              className="border border-red-500 text-red-500 text-xs tracking-widest uppercase px-8 py-3 hover:bg-red-500 hover:text-black transition-all duration-300"
+              className="border rounded-lg border-red-500 text-red-500 text-xs tracking-widest uppercase px-8 py-3 hover:bg-red-500 hover:text-black transition-all duration-300"
             >
               Continue Shopping
             </Link>
@@ -70,7 +70,7 @@ function Cart() {
                   {/* Product — image + info */}
                   <div className="flex items-center gap-4 md:col-span-2">
                     <Link to={`/product/${item._id}`} className="shrink-0">
-                      <div className="w-20 h-20 bg-zinc-900 border border-zinc-800 overflow-hidden hover:border-red-500 transition-colors">
+                      <div className="w-20 h-20 rounded-lg bg-zinc-900 border border-zinc-800 overflow-hidden hover:border-red-500 transition-colors">
                         <img
                           src={item.image}
                           alt={item.name}
@@ -103,7 +103,7 @@ function Cart() {
 
                   {/* Quantity */}
                   <div className="flex items-center md:justify-center">
-                    <div className="flex items-center border border-zinc-700">
+                    <div className="flex items-center border rounded-lg border-zinc-700">
                       <button
                         onClick={() => updateQuantity(item._id, item.size, item.quantity - 1)}
                         className="px-3 py-2 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-all text-sm"
@@ -152,7 +152,7 @@ function Cart() {
 
             {/* Right — Order Summary */}
             <div className="lg:col-span-1">
-              <div className="bg-zinc-950 border border-zinc-800 p-6 sticky top-28">
+              <div className="bg-zinc-950 border rounded-lg border-zinc-800 p-6 sticky top-28">
                 <h2 className="text-white text-sm font-black tracking-[0.3em] uppercase mb-6">
                   Order Summary
                 </h2>
@@ -190,16 +190,16 @@ function Cart() {
                   <input
                     type="text"
                     placeholder="Promo code"
-                    className="flex-1 bg-zinc-900 border border-zinc-700 text-white text-xs px-4 py-3 tracking-wider placeholder-zinc-600 focus:outline-none focus:border-red-500 transition-colors"
+                    className="flex-1 bg-zinc-900 border rounded-l-2xl border-zinc-700 text-white text-xs px-4 py-3 tracking-wider placeholder-zinc-600 focus:outline-none focus:border-red-500 transition-colors"
                   />
-                  <button className="bg-zinc-800 border border-zinc-700 border-l-0 text-zinc-400 text-xs px-4 tracking-widest uppercase hover:bg-red-500 hover:text-white hover:border-red-500 transition-all duration-300">
+                  <button className="bg-zinc-800 border rounded-r-2xl border-zinc-700 border-l-0 text-zinc-400 text-xs px-4 tracking-widest uppercase hover:bg-red-500 hover:text-white hover:border-red-500 transition-all duration-300">
                     Apply
                   </button>
                 </div>
 
                 <Link
                   to="/checkout"
-                  className="w-full block bg-red-500 text-white text-xs tracking-[0.3em] uppercase py-4 text-center hover:bg-red-600 transition-all duration-300"
+                  className="w-full block bg-red-500 text-white text-xs rounded-lg tracking-[0.3em] uppercase py-4 text-center hover:bg-red-600 transition-all duration-300"
                 >
                   Proceed to Checkout
                 </Link>

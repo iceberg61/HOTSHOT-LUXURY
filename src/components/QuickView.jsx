@@ -26,7 +26,7 @@ function QuickView({ product, onClose }) {
       />
 
       {/* Modal */}
-      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-2xl mx-4 bg-zinc-950 border border-zinc-800 overflow-y-auto max-h-screen">
+      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-full max-w-2xl mx-4 bg-zinc-950 border rounded-lg border-zinc-800 overflow-y-auto max-h-screen">
         <div className="grid grid-cols-1 sm:grid-cols-2">
 
           {/* Image */}
@@ -76,7 +76,7 @@ function QuickView({ product, onClose }) {
                   <button
                     key={size}
                     onClick={() => setSelectedSize(size)}
-                    className={`px-3 py-2 text-xs tracking-widest uppercase border transition-all duration-300 ${
+                    className={`px-3 py-2 text-xs tracking-widest uppercase border rounded-lg transition-all duration-300 ${
                       selectedSize === size
                         ? 'bg-red-500 border-red-500 text-white'
                         : 'border-zinc-700 text-zinc-400 hover:border-white hover:text-white'
@@ -95,7 +95,7 @@ function QuickView({ product, onClose }) {
             <button
               onClick={handleAddToCart}
               disabled={!selectedSize}
-              className={`w-full flex items-center justify-center gap-2 text-xs tracking-[0.3em] uppercase py-4 transition-all duration-300 ${
+              className={`w-full rounded-lg flex items-center justify-center gap-2 text-xs tracking-[0.3em] uppercase py-4 transition-all duration-300 ${
                 added
                   ? 'bg-green-600 text-white'
                   : selectedSize
@@ -110,7 +110,7 @@ function QuickView({ product, onClose }) {
             <Link
               to={`/product/${product._id}`}
               onClick={onClose}
-              className="w-full border border-zinc-700 text-zinc-400 text-xs tracking-[0.3em] uppercase py-3 text-center hover:border-white hover:text-white transition-all duration-300"
+              className="w-full border rounded-lg border-zinc-700 text-zinc-400 text-xs tracking-[0.3em] uppercase py-3 text-center hover:border-white hover:text-white transition-all duration-300"
             >
               View Full Details
             </Link>

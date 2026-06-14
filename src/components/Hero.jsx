@@ -43,7 +43,7 @@ function Hero() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 flex-wrap">
           <Link
             to="/experience"
-            className="border border-red-500 text-red-500 px-6 sm:px-10 py-4 text-xs tracking-[0.3em] uppercase hover:bg-red-500 hover:text-black transition-all duration-300 w-full sm:w-auto text-center"
+            className="border border-red-500 text-red-500 px-6 sm:px-10 py-4 rounded-lg text-xs tracking-[0.3em] uppercase hover:bg-red-500 hover:text-black transition-all duration-300 w-full sm:w-auto text-center"
           >
             [ ENTER THE EXPERIENCE ]
           </Link>

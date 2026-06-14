@@ -71,7 +71,7 @@ function Auth() {
   }
 
   const inputClass = (field) =>
-    `w-full bg-zinc-900 border text-white text-xs px-4 py-3 tracking-wider placeholder-zinc-600 focus:outline-none transition-colors ${
+    `w-full bg-zinc-900 border rounded-lg text-white text-xs px-4 py-3 tracking-wider placeholder-zinc-600 focus:outline-none transition-colors ${
       errors[field] ? 'border-red-500' : 'border-zinc-800 focus:border-red-500'
     }`
 
@@ -111,10 +111,10 @@ function Auth() {
         <div className="w-full max-w-md">
 
           {/* Toggle */}
-          <div className="flex mb-6 border border-zinc-800">
+          <div className="flex mb-6 border rounded-lg border-zinc-800">
             <button
               onClick={() => { setMode('login'); setErrors({}); setServerError('') }}
-              className={`flex-1 py-3 text-xs tracking-widest uppercase transition-all duration-300 ${
+              className={`flex-1 py-3 text-xs tracking-widest rounded-lg uppercase transition-all duration-300 ${
                 mode === 'login' ? 'bg-red-500 text-white' : 'text-zinc-400 hover:text-white'
               }`}
             >
@@ -122,7 +122,7 @@ function Auth() {
             </button>
             <button
               onClick={() => { setMode('register'); setErrors({}); setServerError('') }}
-              className={`flex-1 py-3 text-xs tracking-widest uppercase transition-all duration-300 ${
+              className={`flex-1 py-3 text-xs tracking-widest rounded-lg uppercase transition-all duration-300 ${
                 mode === 'register' ? 'bg-red-500 text-white' : 'text-zinc-400 hover:text-white'
               }`}
             >
@@ -132,7 +132,7 @@ function Auth() {
 
           {/* Server Error */}
           {serverError && (
-            <div className="bg-red-500/10 border border-red-500 px-4 py-3 mb-4">
+            <div className="bg-red-500/10 border rounded-lg border-red-500 px-4 py-3 mb-4">
               <p className="text-red-500 text-xs tracking-wider">{serverError}</p>
             </div>
           )}
@@ -225,7 +225,7 @@ function Auth() {
             <button
               onClick={handleSubmit}
               disabled={loading}
-              className={`w-full text-xs tracking-[0.3em] uppercase py-4 transition-all duration-300 mt-2 ${
+              className={`w-full text-xs rounded-lg tracking-[0.3em] uppercase py-4 transition-all duration-300 mt-2 ${
                 loading
                   ? 'bg-zinc-700 text-zinc-400 cursor-not-allowed'
                   : 'bg-red-500 text-white hover:bg-red-600'

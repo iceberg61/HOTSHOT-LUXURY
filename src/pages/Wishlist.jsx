@@ -50,7 +50,7 @@ function Wishlist() {
             <p className="text-zinc-600 text-xs tracking-widest uppercase">Your wishlist is empty</p>
             <Link
               to="/shop"
-              className="bg-red-500 text-white text-xs tracking-[0.3em] uppercase px-8 py-4 hover:bg-red-600 transition-all duration-300"
+              className="bg-red-500 text-white rounded-lg text-xs tracking-[0.3em] uppercase px-8 py-4 hover:bg-red-600 transition-all duration-300"
             >
               Browse Collection
             </Link>
@@ -79,14 +79,14 @@ function Wishlist() {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => { addToCart(product, product.sizes[0], 1) }}
-                      className="flex-1 flex items-center justify-center gap-2 bg-red-500 text-white text-xs tracking-widest uppercase py-3 hover:bg-red-600 transition-colors"
+                      className="flex-1 flex items-center rounded-lg justify-center gap-2 bg-red-500 text-white text-xs tracking-widest uppercase py-3 hover:bg-red-600 transition-colors"
                     >
                       <ShoppingCart size={12} />
                       Add to Cart
                     </button>
                     <button
                       onClick={() => removeItem(user.token, product._id)}
-                      className="border border-zinc-700 p-3 text-zinc-400 hover:border-red-500 hover:text-red-500 transition-all duration-300"
+                      className="border border-zinc-700 p-3 text-zinc-400 hover:border-red-500 hover:text-red-500 transition-all duration-300 rounded-lg"
                     >
                       <Heart size={14} fill="currentColor" />
                     </button>

@@ -63,12 +63,12 @@ function AdminOrders() {
 
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2  border-red-500 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
           <div className="flex flex-col gap-3">
             {orders.map((order) => (
-              <div key={order._id} className="bg-black border border-zinc-800">
+              <div key={order._id} className="bg-black border rounded-lg border-zinc-800">
 
                 {/* Order Row */}
                 <div
@@ -81,10 +81,10 @@ function AdminOrders() {
                         <p className="text-white text-xs font-bold">
                           #{order._id.slice(-8).toUpperCase()}
                         </p>
-                        <span className={`text-xs font-bold uppercase border px-2 py-0.5 ${statusColors[order.status]}`}>
+                        <span className={`text-xs font-bold rounded-lg uppercase border px-2 py-0.5 ${statusColors[order.status]}`}>
                           {order.status}
                         </span>
-                        <span className={`text-xs font-bold uppercase ${paymentColors[order.paymentStatus]}`}>
+                        <span className={`text-xs font-bold  uppercase ${paymentColors[order.paymentStatus]}`}>
                           {order.paymentStatus}
                         </span>
                       </div>
@@ -151,7 +151,7 @@ function AdminOrders() {
                               key={status}
                               onClick={() => handleStatusUpdate(order._id, status)}
                               disabled={updatingId === order._id || order.status === status}
-                              className={`px-3 py-2 text-xs tracking-widest uppercase border transition-all duration-300 ${
+                              className={`px-3 py-2 text-xs tracking-widest uppercase border rounded-lg transition-all duration-300 ${
                                 order.status === status
                                   ? 'bg-red-500 border-red-500 text-white'
                                   : 'border-zinc-700 text-zinc-400 hover:border-white hover:text-white'

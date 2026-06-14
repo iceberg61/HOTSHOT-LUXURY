@@ -78,17 +78,20 @@ function Checkout() {
         description: 'Payment for your order',
       },
       callback: async (response) => {
-        console.log('Flutterwave response:', response)
+        console.log('Flutterwave full response:', JSON.stringify(response))
         if (
           response.status === 'successful' ||
           response.status === 'completed'
         ) {
           try {
             setPlacing(true)
+            console.log('Calling verifyPayment with:', order._id, response.transaction_id) // ADD THIS
+            console.log('API URL:', import.meta.env.VITE_API_URL) // ADD THIS
             await verifyPayment(order._id, response.transaction_id, user?.token)
             clearCart()
             navigate(`/order-confirmation/${order._id}`)
-          } catch {
+          } catch (err) {
+            console.error('Verify payment error:', err.message)  // ADD THIS
             clearCart()
             navigate(`/order-confirmation/${order._id}`)
           }
@@ -168,6 +171,7 @@ function Checkout() {
       }
 
       const order = await createOrder(orderData, user?.token)
+      
 
       setPlacing(false)
       handleFlutterwavePayment(order)
@@ -179,9 +183,11 @@ function Checkout() {
   }
 
   const inputClass = (field) =>
-    `w-full bg-zinc-900 border text-white text-xs px-5 py-4 tracking-wider placeholder-zinc-600 focus:outline-none transition-colors ${
+    `w-full bg-zinc-900 border text-white rounded-lg text-xs px-5 py-4 tracking-wider placeholder-zinc-600 focus:outline-none transition-colors ${
       errors[field] ? 'border-red-500' : 'border-zinc-800 focus:border-red-500'
     }`
+
+    
 
   return (
     <div className="bg-black min-h-screen flex flex-col">
@@ -225,7 +231,7 @@ function Checkout() {
             {/* Shipping Info */}
             <div>
               <div className="flex items-center gap-4 mb-6">
-                <span className="bg-red-500 text-white text-xs w-6 h-6 flex items-center justify-center font-black">1</span>
+                <span className="bg-red-500 text-white text-xs w-6 h-6 rounded-lg flex items-center justify-center font-black">1</span>
                 <h2 className="text-white text-sm font-black tracking-[0.3em] uppercase">Shipping Information</h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -270,7 +276,7 @@ function Checkout() {
             {/* Payment */}
             <div>
               <div className="flex items-center gap-4 mb-6">
-                <span className="bg-red-500 text-white text-xs w-6 h-6 flex items-center justify-center font-black">2</span>
+                <span className="bg-red-500 rounded-lg text-white text-xs w-6 h-6 flex items-center justify-center font-black">2</span>
                 <h2 className="text-white text-sm font-black tracking-[0.3em] uppercase">Payment Method</h2>
               </div>
 
@@ -279,7 +285,7 @@ function Checkout() {
                   <button
                     key={method}
                     onClick={() => setForm({ ...form, paymentMethod: method })}
-                    className={`px-6 py-3 text-xs tracking-widest uppercase border transition-all duration-300 ${
+                    className={`px-6 py-3 text-xs tracking-widest uppercase border rounded-lg transition-all duration-300 ${
                       form.paymentMethod === method
                         ? 'bg-red-500 border-red-500 text-white'
                         : 'border-zinc-700 text-zinc-400 hover:border-white hover:text-white'
@@ -291,7 +297,7 @@ function Checkout() {
               </div>
 
               {form.paymentMethod === 'card' && (
-                <div className="bg-zinc-950 border border-zinc-800 p-6">
+                <div className="bg-zinc-950 border rounded-lg border-zinc-800 p-6">
                   <p className="text-zinc-400 text-xs tracking-wider leading-relaxed">
                     You will be redirected to Flutterwave's secure payment page to complete your payment. We accept cards, USSD, and bank transfers.
                   </p>
@@ -303,7 +309,7 @@ function Checkout() {
               )}
 
               {form.paymentMethod === 'transfer' && (
-                <div className="bg-zinc-950 border border-zinc-800 p-6">
+                <div className="bg-zinc-950 border rounded-lg border-zinc-800 p-6">
                   <p className="text-zinc-400 text-xs tracking-wider leading-relaxed">
                     You will be redirected to Flutterwave's secure payment page where you can complete your payment via bank transfer, USSD, or card.
                   </p>
@@ -318,7 +324,7 @@ function Checkout() {
 
           {/* Right — Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-zinc-950 border border-zinc-800 p-6 sticky top-28">
+            <div className="bg-zinc-950 border rounded-lg border-zinc-800 p-6 sticky top-28">
               <h2 className="text-white text-sm font-black tracking-[0.3em] uppercase mb-6">
                 Order Summary
               </h2>
@@ -326,7 +332,7 @@ function Checkout() {
               <div className="flex flex-col gap-4 mb-6 max-h-64 overflow-y-auto">
                 {items.map((item, index) => (
                   <div key={`${item._id}-${item.size}-${index}`} className="flex gap-3 items-center">
-                    <div className="w-14 h-14 bg-zinc-900 border border-zinc-800 overflow-hidden shrink-0">
+                    <div className="w-14 h-14 bg-zinc-900 border border-zinc-800 overflow-hidden shrink-0 rounded-lg">
                       <img
                         src={item.image}
                         alt={item.name}
@@ -362,7 +368,7 @@ function Checkout() {
               <button
                 onClick={handlePlaceOrder}
                 disabled={placing || items.length === 0}
-                className={`w-full text-xs tracking-[0.3em] uppercase py-4 transition-all duration-300 ${
+                className={`w-full text-xs tracking-[0.3em] rounded-lg uppercase py-4 transition-all duration-300 ${
                   placing
                     ? 'bg-zinc-700 text-zinc-400 cursor-not-allowed'
                     : items.length === 0

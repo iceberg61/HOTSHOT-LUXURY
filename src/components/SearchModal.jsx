@@ -56,7 +56,7 @@ function SearchModal({ isOpen, onClose }) {
       />
 
       {/* Modal */}
-      <div className="relative z-10 bg-zinc-950 border-b border-zinc-800 px-4 sm:px-8 py-6">
+      <div className="relative z-10 bg-zinc-950 border-b  border-zinc-800 px-4 sm:px-8 py-6">
         <div className="max-w-3xl mx-auto">
 
           {/* Search Input */}
@@ -83,7 +83,7 @@ function SearchModal({ isOpen, onClose }) {
 
             {loading && (
               <div className="flex items-center justify-center py-8">
-                <div className="w-6 h-6 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+                <div className="w-6 h-6 border-2  border-red-500 border-t-transparent rounded-full animate-spin" />
               </div>
             )}
 
@@ -105,7 +105,7 @@ function SearchModal({ isOpen, onClose }) {
                     onClick={onClose}
                     className="flex items-center gap-4 p-3 hover:bg-zinc-900 transition-colors group"
                   >
-                    <div className="w-12 h-12 bg-zinc-900 overflow-hidden shrink-0 border border-zinc-800 group-hover:border-red-500 transition-colors">
+                    <div className="w-12 h-12 bg-zinc-900 overflow-hidden shrink-0 border rounded-lg border-zinc-800 group-hover:border-red-500 transition-colors">
                       <img
                         src={product.image}
                         alt={product.name}

@@ -69,7 +69,7 @@ function AdminOverview() {
               {stats.map((stat) => {
                 const Icon = stat.icon
                 return (
-                  <div key={stat.label} className="bg-black border border-zinc-800 p-4">
+                  <div key={stat.label} className="bg-black border rounded-lg border-zinc-800 p-4">
                     <div className={`w-8 h-8 ${stat.bg} flex items-center justify-center mb-3`}>
                       <Icon size={16} className={stat.color} />
                     </div>
@@ -81,7 +81,7 @@ function AdminOverview() {
             </div>
 
             {/* Recent Orders */}
-            <div className="bg-black border border-zinc-800">
+            <div className="bg-black border rounded-lg border-zinc-800">
               <div className="px-4 sm:px-6 py-4 border-b border-zinc-800">
                 <h2 className="text-white text-sm font-black tracking-[0.3em] uppercase">Recent Orders</h2>
               </div>

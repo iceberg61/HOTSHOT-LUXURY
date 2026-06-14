@@ -43,8 +43,12 @@ function Experience() {
               Founded in Nigeria, rooted in the hustle, refined by vision. We are not just a clothing brand — we are a movement for those who refuse to blend in.
             </p>
           </div>
-          <div className="bg-zinc-950 border border-zinc-800 h-80 sm:h-96 flex items-center justify-center">
-            <p className="text-zinc-700 text-xs tracking-widest uppercase">Brand Image</p>
+          <div className="rounded-lg overflow-hidden border border-zinc-800 h-80 sm:h-96">
+            <img
+              src="/images/hotshot.jpeg"
+              alt="Hotshot Luxury"
+              className="w-full h-full object-contain object-center "
+            />
           </div>
         </div>
 
@@ -63,7 +67,7 @@ function Experience() {
               { title: 'Identity', desc: 'Wear what you are. Hotshot Luxury is not a brand you put on — it\'s who you already are.', icon: '🎯' },
               { title: 'Legacy', desc: 'We build for the long run. Every drop adds to a story that will outlast any trend.', icon: '🏆' },
             ].map((value) => (
-              <div key={value.title} className="bg-zinc-950 border border-zinc-800 hover:border-red-500 transition-colors duration-300 p-6">
+              <div key={value.title} className="bg-zinc-950 border border-zinc-800 hover:border-red-500 transition-colors duration-300 p-6 rounded-lg">
                 <span className="text-3xl mb-4 block">{value.icon}</span>
                 <h3 className="text-white text-sm font-black uppercase tracking-wider mb-3">{value.title}</h3>
                 <p className="text-zinc-500 text-xs tracking-wider leading-relaxed">{value.desc}</p>
@@ -77,10 +81,10 @@ function Experience() {
           <p className="text-red-500 text-xs tracking-[0.4em] uppercase mb-4">Ready?</p>
           <h2 className="text-white text-3xl sm:text-4xl font-black uppercase mb-6">Join The Movement</h2>
           <div className="flex items-center justify-center gap-4 flex-wrap">
-            <Link to="/shop" className="bg-red-500 text-white text-xs tracking-[0.3em] uppercase px-8 py-4 hover:bg-red-600 transition-all duration-300">
+            <Link to="/shop" className="bg-red-500 text-white text-xs tracking-[0.3em] uppercase px-8 py-4 hover:bg-red-600 transition-all duration-300 rounded-lg">
               Shop The Drop
             </Link>
-            <Link to="/contact" className="border border-zinc-700 text-zinc-400 text-xs tracking-[0.3em] uppercase px-8 py-4 hover:border-white hover:text-white transition-all duration-300">
+            <Link to="/contact" className="border border-zinc-700 text-zinc-400 text-xs tracking-[0.3em] uppercase px-8 py-4 hover:border-white hover:text-white transition-all duration-300 rounded-lg">
               Get In Touch
             </Link>
           </div>

@@ -18,7 +18,7 @@ const getProducts = async (req, res) => {
   }
   if (tag) query.tag = tag
 
-  let products = await Product.find(query)
+  let products = await Product.find(query).sort({ createdAt: -1 })
 
   if (sort === 'Price: Low to High') products = products.sort((a, b) => a.price - b.price)
   if (sort === 'Price: High to Low') products = products.sort((a, b) => b.price - a.price)

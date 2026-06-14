@@ -49,7 +49,7 @@ function AdminLayout({ children }) {
                 key={link.path}
                 to={link.path}
                 onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 text-xs tracking-widest uppercase transition-all duration-300 ${
+                className={`flex items-center rounded-lg gap-3 px-4 py-3 text-xs tracking-widest uppercase transition-all duration-300 ${
                   active
                     ? 'bg-red-500 text-white'
                     : 'text-zinc-400 hover:text-white hover:bg-zinc-900'
@@ -65,7 +65,7 @@ function AdminLayout({ children }) {
         {/* User + Logout */}
         <div className="px-4 py-6 border-t border-zinc-800">
           <div className="flex items-center gap-3 mb-4 px-4">
-            <div className="w-8 h-8 bg-red-500 flex items-center justify-center shrink-0">
+            <div className="w-8 h-8 bg-red-500 flex items-center justify-center shrink-0 rounded-lg">
               <span className="text-white text-xs font-black">
                 {user?.firstName?.charAt(0).toUpperCase()}
               </span>
@@ -79,7 +79,7 @@ function AdminLayout({ children }) {
           </div>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 px-4 py-3 w-full text-zinc-400 text-xs tracking-widest uppercase hover:text-red-500 hover:bg-zinc-900 transition-all duration-300"
+            className="flex items-center gap-3 px-4 py-3 w-full text-zinc-400 text-xs rounded-lg tracking-widest uppercase hover:text-red-500 hover:bg-zinc-900 transition-all duration-300"
           >
             <LogOut size={16} />
             Logout

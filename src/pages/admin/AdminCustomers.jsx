@@ -38,7 +38,7 @@ function AdminCustomers() {
         ) : (
           <>
             {/* Desktop Table */}
-            <div className="hidden md:block bg-black border border-zinc-800 overflow-x-auto">
+            <div className="hidden md:block bg-black border rounded-lg border-zinc-800 overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-zinc-800">
@@ -53,7 +53,7 @@ function AdminCustomers() {
                     <tr key={u._id} className="border-b border-zinc-900 hover:bg-zinc-950 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 bg-red-500 flex items-center justify-center shrink-0">
+                          <div className="w-8 h-8 bg-red-500 flex rounded-lg items-center justify-center shrink-0">
                             <span className="text-white text-xs font-black">
                               {u.firstName?.charAt(0).toUpperCase()}
                             </span>
@@ -79,8 +79,8 @@ function AdminCustomers() {
             {/* Mobile Cards */}
             <div className="md:hidden flex flex-col gap-3">
               {users.map((u) => (
-                <div key={u._id} className="bg-black border border-zinc-800 p-4 flex items-center gap-4">
-                  <div className="w-10 h-10 bg-red-500 flex items-center justify-center shrink-0">
+                <div key={u._id} className="bg-black border rounded-lg border-zinc-800 p-4 flex items-center gap-4">
+                  <div className="w-10 h-10 bg-red-500 flex items-center justify-center rounded-lg shrink-0">
                     <span className="text-white text-sm font-black">
                       {u.firstName?.charAt(0).toUpperCase()}
                     </span>

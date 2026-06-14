@@ -53,12 +53,12 @@ function CTA() {
         {/* Right — Email signup */}
         <div className="w-full lg:w-auto lg:min-w-95">
           {status ? (
-            <div className="bg-black/20 border border-black/20 px-6 py-8 text-center">
+            <div className="bg-black/20 border  border-black/20 px-6 py-8 text-center">
               <p className="text-black text-2xl font-black uppercase mb-2">You're In. ✓</p>
               <p className="text-red-900 text-xs tracking-wider">{status}</p>
             </div>
           ) : (
-            <div className="bg-black/10 border border-black/20 p-6 sm:p-8">
+            <div className="bg-black/10 border rounded-lg border-black/20 p-6 sm:p-8">
               <p className="text-black text-sm font-black uppercase tracking-wider mb-6">
                 Join The VIP List
               </p>
@@ -69,12 +69,12 @@ function CTA() {
                   onChange={(e) => setEmail(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSubscribe()}
                   placeholder="Enter your email address"
-                  className="w-full bg-black text-white text-xs px-5 py-4 tracking-wider placeholder-zinc-500 focus:outline-none border border-transparent focus:border-white transition-colors"
+                  className="w-full bg-black rounded-lg text-white text-xs px-5 py-4 tracking-wider placeholder-zinc-500 focus:outline-none border border-transparent focus:border-white transition-colors"
                 />
                 <button
                   onClick={handleSubscribe}
                   disabled={loading}
-                  className={`w-full text-xs tracking-[0.3em] uppercase py-4 font-bold transition-all duration-300 ${
+                  className={`w-full text-xs rounded-lg tracking-[0.3em] uppercase py-4 font-bold transition-all duration-300 ${
                     loading
                       ? 'bg-zinc-700 text-zinc-400 cursor-not-allowed'
                       : 'bg-black text-white hover:bg-zinc-900'

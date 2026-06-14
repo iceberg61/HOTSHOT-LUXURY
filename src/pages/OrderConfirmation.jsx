@@ -21,16 +21,16 @@ function OrderConfirmation() {
               Your order has been received and is being processed.
             </p>
             {id && (
-              <div className="bg-zinc-950 border border-zinc-800 px-4 py-3 mb-8 mx-4">
+              <div className="bg-zinc-950 border rounded-lg border-zinc-800 px-4 py-3 mb-8 mx-4">
                 <p className="text-zinc-500 text-xs tracking-wider mb-1">Order ID</p>
                 <p className="text-white text-xs font-bold tracking-wider break-all">{id}</p>
               </div>
             )}
             <div className="flex items-center justify-center gap-4 flex-wrap px-4">
-              <Link to="/shop" className="bg-red-500 text-white text-xs tracking-[0.3em] uppercase px-6 sm:px-8 py-4 hover:bg-red-600 transition-all duration-300">
+              <Link to="/shop" className="bg-red-500 text-white text-xs tracking-[0.3em] uppercase px-6 sm:px-8 py-4 hover:bg-red-600 transition-all duration-300 rounded-lg">
                 Continue Shopping
               </Link>
-              <Link to="/" className="border border-zinc-700 text-zinc-400 text-xs tracking-[0.3em] uppercase px-6 sm:px-8 py-4 hover:border-white hover:text-white transition-all duration-300">
+              <Link to="/" className="border rounded-lg border-zinc-700 text-zinc-400 text-xs tracking-[0.3em] uppercase px-6 sm:px-8 py-4 hover:border-white hover:text-white transition-all duration-300">
                 Back to Home
               </Link>
             </div>

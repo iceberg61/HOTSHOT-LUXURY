@@ -170,7 +170,7 @@ function ProductDetail() {
 
           {/* Left — Image */}
           <div>
-            <div className="bg-zinc-950 border border-zinc-800 overflow-hidden" style={{ height: '550px' }}>
+            <div className="bg-zinc-950 border rounded-lg border-zinc-800 overflow-hidden" style={{ height: '550px' }}>
               <img
                 src={product.image}
                 alt={product.name}
@@ -224,7 +224,7 @@ function ProductDetail() {
                   <button
                     key={size}
                     onClick={() => setSelectedSize(size)}
-                    className={`px-4 py-2 text-xs tracking-widest uppercase border transition-all duration-300 ${
+                    className={`px-4 py-2 text-xs rounded-lg tracking-widest uppercase border transition-all duration-300 ${
                       selectedSize === size
                         ? 'bg-red-500 border-red-500 text-white'
                         : 'border-zinc-700 text-zinc-400 hover:border-white hover:text-white'
@@ -242,7 +242,7 @@ function ProductDetail() {
             {/* Quantity */}
             <div>
               <p className="text-white text-xs font-bold tracking-[0.3em] uppercase mb-4">Quantity</p>
-              <div className="flex items-center w-fit border border-zinc-700">
+              <div className="flex items-center w-fit border rounded-lg border-zinc-700">
                 <button
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                   className="px-4 py-3 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-all text-sm"
@@ -260,7 +260,7 @@ function ProductDetail() {
               <button
                 onClick={handleAddToCart}
                 disabled={!product.inStock}
-                className={`flex-1 flex items-center justify-center gap-3 text-xs tracking-[0.3em] uppercase py-4 transition-all duration-300 ${
+                className={`flex-1 flex items-center justify-center gap-3 text-xs tracking-[0.3em] uppercase py-4 transition-all duration-300 rounded-lg ${
                   added
                     ? 'bg-green-600 text-white'
                     : product.inStock
@@ -273,7 +273,7 @@ function ProductDetail() {
               </button>
               <button
                 onClick={handleWishlist}
-                className={`border p-4 transition-all duration-300 ${
+                className={`border rounded-lg p-4 transition-all duration-300 ${
                   isWishlisted(product._id)
                     ? 'border-red-500 text-red-500 bg-red-500/10'
                     : 'border-zinc-700 text-zinc-400 hover:border-red-500 hover:text-red-500'
@@ -386,12 +386,12 @@ function ProductDetail() {
                 </h2>
 
                 {reviewSuccess && (
-                  <div className="bg-green-500/10 border border-green-500 px-4 py-3 mb-4">
+                  <div className="bg-green-500/10 border rounded-lg border-green-500 px-4 py-3 mb-4">
                     <p className="text-green-500 text-xs tracking-wider">{reviewSuccess}</p>
                   </div>
                 )}
                 {reviewError && (
-                  <div className="bg-red-500/10 border border-red-500 px-4 py-3 mb-4">
+                  <div className="bg-red-500/10 border rounded-lg border-red-500 px-4 py-3 mb-4">
                     <p className="text-red-500 text-xs tracking-wider">{reviewError}</p>
                   </div>
                 )}
@@ -403,7 +403,7 @@ function ProductDetail() {
                       value={reviewForm.name}
                       onChange={(e) => setReviewForm({ ...reviewForm, name: e.target.value })}
                       placeholder="John Doe"
-                      className="w-full bg-zinc-900 border border-zinc-800 text-white text-xs px-4 py-3 tracking-wider placeholder-zinc-600 focus:outline-none focus:border-red-500 transition-colors"
+                      className="w-full bg-zinc-900 border rounded-lg border-zinc-800 text-white text-xs px-4 py-3 tracking-wider placeholder-zinc-600 focus:outline-none focus:border-red-500 transition-colors"
                     />
                   </div>
 
@@ -430,14 +430,14 @@ function ProductDetail() {
                       onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
                       placeholder="Share your experience with this product..."
                       rows={5}
-                      className="w-full bg-zinc-900 border border-zinc-800 text-white text-xs px-4 py-3 tracking-wider placeholder-zinc-600 focus:outline-none focus:border-red-500 transition-colors resize-none"
+                      className="w-full bg-zinc-900 border rounded-lg border-zinc-800 text-white text-xs px-4 py-3 tracking-wider placeholder-zinc-600 focus:outline-none focus:border-red-500 transition-colors resize-none"
                     />
                   </div>
 
                   <button
                     onClick={handleReviewSubmit}
                     disabled={reviewLoading}
-                    className={`w-full text-xs tracking-[0.3em] uppercase py-4 transition-all duration-300 ${
+                    className={`w-full text-xs tracking-[0.3em] rounded-lg uppercase py-4 transition-all duration-300 ${
                       reviewLoading ? 'bg-zinc-700 text-zinc-400 cursor-not-allowed' : 'bg-red-500 text-white hover:bg-red-600'
                     }`}
                   >

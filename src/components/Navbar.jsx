@@ -73,7 +73,7 @@ function Navbar() {
                   </div>
                 </button>
                 {/* Dropdown */}
-                <div className="absolute right-0 top-8 w-48 bg-zinc-950 border border-zinc-800 hidden group-hover:flex flex-col z-50">
+                <div className="absolute right-0 top-8 w-48 bg-zinc-950 border rounded-lg border-zinc-800 hidden group-hover:flex flex-col z-50">
                   <p className="text-zinc-400 text-xs px-4 py-3 border-b border-zinc-800 tracking-wider">
                     {user.firstName} {user.lastName}
                   </p>
@@ -152,7 +152,7 @@ function Navbar() {
                   <Link
                     to="/orders"
                     onClick={handleLinkClick}
-                    className="border border-zinc-700 text-zinc-400 text-xs tracking-widest uppercase py-3 text-center hover:border-white hover:text-white transition-all duration-300"
+                    className="border rounded-lg border-zinc-700 text-zinc-400 text-xs tracking-widest uppercase py-3 text-center hover:border-white hover:text-white transition-all duration-300"
                   >
                     My Orders
                   </Link>
@@ -160,14 +160,14 @@ function Navbar() {
                     <Link
                       to="/admin"
                       onClick={handleLinkClick}
-                      className="border border-red-500 text-red-500 text-xs tracking-widest uppercase py-3 text-center hover:bg-red-500 hover:text-black transition-all duration-300"
+                      className="border rounded-lg border-red-500 text-red-500 text-xs tracking-widest uppercase py-3 text-center hover:bg-red-500 hover:text-black transition-all duration-300"
                     >
                       Admin Dashboard
                     </Link>
                   )}
                   <button
                     onClick={() => { logout(); handleLinkClick() }}
-                    className="border border-zinc-700 text-zinc-400 text-xs tracking-widest uppercase py-3 text-center hover:border-red-500 hover:text-red-500 transition-all duration-300"
+                    className="border rounded-lg border-zinc-700 text-zinc-400 text-xs tracking-widest uppercase py-3 text-center hover:border-red-500 hover:text-red-500 transition-all duration-300"
                   >
                     Logout
                   </button>
@@ -177,7 +177,7 @@ function Navbar() {
                   <Link
                     to="/login"
                     onClick={handleLinkClick}
-                    className="flex-1 border border-zinc-700 text-zinc-400 text-xs tracking-widest uppercase py-3 text-center hover:border-white hover:text-white transition-all duration-300"
+                    className="flex-1 border rounded-lg border-zinc-700 text-zinc-400 text-xs tracking-widest uppercase py-3 text-center hover:border-white hover:text-white transition-all duration-300"
                   >
                     Login
                   </Link>
@@ -194,7 +194,7 @@ function Navbar() {
 
             {/* Search on mobile */}
             <div
-              className="flex items-center border border-zinc-800 mt-4 mx-0 cursor-pointer"
+              className="flex items-center border rounded-lg border-zinc-800 mt-4 mx-0 cursor-pointer"
               onClick={() => { setSearchOpen(true); setMenuOpen(false) }}
             >
               <div className="flex-1 text-zinc-600 text-xs px-4 py-3 tracking-wider">

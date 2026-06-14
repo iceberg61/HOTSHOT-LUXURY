@@ -115,7 +115,7 @@ function MyOrders() {
           <div className="flex flex-col gap-4">
 
             {/* Table Header — desktop only */}
-            <div className="hidden md:grid grid-cols-6 gap-4 pb-4 border-b border-zinc-800">
+            <div className="hidden md:grid grid-cols-6 gap-4 pb-4 border-b  border-zinc-800">
               <p className="text-zinc-600 text-xs tracking-widest uppercase col-span-2">Order ID</p>
               <p className="text-zinc-600 text-xs tracking-widest uppercase">Date</p>
               <p className="text-zinc-600 text-xs tracking-widest uppercase">Total</p>
@@ -124,7 +124,7 @@ function MyOrders() {
             </div>
 
             {orders.map((order) => (
-              <div key={order._id} className="border border-zinc-800 hover:border-zinc-700 transition-colors duration-300">
+              <div key={order._id} className="border rounded-lg border-zinc-800 hover:border-zinc-700 transition-colors duration-300">
 
                 {/* Order Row */}
                 <div
@@ -169,7 +169,7 @@ function MyOrders() {
                   <div className="flex items-center justify-between gap-2">
                     <div>
                       <p className="text-zinc-500 text-xs tracking-wider md:hidden mb-1">Status</p>
-                      <span className={`text-xs tracking-widest uppercase font-bold border px-2 py-1 ${statusColors[order.status]}`}>
+                      <span className={`text-xs tracking-widest rounded-lg uppercase font-bold border px-2 py-1 ${statusColors[order.status]}`}>
                         {order.status}
                       </span>
                     </div>
@@ -182,14 +182,14 @@ function MyOrders() {
 
                 {/* Expanded — Order Items */}
                 {expandedId === order._id && (
-                  <div className="border-t border-zinc-800 p-4 bg-zinc-950">
+                  <div className="border-t  border-zinc-800 p-4 bg-zinc-950">
                     <p className="text-zinc-500 text-xs tracking-widest uppercase mb-4">
                       Order Items
                     </p>
                     <div className="flex flex-col gap-4 mb-6">
                       {order.items.map((item, index) => (
                         <div key={index} className="flex items-center gap-4">
-                          <div className="w-14 h-14 bg-zinc-900 border border-zinc-800 overflow-hidden shrink-0">
+                          <div className="w-14 h-14 bg-zinc-900 rounded-lg border border-zinc-800 overflow-hidden shrink-0">
                             <img
                               src={item.image}
                               alt={item.name}

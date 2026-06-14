@@ -48,7 +48,7 @@ function Collection() {
           The Collection
         </h2>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 ">
 
           {products.map((product) => (
             <Link
@@ -56,7 +56,7 @@ function Collection() {
               key={product._id}
               className="group cursor-pointer"
             >
-              <div className="h-64 overflow-hidden border border-zinc-800 group-hover:border-red-500 transition-all duration-300">
+              <div className="h-64 overflow-hidden rounded-lg border border-zinc-800 group-hover:border-red-500 transition-all duration-300">
                 <img
                   src={product.image}
                   alt={product.name}
@@ -70,7 +70,7 @@ function Collection() {
                   <p className="text-zinc-400 text-xs mt-1">₦{product.price}.00</p>
                 </div>
                 {product.tag && (
-                  <span className="bg-red-500 text-white text-[10px] tracking-widest px-2 py-1 uppercase">
+                  <span className="bg-red-500 text-white text-[10px] rounded-lg tracking-widest px-2 py-1 uppercase">
                     {product.tag}
                   </span>
                 )}
@@ -79,7 +79,7 @@ function Collection() {
           ))}
 
           {/* VIP Box */}
-          <div className="border border-zinc-800 p-6 flex flex-col justify-center gap-4">
+          <div className="border border-zinc-800 p-6 flex flex-col justify-center gap-4 rounded-lg">
             <div>
               <h3 className="text-white text-sm font-bold tracking-widest uppercase">VIP Verification</h3>
               <p className="text-zinc-500 text-xs tracking-wider mt-1">Signup for exclusive drops and accents.</p>
@@ -93,12 +93,12 @@ function Collection() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
-                  className="bg-zinc-900 border border-zinc-700 text-white text-xs px-4 py-3 tracking-wider placeholder-zinc-600 focus:outline-none focus:border-red-500 transition-colors"
+                  className="bg-zinc-900 border rounded-lg border-zinc-700 text-white text-xs px-4 py-3 tracking-wider placeholder-zinc-600 focus:outline-none focus:border-red-500 transition-colors"
                 />
                 <button
                   onClick={handleSubscribe}
                   disabled={loading}
-                  className={`text-white text-xs tracking-[0.3em] uppercase py-3 transition-colors duration-300 ${
+                  className={`text-white text-xs tracking-[0.3em] rounded-lg uppercase py-3 transition-colors duration-300 ${
                     loading ? 'bg-zinc-700 cursor-not-allowed' : 'bg-red-500 hover:bg-red-600'
                   }`}
                 >

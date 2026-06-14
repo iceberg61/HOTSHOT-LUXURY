@@ -53,7 +53,7 @@ function AdminContacts() {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-6 py-3 text-xs tracking-widest uppercase border transition-all duration-300 ${
+              className={`px-6 py-3 text-xs tracking-widest uppercase border rounded-lg transition-all duration-300 ${
                 activeTab === tab
                   ? 'bg-red-500 border-red-500 text-white'
                   : 'border-zinc-700 text-zinc-400 hover:border-white hover:text-white'
@@ -65,7 +65,7 @@ function AdminContacts() {
         </div>
 
         {loading ? (
-          <div className="flex items-center justify-center py-20">
+          <div className="flex items-center  justify-center py-20">
             <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
@@ -89,10 +89,10 @@ function AdminContacts() {
             {activeTab === 'subscribers' && (
               <>
                 {/* Desktop Table */}
-                <div className="hidden md:block bg-black border border-zinc-800 overflow-x-auto">
+                <div className="hidden md:block bg-black border rounded-lg border-zinc-800 overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b border-zinc-800">
+                      <tr className="border-b rounded-lg border-zinc-800">
                         <th className="text-left px-6 py-3 text-zinc-600 text-xs tracking-widest uppercase">#</th>
                         <th className="text-left px-6 py-3 text-zinc-600 text-xs tracking-widest uppercase">Email</th>
                         <th className="text-left px-6 py-3 text-zinc-600 text-xs tracking-widest uppercase">Subscribed</th>
@@ -107,7 +107,7 @@ function AdminContacts() {
                         </tr>
                       ) : (
                         subscribers.map((sub, i) => (
-                          <tr key={sub._id} className="border-b border-zinc-900 hover:bg-zinc-950 transition-colors">
+                          <tr key={sub._id} className="border-b  border-zinc-900 hover:bg-zinc-950 transition-colors">
                             <td className="px-6 py-4 text-zinc-600 text-xs">{i + 1}</td>
                             <td className="px-6 py-4 text-white text-xs font-bold">{sub.email}</td>
                             <td className="px-6 py-4 text-zinc-400 text-xs">
@@ -123,7 +123,7 @@ function AdminContacts() {
                 {/* Mobile Cards */}
                 <div className="md:hidden flex flex-col gap-3">
                   {subscribers.map((sub, i) => (
-                    <div key={sub._id} className="bg-black border border-zinc-800 px-4 py-3 flex items-center justify-between gap-4">
+                    <div key={sub._id} className="bg-black border  border-zinc-800 px-4 py-3 flex items-center justify-between gap-4">
                       <div className="flex items-center gap-3 min-w-0">
                         <span className="text-zinc-600 text-xs shrink-0">{i + 1}</span>
                         <p className="text-white text-xs font-bold truncate">{sub.email}</p>
@@ -147,7 +147,7 @@ function ContactCard({ contact }) {
   const [expanded, setExpanded] = useState(false)
 
   return (
-    <div className="bg-black border border-zinc-800">
+    <div className="bg-black border border-zinc-800 rounded-lg">
       <div
         className="px-4 sm:px-6 py-4 cursor-pointer hover:bg-zinc-950 transition-colors"
         onClick={() => setExpanded(!expanded)}
@@ -172,7 +172,7 @@ function ContactCard({ contact }) {
       </div>
 
       {expanded && (
-        <div className="border-t border-zinc-800 px-4 sm:px-6 py-6 bg-zinc-950">
+        <div className="border-t border-zinc-800 px-4 sm:px-6 py-6  bg-zinc-950">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="flex flex-col gap-3">
               <div>
@@ -203,12 +203,12 @@ function ContactCard({ contact }) {
             </div>
             <div>
               <p className="text-zinc-600 text-xs tracking-widest uppercase mb-2">Message</p>
-              <div className="bg-zinc-900 border border-zinc-800 p-4">
+              <div className="bg-zinc-900 border rounded-lg border-zinc-800 p-4">
                 <p className="text-zinc-300 text-xs leading-relaxed">{contact.message}</p>
               </div>
               <a
                 href={`mailto:${contact.email}?subject=Re: Your message to Hotshot Luxury`}
-                className="inline-block mt-3 bg-red-500 text-white text-xs tracking-[0.3em] uppercase px-6 py-3 hover:bg-red-600 transition-all duration-300"
+                className="inline-block mt-3 bg-red-500 rounded-lg text-white text-xs tracking-[0.3em] uppercase px-6 py-3 hover:bg-red-600 transition-all duration-300"
               >
                 Reply via Email
               </a>

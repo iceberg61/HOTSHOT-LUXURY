@@ -120,7 +120,7 @@ function AdminProducts() {
     }
   }
 
-  const inputClass = 'w-full bg-zinc-900 border border-zinc-700 text-white text-xs px-4 py-3 tracking-wider placeholder-zinc-600 focus:outline-none focus:border-red-500 transition-colors'
+  const inputClass = 'w-full bg-zinc-900 border rounded-lg border-zinc-700 text-white text-xs px-4 py-3 tracking-wider placeholder-zinc-600 focus:outline-none focus:border-red-500 transition-colors'
 
   return (
     <AdminLayout>
@@ -133,7 +133,7 @@ function AdminProducts() {
           </div>
           <button
             onClick={() => { setShowForm(true); setEditProduct(null); setForm(emptyForm) }}
-            className="flex items-center gap-2 bg-red-500 text-white text-xs tracking-widest uppercase px-3 sm:px-4 py-3 hover:bg-red-600 transition-colors shrink-0"
+            className="flex items-center gap-2 bg-red-500 rounded-lg text-white text-xs tracking-widest uppercase px-3 sm:px-4 py-3 hover:bg-red-600 transition-colors shrink-0"
           >
             <Plus size={14} />
             <span className="hidden sm:inline">Add Product</span>
@@ -144,7 +144,7 @@ function AdminProducts() {
         {/* Form Modal */}
         {showForm && (
           <div className="fixed inset-0 bg-black/80 z-50 flex items-start justify-center p-4 overflow-y-auto">
-            <div className="bg-zinc-950 border border-zinc-800 w-full max-w-2xl my-4">
+            <div className="bg-zinc-950 border rounded-lg  border-zinc-800 w-full max-w-2xl my-4">
               <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-zinc-800">
                 <h2 className="text-white text-sm font-black tracking-widest uppercase">
                   {editProduct ? 'Edit Product' : 'Add Product'}
@@ -163,7 +163,7 @@ function AdminProducts() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-zinc-500 text-xs tracking-widest uppercase mb-2 block">Name *</label>
+                    <label className="text-zinc-500 text-xs  tracking-widest uppercase mb-2 block">Name *</label>
                     <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder="Product name" className={inputClass} />
                   </div>
                   <div>
@@ -194,8 +194,29 @@ function AdminProducts() {
                     </select>
                   </div>
                   <div>
-                    <label className="text-zinc-500 text-xs tracking-widest uppercase mb-2 block">Sizes (comma separated)</label>
-                    <input value={form.sizes} onChange={(e) => setForm({ ...form, sizes: e.target.value })} placeholder="S, M, L, XL" className={inputClass} />
+                    <label className="text-zinc-500 text-xs tracking-widest uppercase mb-3 block">Sizes</label>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {['XS', 'S', 'M', 'L', 'XL', 'XXL'].map((size) => (
+                        <button
+                          key={size}
+                          type="button"
+                          onClick={() => {
+                            const current = form.sizes ? form.sizes.split(',').map(s => s.trim()).filter(Boolean) : []
+                            const updated = current.includes(size)
+                              ? current.filter(s => s !== size)
+                              : [...current, size]
+                            setForm({ ...form, sizes: updated.join(', ') })
+                          }}
+                          className={`px-3 py-2 text-xs tracking-widest rounded-lg uppercase border transition-all duration-200 ${
+                            form.sizes && form.sizes.split(',').map(s => s.trim()).includes(size)
+                              ? 'border-red-500 text-red-500 bg-red-500/10'
+                              : 'border-zinc-700 text-zinc-500 hover:border-zinc-400 hover:text-zinc-300'
+                          }`}
+                        >
+                          {size}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                   <div>
                     <label className="text-zinc-500 text-xs tracking-widest uppercase mb-2 block">Stock Count</label>
@@ -215,7 +236,7 @@ function AdminProducts() {
 
                   {/* Image Preview */}
                   {form.image && (
-                    <div className="relative w-full h-48 bg-zinc-900 border border-zinc-700 overflow-hidden mb-3">
+                    <div className="relative w-full h-48 bg-zinc-900 border  border-zinc-700 overflow-hidden mb-3">
                       <img
                         src={form.image}
                         alt="preview"
@@ -242,7 +263,7 @@ function AdminProducts() {
                       />
                       {uploading ? (
                         <div className="flex flex-col items-center gap-2">
-                          <div className="w-6 h-6 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+                          <div className="w-6 h-6 border-2  border-red-500 border-t-transparent rounded-full animate-spin" />
                           <p className="text-zinc-500 text-xs tracking-wider">Uploading...</p>
                         </div>
                       ) : (
@@ -263,7 +284,7 @@ function AdminProducts() {
                   <button
                     onClick={handleSubmit}
                     disabled={saving}
-                    className={`flex-1 text-xs tracking-[0.3em] uppercase py-4 transition-all duration-300 ${
+                    className={`flex-1 text-xs tracking-[0.3em] uppercase rounded-lg py-4 transition-all duration-300 ${
                       saving ? 'bg-zinc-700 text-zinc-400 cursor-not-allowed' : 'bg-red-500 text-white hover:bg-red-600'
                     }`}
                   >
@@ -271,7 +292,7 @@ function AdminProducts() {
                   </button>
                   <button
                     onClick={() => { setShowForm(false); setEditProduct(null) }}
-                    className="border border-zinc-700 text-zinc-400 text-xs tracking-widest uppercase px-4 py-4 hover:border-white hover:text-white transition-all duration-300"
+                    className="border border-zinc-700 rounded-lg text-zinc-400 text-xs tracking-widest uppercase px-4 py-4 hover:border-white hover:text-white transition-all duration-300"
                   >
                     Cancel
                   </button>
@@ -284,12 +305,12 @@ function AdminProducts() {
         {/* Products — card layout on mobile, table on desktop */}
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2  border-red-500 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
           <>
             {/* Desktop Table */}
-            <div className="hidden md:block bg-black border border-zinc-800 overflow-x-auto">
+            <div className="hidden md:block bg-black border rounded-lg border-zinc-800 overflow-x-auto">
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-zinc-800">
@@ -306,7 +327,7 @@ function AdminProducts() {
                     <tr key={product._id} className="border-b border-zinc-900 hover:bg-zinc-950 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-zinc-900 overflow-hidden shrink-0">
+                          <div className="w-10 h-10 bg-zinc-900 overflow-hidden shrink-0 rounded-lg border border-zinc-800">
                             <img src={product.image} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                           </div>
                           <p className="text-white text-xs font-bold uppercase">{product.name}</p>
@@ -320,7 +341,7 @@ function AdminProducts() {
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        {product.tag && <span className="bg-red-500 text-white text-xs px-2 py-1 uppercase">{product.tag}</span>}
+                        {product.tag && <span className="bg-red-500 rounded-lg text-white text-xs px-2 py-1 uppercase">{product.tag}</span>}
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
@@ -341,8 +362,8 @@ function AdminProducts() {
             {/* Mobile Cards */}
             <div className="md:hidden flex flex-col gap-3">
               {products.map((product) => (
-                <div key={product._id} className="bg-black border border-zinc-800 p-4 flex items-center gap-4">
-                  <div className="w-14 h-14 bg-zinc-900 overflow-hidden shrink-0 border border-zinc-800">
+                <div key={product._id} className="bg-black border rounded-lg border-zinc-800 p-4 flex items-center gap-4">
+                  <div className="w-14 h-14 bg-zinc-900 overflow-hidden shrink-0 border rounded-lg border-zinc-800">
                     <img src={product.image} alt={product.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
                   <div className="flex-1 min-w-0">
@@ -350,7 +371,7 @@ function AdminProducts() {
                     <p className="text-red-500 text-xs font-bold mt-1">₦{product.price}.00</p>
                     <div className="flex items-center gap-2 mt-1 flex-wrap">
                       <span className="text-zinc-500 text-xs">{product.category}</span>
-                      {product.tag && <span className="bg-red-500 text-white text-xs px-1.5 py-0.5 uppercase">{product.tag}</span>}
+                      {product.tag && <span className="bg-red-500 text-white text-xs px-1.5 py-0.5 rounded-lg uppercase">{product.tag}</span>}
                       <span className={`text-xs font-bold ${product.inStock ? 'text-green-500' : 'text-red-500'}`}>
                         {product.inStock ? `${product.countInStock} left` : 'Out'}
                       </span>
