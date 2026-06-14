@@ -28,25 +28,27 @@ function ProductGrid({ limit = null }) {
     if (user) fetchWishlist(user.token)
   }, [user, fetchWishlist])
 
-  useEffect(() => {
-    const loadProducts = async () => {
-      try {
-        setLoading(true)
-        // Pass 'ALL' as empty string so backend returns everything,
-        // or the specific category if filtered
-        const data = await fetchProducts({ category: activeTab === 'ALL' ? '' : activeTab })
-        setProducts(data)
-      } catch (err) {
-        console.error(err)
-      } finally {
-        setLoading(false)
-      }
+useEffect(() => {
+  const loadProducts = async () => {
+    try {
+      setLoading(true)
+      console.log('🔍 Fetching with category:', activeTab === 'ALL' ? '' : activeTab)
+      const data = await fetchProducts({ category: activeTab === 'ALL' ? '' : activeTab })
+      console.log('✅ Products received:', data)
+      console.log('📦 Total count:', data.length)
+      setProducts(data)
+    } catch (err) {
+      console.error('❌ Fetch error:', err)
+    } finally {
+      setLoading(false)
     }
-    loadProducts()
-  }, [activeTab])
+  }
+  loadProducts()
+}, [activeTab])
 
   // Just slice — no client-side re-filtering since API already handles it
   const displayedProducts = limit ? products.slice(0, limit) : products
+console.log('🖼️ displayedProducts:', displayedProducts.length, '| limit:', limit)
 
   const handleAddToCart = (e, product) => {
     e.preventDefault()
@@ -72,9 +74,12 @@ function ProductGrid({ limit = null }) {
     e.preventDefault()
     setQuickViewProduct(product)
   }
-
+console.log('🔄 loading:', loading, '| products.length:', products.length, '| displayedProducts:', displayedProducts.length)
   return (
     <section className="bg-black py-20 px-4 sm:px-8">
+      <div style={{ background: 'red', color: 'white', padding: '20px', fontSize: '20px' }}>
+      GRID IS HERE | products: {products.length} | loading: {loading ? 'YES' : 'NO'} | displayed: {displayedProducts.length}
+    </div>
       <div className="max-w-7xl mx-auto">
 
         {/* Header */}
@@ -111,7 +116,7 @@ function ProductGrid({ limit = null }) {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4" style={{ border: '3px solid lime' }}>
               {displayedProducts.map((product) => (
                 <Link
                   to={`/product/${product._id}`}

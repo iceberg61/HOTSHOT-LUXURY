@@ -24,19 +24,23 @@ function Shop() {
   const [activeSort, setActiveSort] = useState('Default')
   const [hoveredId, setHoveredId] = useState(null)
   const [showFilters, setShowFilters] = useState(false)
-  const [maxPrice, setMaxPrice] = useState(500)
+  const [maxPrice, setMaxPrice] = useState(500000)
+  const [priceFilterActive, setPriceFilterActive] = useState(false)
   const [addedId, setAddedId] = useState(null)
   const { user } = useAuthStore()
   const { fetchWishlist, addItem, removeItem, isWishlisted } = useWishlistStore()
   const [quickViewProduct, setQuickViewProduct] = useState(null)
   const addToCart = useCartStore((state) => state.addToCart)
 
-  // Fetch products from backend
   useEffect(() => {
     const loadProducts = async () => {
       try {
         setLoading(true)
-        const data = await fetchProducts({ category: activeCategory, sort: activeSort, maxPrice })
+        const data = await fetchProducts({
+          category: activeCategory,
+          sort: activeSort,
+          maxPrice: priceFilterActive ? maxPrice : null,
+        })
         setProducts(data)
       } catch (err) {
         setError(err.message)
@@ -45,7 +49,7 @@ function Shop() {
       }
     }
     loadProducts()
-  }, [activeCategory, activeSort, maxPrice])
+  }, [activeCategory, activeSort, maxPrice, priceFilterActive])
 
   const handleAddToCart = (e, product) => {
     e.preventDefault()
@@ -75,6 +79,12 @@ function Shop() {
   const handleQuickView = (e, product) => {
     e.preventDefault()
     setQuickViewProduct(product)
+  }
+
+  const handleResetFilters = () => {
+    setActiveCategory('ALL')
+    setMaxPrice(500000)
+    setPriceFilterActive(false)
   }
 
   return (
@@ -152,16 +162,31 @@ function Shop() {
             <div className="flex items-center gap-8">
               <div>
                 <p className="text-white text-xs tracking-widest uppercase mb-3">
-                  Max Price: <span className="text-red-500">${maxPrice}</span>
+                  Max Price:{' '}
+                  <span className="text-red-500">
+                    {priceFilterActive ? `₦${maxPrice.toLocaleString()}` : 'No limit'}
+                  </span>
                 </p>
                 <input
                   type="range"
-                  min={50}
-                  max={500}
+                  min={1000}
+                  max={500000}
+                  step={1000}
                   value={maxPrice}
-                  onChange={(e) => setMaxPrice(Number(e.target.value))}
+                  onChange={(e) => {
+                    setMaxPrice(Number(e.target.value))
+                    setPriceFilterActive(true)
+                  }}
                   className="w-48 accent-red-500"
                 />
+                {priceFilterActive && (
+                  <button
+                    onClick={() => { setMaxPrice(500000); setPriceFilterActive(false) }}
+                    className="block mt-2 text-zinc-500 text-xs tracking-widest uppercase hover:text-red-500 transition-colors"
+                  >
+                    Clear price filter ×
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -199,7 +224,7 @@ function Shop() {
           <div className="flex flex-col items-center justify-center py-32 gap-4">
             <p className="text-zinc-600 text-xs tracking-widest uppercase">No products found</p>
             <button
-              onClick={() => { setActiveCategory('ALL'); setMaxPrice(500) }}
+              onClick={handleResetFilters}
               className="border border-red-500 text-red-500 text-xs tracking-widest uppercase px-6 py-3 hover:bg-red-500 hover:text-black transition-all duration-300"
             >
               Reset Filters
@@ -259,7 +284,7 @@ function Shop() {
                     {product.name}
                   </h3>
                   <p className="text-red-500 text-sm font-medium mb-3">
-                    ₦{product.price}.00
+                    ₦{product.price.toLocaleString()}.00
                   </p>
                   <button
                     onClick={(e) => handleAddToCart(e, product)}
