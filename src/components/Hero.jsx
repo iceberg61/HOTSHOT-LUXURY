@@ -1,6 +1,14 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { fetchProducts } from '../api/productApi'
 
 function Hero() {
+  const [productCount, setProductCount] = useState(0)
+
+  useEffect(() => {
+    fetchProducts().then((data) => setProductCount(data.length)).catch(() => {})
+  }, [])
+
   return (
     <section className="relative min-h-screen bg-black flex items-center overflow-hidden">
 
@@ -18,24 +26,20 @@ function Hero() {
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 w-full pt-24 pb-16">
 
-        {/* Badge */}
         <p className="text-red-500 text-xs tracking-[0.4em] uppercase mb-4 sm:mb-6">
           Limited Drop — 2026
         </p>
 
-        {/* Headline */}
         <h1 className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-black text-white leading-none uppercase mb-4 sm:mb-6 max-w-2xl">
           Unapologetically <br />
           <span className="text-red-500">Elite.</span>
         </h1>
 
-        {/* Subtext */}
         <p className="text-zinc-400 text-sm tracking-wider leading-relaxed mb-8 sm:mb-10 max-w-sm sm:max-w-md">
           Where high-octane attitude meets timeless luxury.
           Explore the limited drop.
         </p>
 
-        {/* Buttons */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 flex-wrap">
           <Link
             to="/experience"
@@ -51,10 +55,12 @@ function Hero() {
           </Link>
         </div>
 
-        {/* Stats row — adds visual weight on larger screens */}
+        {/* Dynamic Stats */}
         <div className="hidden sm:flex items-center gap-8 mt-12 sm:mt-16">
           <div>
-            <p className="text-white text-2xl font-black">11+</p>
+            <p className="text-white text-2xl font-black">
+              {productCount > 0 ? `${productCount}+` : '—'}
+            </p>
             <p className="text-zinc-600 text-xs tracking-widest uppercase mt-1">Products</p>
           </div>
           <div className="w-px h-8 bg-zinc-800" />

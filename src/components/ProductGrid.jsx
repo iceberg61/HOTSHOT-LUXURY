@@ -11,7 +11,7 @@ const tabs = ['ALL', 'TOPS', 'ACCESSORIES']
 const ICON_VISIBLE = 'opacity-100 translate-x-0'
 const ICON_HIDDEN = 'opacity-0 translate-x-4'
 
-function ProductGrid() {
+function ProductGrid({ limit = null }) {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('ALL')
@@ -42,6 +42,8 @@ function ProductGrid() {
     }
     loadProducts()
   }, [activeTab])
+
+  const displayedProducts = limit ? products.slice(0, limit) : products
 
   const handleAddToCart = (e, product) => {
     e.preventDefault()
@@ -105,8 +107,9 @@ function ProductGrid() {
             <div className="w-8 h-8 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
+          <>
           <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {products.map((product) => (
+            {displayedProducts.map((product) => (
               <Link
                 to={`/product/${product._id}`}
                 key={product._id}
@@ -181,6 +184,17 @@ function ProductGrid() {
               </Link>
             ))}
           </div>
+          {limit && products.length > limit && (
+              <div className="text-center mt-12">
+                <Link
+                  to="/shop"
+                  className="border border-red-500 text-red-500 text-xs tracking-[0.3em] uppercase px-10 py-4 hover:bg-red-500 hover:text-black transition-all duration-300"
+                >
+                  View All {products.length} Products →
+                </Link>
+              </div>
+            )}
+          </>
         )}
       </div>
 

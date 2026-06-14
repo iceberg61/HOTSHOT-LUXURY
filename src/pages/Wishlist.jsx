@@ -75,7 +75,7 @@ function Wishlist() {
                       {product.name}
                     </h3>
                   </Link>
-                  <p className="text-red-500 text-xs font-bold mb-4">${product.price}.00</p>
+                  <p className="text-red-500 text-xs font-bold mb-4">₦{product.price}.00</p>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => { addToCart(product, product.sizes[0], 1) }}

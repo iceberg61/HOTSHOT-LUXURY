@@ -98,7 +98,7 @@ function Cart() {
                   {/* Price */}
                   <p className="text-zinc-400 text-xs tracking-wider md:text-center">
                     <span className="md:hidden text-zinc-600 mr-2">Price:</span>
-                    ${item.price}.00
+                    ₦{item.price}.00
                   </p>
 
                   {/* Quantity */}
@@ -125,7 +125,7 @@ function Cart() {
                   {/* Total */}
                   <p className="text-red-500 text-xs font-bold tracking-wider md:text-right">
                     <span className="md:hidden text-zinc-600 mr-2">Total:</span>
-                    ${(item.price * item.quantity).toFixed(2)}
+                    ₦{(item.price * item.quantity).toFixed(2)}
                   </p>
 
                 </div>
@@ -163,7 +163,7 @@ function Cart() {
                       Subtotal ({items.reduce((acc, i) => acc + i.quantity, 0)} items)
                     </p>
                     <p className="text-white text-xs font-bold">
-                      ${getTotalPrice().toFixed(2)}
+                      ₦{getTotalPrice().toFixed(2)}
                     </p>
                   </div>
                   <div className="flex items-center justify-between">
@@ -180,7 +180,7 @@ function Cart() {
                   <div className="flex items-center justify-between">
                     <p className="text-white text-xs font-black tracking-widest uppercase">Total</p>
                     <p className="text-red-500 text-lg font-black">
-                      ${getTotalPrice().toFixed(2)}
+                      ₦{getTotalPrice().toFixed(2)}
                     </p>
                   </div>
                 </div>

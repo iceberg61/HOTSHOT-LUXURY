@@ -153,7 +153,7 @@ function MyOrders() {
                   <div>
                     <p className="text-zinc-500 text-xs tracking-wider md:hidden mb-1">Total</p>
                     <p className="text-red-500 text-xs font-bold">
-                      ${order.totalPrice.toFixed(2)}
+                      ₦{order.totalPrice.toFixed(2)}
                     </p>
                   </div>
 
@@ -201,7 +201,7 @@ function MyOrders() {
                             <p className="text-zinc-500 text-xs mt-1">Size: {item.size} · Qty: {item.quantity}</p>
                           </div>
                           <p className="text-red-500 text-xs font-bold shrink-0">
-                            ${(item.price * item.quantity).toFixed(2)}
+                            ₦{(item.price * item.quantity).toFixed(2)}
                           </p>
                         </div>
                       ))}
@@ -231,7 +231,7 @@ function MyOrders() {
                           </p>
                           <p className="text-zinc-400 text-xs tracking-wider">
                             <span className="text-zinc-600">Order Total: </span>
-                            <span className="text-red-500 font-bold">${order.totalPrice.toFixed(2)}</span>
+                            <span className="text-red-500 font-bold">₦{order.totalPrice.toFixed(2)}</span>
                           </p>
                           <p className="text-zinc-400 text-xs tracking-wider">
                             <span className="text-zinc-600">Full Order ID: </span>

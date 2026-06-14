@@ -67,7 +67,7 @@ function Collection() {
               <div className="mt-3 flex items-center justify-between">
                 <div>
                   <p className="text-white text-xs tracking-widest uppercase font-bold">{product.name}</p>
-                  <p className="text-zinc-400 text-xs mt-1">${product.price}.00</p>
+                  <p className="text-zinc-400 text-xs mt-1">₦{product.price}.00</p>
                 </div>
                 {product.tag && (
                   <span className="bg-red-500 text-white text-[10px] tracking-widest px-2 py-1 uppercase">

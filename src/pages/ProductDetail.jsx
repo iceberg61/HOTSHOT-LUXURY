@@ -191,7 +191,7 @@ function ProductDetail() {
               <h1 className="text-white text-4xl font-black uppercase tracking-wider mb-2">
                 {product.name}
               </h1>
-              <p className="text-red-500 text-2xl font-bold">${product.price}.00</p>
+              <p className="text-red-500 text-2xl font-bold">₦{product.price}.00</p>
             </div>
 
             <div className="border-t border-zinc-800" />
@@ -211,9 +211,13 @@ function ProductDetail() {
             <div>
               <div className="flex items-center justify-between mb-4">
                 <p className="text-white text-xs font-bold tracking-[0.3em] uppercase">Select Size</p>
-                <button className="text-red-500 text-xs tracking-widest uppercase hover:text-white transition-colors">
-                  Size Guide
-                </button>
+                {[{ name: 'Size Guide', path: '/size-guide' },].map((item) => (
+                  <li key={item.name}>
+                    <Link to={item.path} className="text-zinc-500 text-xs tracking-wider hover:text-red-500 transition-colors duration-300">
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
               </div>
               <div className="flex items-center gap-2 flex-wrap">
                 {product.sizes.map((size) => (
@@ -316,7 +320,7 @@ function ProductDetail() {
                   </div>
                   <div className="p-4">
                     <h3 className="text-white text-xs font-bold tracking-wider uppercase mb-1">{item.name}</h3>
-                    <p className="text-red-500 text-xs font-medium">${item.price}.00</p>
+                    <p className="text-red-500 text-xs font-medium">₦{item.price}.00</p>
                   </div>
                 </Link>
               ))}

@@ -96,7 +96,7 @@ function AdminOrders() {
                       </p>
                     </div>
                     <div className="flex items-center gap-3 shrink-0">
-                      <p className="text-red-500 text-sm font-black">${order.totalPrice.toFixed(2)}</p>
+                      <p className="text-red-500 text-sm font-black">₦{order.totalPrice.toFixed(2)}</p>
                       <span className="text-zinc-600 text-xs">
                         {expandedId === order._id ? '▲' : '▼'}
                       </span>
@@ -123,7 +123,7 @@ function AdminOrders() {
                                 <p className="text-zinc-500 text-xs">Size: {item.size} · Qty: {item.quantity}</p>
                               </div>
                               <p className="text-red-500 text-xs font-bold shrink-0">
-                                ${(item.price * item.quantity).toFixed(2)}
+                                ₦{(item.price * item.quantity).toFixed(2)}
                               </p>
                             </div>
                           ))}

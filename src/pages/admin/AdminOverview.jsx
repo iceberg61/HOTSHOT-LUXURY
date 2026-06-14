@@ -35,7 +35,7 @@ function AdminOverview() {
   const pendingOrders = orders.filter((o) => o.status === 'processing').length
 
   const stats = [
-    { label: 'Total Revenue', value: `$${totalRevenue.toFixed(2)}`, icon: DollarSign, color: 'text-green-500', bg: 'bg-green-500/10' },
+    { label: 'Total Revenue', value: `₦${totalRevenue.toFixed(2)}`, icon: DollarSign, color: 'text-green-500', bg: 'bg-green-500/10' },
     { label: 'Total Orders', value: orders.length, icon: ShoppingBag, color: 'text-blue-500', bg: 'bg-blue-500/10' },
     { label: 'Pending Orders', value: pendingOrders, icon: TrendingUp, color: 'text-yellow-500', bg: 'bg-yellow-500/10' },
     { label: 'Customers', value: users.length, icon: Users, color: 'text-red-500', bg: 'bg-red-500/10' },
@@ -108,7 +108,7 @@ function AdminOverview() {
                           {order.shippingAddress.firstName} {order.shippingAddress.lastName}
                         </td>
                         <td className="px-6 py-4 text-red-500 text-xs font-bold">
-                          ${order.totalPrice.toFixed(2)}
+                          ₦{order.totalPrice.toFixed(2)}
                         </td>
                         <td className="px-6 py-4">
                           <span className={`text-xs tracking-widest uppercase font-bold ${statusColors[order.status]}`}>
@@ -136,7 +136,7 @@ function AdminOverview() {
                       <p className="text-zinc-600 text-xs mt-1">{new Date(order.createdAt).toLocaleDateString()}</p>
                     </div>
                     <div className="text-right shrink-0">
-                      <p className="text-red-500 text-xs font-bold">${order.totalPrice.toFixed(2)}</p>
+                      <p className="text-red-500 text-xs font-bold">₦{order.totalPrice.toFixed(2)}</p>
                       <p className={`text-xs font-bold uppercase mt-1 ${statusColors[order.status]}`}>
                         {order.status}
                       </p>

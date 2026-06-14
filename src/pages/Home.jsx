@@ -17,7 +17,7 @@ function Home() {
       <Navbar />
       <Hero />
       <Collection />
-      <ProductGrid />
+      <ProductGrid limit={8} />
       <CTA />
       <Footer />
     </div>

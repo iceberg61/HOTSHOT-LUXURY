@@ -338,7 +338,7 @@ function Checkout() {
                       <p className="text-zinc-500 text-xs">Size: {item.size} · Qty: {item.quantity}</p>
                     </div>
                     <p className="text-red-500 text-xs font-bold shrink-0">
-                      ${(item.price * item.quantity).toFixed(2)}
+                      ₦{(item.price * item.quantity).toFixed(2)}
                     </p>
                   </div>
                 ))}
@@ -347,7 +347,7 @@ function Checkout() {
               <div className="flex flex-col gap-3 border-t border-zinc-800 pt-4 mb-6">
                 <div className="flex items-center justify-between">
                   <p className="text-zinc-400 text-xs tracking-wider">Subtotal</p>
-                  <p className="text-white text-xs font-bold">${getTotalPrice().toFixed(2)}</p>
+                  <p className="text-white text-xs font-bold">₦{getTotalPrice().toFixed(2)}</p>
                 </div>
                 <div className="flex items-center justify-between">
                   <p className="text-zinc-400 text-xs tracking-wider">Shipping</p>
@@ -355,7 +355,7 @@ function Checkout() {
                 </div>
                 <div className="flex items-center justify-between border-t border-zinc-800 pt-3">
                   <p className="text-white text-xs font-black tracking-widest uppercase">Total</p>
-                  <p className="text-red-500 text-lg font-black">${getTotalPrice().toFixed(2)}</p>
+                  <p className="text-red-500 text-lg font-black">₦{getTotalPrice().toFixed(2)}</p>
                 </div>
               </div>
 

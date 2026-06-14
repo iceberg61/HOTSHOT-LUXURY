@@ -313,7 +313,7 @@ function AdminProducts() {
                         </div>
                       </td>
                       <td className="px-6 py-4 text-zinc-400 text-xs">{product.category}</td>
-                      <td className="px-6 py-4 text-red-500 text-xs font-bold">${product.price}.00</td>
+                      <td className="px-6 py-4 text-red-500 text-xs font-bold">₦{product.price}.00</td>
                       <td className="px-6 py-4">
                         <span className={`text-xs font-bold ${product.inStock ? 'text-green-500' : 'text-red-500'}`}>
                           {product.inStock ? `${product.countInStock} left` : 'Out of Stock'}
@@ -347,7 +347,7 @@ function AdminProducts() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-white text-xs font-bold uppercase truncate">{product.name}</p>
-                    <p className="text-red-500 text-xs font-bold mt-1">${product.price}.00</p>
+                    <p className="text-red-500 text-xs font-bold mt-1">₦{product.price}.00</p>
                     <div className="flex items-center gap-2 mt-1 flex-wrap">
                       <span className="text-zinc-500 text-xs">{product.category}</span>
                       {product.tag && <span className="bg-red-500 text-white text-xs px-1.5 py-0.5 uppercase">{product.tag}</span>}

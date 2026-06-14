@@ -50,7 +50,7 @@ function QuickView({ product, onClose }) {
                 <h2 className="text-white text-lg font-black uppercase tracking-wider">
                   {product.name}
                 </h2>
-                <p className="text-red-500 text-lg font-bold mt-1">${product.price}.00</p>
+                <p className="text-red-500 text-lg font-bold mt-1">₦{product.price}.00</p>
               </div>
               <button
                 onClick={onClose}

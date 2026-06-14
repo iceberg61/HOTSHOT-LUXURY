@@ -106,7 +106,7 @@ function CartDrawer({ isOpen, onClose }) {
                         </button>
                       </div>
                       <p className="text-red-500 text-xs font-bold">
-                        ${(item.price * item.quantity).toFixed(2)}
+                        ₦{(item.price * item.quantity).toFixed(2)}
                       </p>
                     </div>
                   </div>
@@ -125,7 +125,7 @@ function CartDrawer({ isOpen, onClose }) {
             <div className="flex flex-col gap-2">
               <div className="flex items-center justify-between">
                 <p className="text-zinc-400 text-xs tracking-wider">Subtotal</p>
-                <p className="text-white text-xs font-bold">${getTotalPrice().toFixed(2)}</p>
+                <p className="text-white text-xs font-bold">₦{getTotalPrice().toFixed(2)}</p>
               </div>
               <div className="flex items-center justify-between">
                 <p className="text-zinc-400 text-xs tracking-wider">Shipping</p>
@@ -133,7 +133,7 @@ function CartDrawer({ isOpen, onClose }) {
               </div>
               <div className="border-t border-zinc-800 pt-2 flex items-center justify-between">
                 <p className="text-white text-xs font-bold tracking-widest uppercase">Total</p>
-                <p className="text-red-500 text-sm font-black">${getTotalPrice().toFixed(2)}</p>
+                <p className="text-red-500 text-sm font-black">₦{getTotalPrice().toFixed(2)}</p>
               </div>
             </div>
 

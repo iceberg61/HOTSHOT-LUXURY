@@ -259,7 +259,7 @@ function Shop() {
                     {product.name}
                   </h3>
                   <p className="text-red-500 text-sm font-medium mb-3">
-                    ${product.price}.00
+                    ₦{product.price}.00
                   </p>
                   <button
                     onClick={(e) => handleAddToCart(e, product)}
