@@ -32,7 +32,9 @@ function ProductGrid({ limit = null }) {
     const loadProducts = async () => {
       try {
         setLoading(true)
-        const data = await fetchProducts({ category: activeTab })
+        // Pass 'ALL' as empty string so backend returns everything,
+        // or the specific category if filtered
+        const data = await fetchProducts({ category: activeTab === 'ALL' ? '' : activeTab })
         setProducts(data)
       } catch (err) {
         console.error(err)
@@ -43,12 +45,8 @@ function ProductGrid({ limit = null }) {
     loadProducts()
   }, [activeTab])
 
-  // After loading products, apply tab filter then limit
-  const filtered = activeTab === 'ALL'
-    ? products
-    : products.filter((p) => p.category === activeTab)
-
-  const displayedProducts = limit ? filtered.slice(0, limit) : filtered
+  // Just slice — no client-side re-filtering since API already handles it
+  const displayedProducts = limit ? products.slice(0, limit) : products
 
   const handleAddToCart = (e, product) => {
     e.preventDefault()
@@ -113,92 +111,93 @@ function ProductGrid({ limit = null }) {
           </div>
         ) : (
           <>
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {displayedProducts.map((product) => (
-              <Link
-                to={`/product/${product._id}`}
-                key={product._id}
-                className="group relative bg-zinc-950 rounded-lg overflow-hidden border border-zinc-800 hover:border-red-500 transition-all duration-300 block"
-                onMouseEnter={() => setHoveredId(product._id)}
-                onMouseLeave={() => setHoveredId(null)}
-              >
-                {product.tag && (
-                  <span className="absolute top-3 left-3 z-10 bg-red-500 text-white text-[10px] tracking-widest px-2 py-1 uppercase">
-                    {product.tag}
-                  </span>
-                )}
-
-                {/* Icons */}
-                <div className={`absolute top-3 right-3 z-10 flex flex-col gap-2 transition-all duration-300 ${
-                  hoveredId === product._id ? ICON_VISIBLE : ICON_HIDDEN
-                }`}>
-                  <button
-                    onClick={(e) => handleWishlist(e, product)}
-                    className={`border p-2.5 transition-all duration-300 ${
-                      isWishlisted(product._id)
-                        ? 'bg-red-500 border-red-500 text-white'
-                        : 'bg-black border-zinc-600 text-zinc-400 hover:border-red-500 hover:text-red-500'
-                    }`}
-                  >
-                    <Heart size={18} fill={isWishlisted(product._id) ? 'currentColor' : 'none'} />
-                  </button>
-                  <button
-                    onClick={(e) => handleQuickView(e, product)}
-                    className="bg-black border border-zinc-600 p-2.5 hover:border-red-500 hover:text-red-500 text-zinc-400 transition-all duration-300"
-                  >
-                    <Eye size={18} />
-                  </button>
-                </div>
-
-                {/* Image */}
-                <div className="overflow-hidden bg-zinc-900" style={{ height: '280px' }}>
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }}
-                    className="group-hover:scale-105 transition-transform duration-500"
-                  />
-                </div>
-
-                {/* Info */}
-                <div className="p-4">
-                  <h3 className="text-white text-sm font-bold tracking-wider uppercase mb-1">
-                    {product.name}
-                  </h3>
-                  {/* Star rating */}
-                  {product.numReviews > 0 && (
-                    <div className="flex items-center gap-1 mb-2">
-                      {[1,2,3,4,5].map((star) => (
-                        <span key={star} className={`text-xs ${star <= Math.round(product.rating) ? 'text-yellow-500' : 'text-zinc-700'}`}>★</span>
-                      ))}
-                      <span className="text-zinc-600 text-xs ml-1">({product.numReviews})</span>
-                    </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {displayedProducts.map((product) => (
+                <Link
+                  to={`/product/${product._id}`}
+                  key={product._id}
+                  className="group relative bg-zinc-950 rounded-lg overflow-hidden border border-zinc-800 hover:border-red-500 transition-all duration-300 block"
+                  onMouseEnter={() => setHoveredId(product._id)}
+                  onMouseLeave={() => setHoveredId(null)}
+                >
+                  {product.tag && (
+                    <span className="absolute top-3 left-3 z-10 bg-red-500 text-white text-[10px] tracking-widest px-2 py-1 uppercase">
+                      {product.tag}
+                    </span>
                   )}
-                  <p className="text-red-500 text-sm font-medium mb-3">₦{product.price}.00</p>
-                  <button
-                    onClick={(e) => handleAddToCart(e, product)}
-                    className={`w-full text-xs tracking-widest uppercase py-3 border transition-all duration-300 ${
-                      addedId === product._id
-                        ? 'border-green-500 text-green-500'
-                        : 'border-red-500 text-red-500 hover:bg-red-500 hover:text-black'
-                    }`}
-                  >
-                    {addedId === product._id ? 'Added ✓' : 'Add to Cart'}
-                  </button>
-                </div>
-              </Link>
-            ))}
-          </div>
-          {limit && filtered.length > limit && (
-            <div className="text-center mt-12">
-              <Link
-                to="/shop"
-                className="border border-red-500 text-red-500 text-xs tracking-[0.3em] uppercase px-10 py-4 hover:bg-red-500 hover:text-black transition-all duration-300"
-              >
-                View All {filtered.length} Products →
-              </Link>
+
+                  {/* Icons */}
+                  <div className={`absolute top-3 right-3 z-10 flex flex-col gap-2 transition-all duration-300 ${
+                    hoveredId === product._id ? ICON_VISIBLE : ICON_HIDDEN
+                  }`}>
+                    <button
+                      onClick={(e) => handleWishlist(e, product)}
+                      className={`border p-2.5 transition-all duration-300 ${
+                        isWishlisted(product._id)
+                          ? 'bg-red-500 border-red-500 text-white'
+                          : 'bg-black border-zinc-600 text-zinc-400 hover:border-red-500 hover:text-red-500'
+                      }`}
+                    >
+                      <Heart size={18} fill={isWishlisted(product._id) ? 'currentColor' : 'none'} />
+                    </button>
+                    <button
+                      onClick={(e) => handleQuickView(e, product)}
+                      className="bg-black border border-zinc-600 p-2.5 hover:border-red-500 hover:text-red-500 text-zinc-400 transition-all duration-300"
+                    >
+                      <Eye size={18} />
+                    </button>
+                  </div>
+
+                  {/* Image */}
+                  <div className="overflow-hidden bg-zinc-900" style={{ height: '280px' }}>
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }}
+                      className="group-hover:scale-105 transition-transform duration-500"
+                    />
+                  </div>
+
+                  {/* Info */}
+                  <div className="p-4">
+                    <h3 className="text-white text-sm font-bold tracking-wider uppercase mb-1">
+                      {product.name}
+                    </h3>
+                    {product.numReviews > 0 && (
+                      <div className="flex items-center gap-1 mb-2">
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <span key={star} className={`text-xs ${star <= Math.round(product.rating) ? 'text-yellow-500' : 'text-zinc-700'}`}>★</span>
+                        ))}
+                        <span className="text-zinc-600 text-xs ml-1">({product.numReviews})</span>
+                      </div>
+                    )}
+                    <p className="text-red-500 text-sm font-medium mb-3">₦{product.price}.00</p>
+                    <button
+                      onClick={(e) => handleAddToCart(e, product)}
+                      className={`w-full text-xs tracking-widest uppercase py-3 border transition-all duration-300 ${
+                        addedId === product._id
+                          ? 'border-green-500 text-green-500'
+                          : 'border-red-500 text-red-500 hover:bg-red-500 hover:text-black'
+                      }`}
+                    >
+                      {addedId === product._id ? 'Added ✓' : 'Add to Cart'}
+                    </button>
+                  </div>
+                </Link>
+              ))}
             </div>
-          )}
+
+            {/* View All button — only when limit is active and there are more products */}
+            {limit && products.length > limit && (
+              <div className="text-center mt-12">
+                <Link
+                  to="/shop"
+                  className="border border-red-500 text-red-500 text-xs tracking-[0.3em] uppercase px-10 py-4 hover:bg-red-500 hover:text-black transition-all duration-300"
+                >
+                  View All {products.length} Products →
+                </Link>
+              </div>
+            )}
           </>
         )}
       </div>
