@@ -169,7 +169,7 @@ function ProductGrid({ limit = null }) {
                       <span className="text-zinc-600 text-xs ml-1">({product.numReviews})</span>
                     </div>
                   )}
-                  <p className="text-red-500 text-sm font-medium mb-3">${product.price}.00</p>
+                  <p className="text-red-500 text-sm font-medium mb-3">₦{product.price}.00</p>
                   <button
                     onClick={(e) => handleAddToCart(e, product)}
                     className={`w-full text-xs tracking-widest uppercase py-3 border transition-all duration-300 ${
