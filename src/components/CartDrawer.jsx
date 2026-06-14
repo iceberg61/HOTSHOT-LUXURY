@@ -100,7 +100,12 @@ function CartDrawer({ isOpen, onClose }) {
                         </span>
                         <button
                           onClick={() => updateQuantity(item._id, item.size, item.quantity + 1)}
-                          className="px-3 py-1 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all text-sm"
+                          disabled={item.quantity >= item.countInStock}
+                          className={`px-3 py-1 transition-all text-sm ${
+                            item.quantity >= item.countInStock
+                              ? 'text-zinc-700 cursor-not-allowed'
+                              : 'text-zinc-400 hover:text-white hover:bg-zinc-800'
+                          }`}
                         >
                           +
                         </button>

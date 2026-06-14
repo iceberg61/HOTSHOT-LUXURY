@@ -52,7 +52,6 @@ function Checkout() {
 
     const txRef = `HSL-${Date.now()}`
 
-    // Save txRef to order immediately
     fetch(`${import.meta.env.VITE_API_URL}/api/orders/${order._id}/save-ref`, {
       method: 'PUT',
       headers: {
@@ -78,20 +77,16 @@ function Checkout() {
         description: 'Payment for your order',
       },
       callback: async (response) => {
-        console.log('Flutterwave full response:', JSON.stringify(response))
         if (
           response.status === 'successful' ||
           response.status === 'completed'
         ) {
           try {
             setPlacing(true)
-            console.log('Calling verifyPayment with:', order._id, response.transaction_id) // ADD THIS
-            console.log('API URL:', import.meta.env.VITE_API_URL) // ADD THIS
             await verifyPayment(order._id, response.transaction_id, user?.token)
             clearCart()
             navigate(`/order-confirmation/${order._id}`)
-          } catch (err) {
-            console.error('Verify payment error:', err.message)  // ADD THIS
+          } catch {
             clearCart()
             navigate(`/order-confirmation/${order._id}`)
           }
@@ -171,11 +166,8 @@ function Checkout() {
       }
 
       const order = await createOrder(orderData, user?.token)
-      
-
       setPlacing(false)
       handleFlutterwavePayment(order)
-
     } catch {
       setServerError('Unable to place order. Please try again.')
       setPlacing(false)
@@ -186,8 +178,6 @@ function Checkout() {
     `w-full bg-zinc-900 border text-white rounded-lg text-xs px-5 py-4 tracking-wider placeholder-zinc-600 focus:outline-none transition-colors ${
       errors[field] ? 'border-red-500' : 'border-zinc-800 focus:border-red-500'
     }`
-
-    
 
   return (
     <div className="bg-black min-h-screen flex flex-col">
@@ -382,7 +372,6 @@ function Checkout() {
               <p className="text-zinc-600 text-xs tracking-wider text-center mt-4">
                 🔒 Secured by Flutterwave
               </p>
-
             </div>
           </div>
 

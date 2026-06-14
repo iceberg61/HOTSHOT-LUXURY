@@ -6,13 +6,10 @@ import { sendOrderConfirmationEmail } from '../utils/emailService.js'
 // Helper to deduct stock after confirmed payment
 const deductStock = async (items) => {
   for (const item of items) {
-    console.log('Deducting stock for product:', item.product, 'qty:', item.quantity)
     const product = await Product.findById(item.product)
-    console.log('Found product:', product ? product.name : 'NOT FOUND')
     if (product) {
       product.countInStock = Math.max(0, product.countInStock - item.quantity)
       await product.save()
-      console.log('New stock:', product.countInStock)
     }
   }
 }
@@ -37,7 +34,6 @@ const createOrder = async (req, res) => {
     paymentStatus: 'pending',
   })
 
-  // Send confirmation email
   try {
     await sendOrderConfirmationEmail(order)
   } catch (err) {
@@ -135,13 +131,12 @@ const verifyPayment = async (req, res) => {
     )
 
     const data = await response.json()
-    console.log('Flutterwave verify response:', JSON.stringify(data, null, 2))
 
-    const isTestMode = process.env.FLUTTERWAVE_SECRET_KEY?.startsWith('FLWSECK_TEST')
     const isSuccess =
-      (data.status === 'success' && data.data?.status === 'successful') ||
-      (data.status === 'success' && data.data?.status === 'completed') ||
-      isTestMode  // trust the callback in test mode
+      data.status === 'success' &&
+      (data.data?.status === 'successful' || data.data?.status === 'completed') &&
+      data.data?.amount >= order.totalPrice &&
+      data.data?.currency === 'NGN'
 
     if (isSuccess) {
       if (order.paymentStatus !== 'paid') {
@@ -176,11 +171,7 @@ const flutterwaveWebhook = async (req, res) => {
   }
 
   const payload = req.body
-  console.log('Webhook received:', payload)
-
-  const status = payload.status
-  const txRef = payload.txRef
-  const txId = payload.id
+  const { status, txRef, id: txId } = payload
 
   if (status === 'successful') {
     try {
@@ -190,18 +181,13 @@ const flutterwaveWebhook = async (req, res) => {
       })
 
       if (order) {
-        // Only deduct stock if not already paid (prevent double deduction)
         if (order.paymentStatus !== 'paid') {
           await deductStock(order.items)
         }
-
         order.paymentStatus = 'paid'
         order.flutterwaveRef = String(txId)
         order.status = 'confirmed'
         await order.save()
-        console.log('Order confirmed via webhook:', order._id)
-      } else {
-        console.log('No matching order found for txRef:', txRef)
       }
     } catch (err) {
       console.error('Webhook order update error:', err)
