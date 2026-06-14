@@ -82,6 +82,7 @@ function Footer() {
                 { name: 'Privacy Policy', path: '/privacy-policy' },
                 { name: 'Returns & Refunds', path: '/returns' },
                 { name: 'Help & FAQ', path: '/contact' },
+                { name: 'Order Tracking', path: '/track-order' },
               ].map((item) => (
                 <li key={item.name}>
                   <Link to={item.path} className="text-zinc-500 text-xs tracking-wider hover:text-red-500 transition-colors duration-300">

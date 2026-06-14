@@ -33,6 +33,12 @@ function OrderConfirmation() {
               <Link to="/" className="border rounded-lg border-zinc-700 text-zinc-400 text-xs tracking-[0.3em] uppercase px-6 sm:px-8 py-4 hover:border-white hover:text-white transition-all duration-300">
                 Back to Home
               </Link>
+              <Link
+                to="/track-order"
+                className="border rounded-lg border-zinc-700 text-zinc-400 text-xs tracking-[0.3em] uppercase px-6 sm:px-8 py-4 hover:border-white hover:text-white transition-all duration-300"
+              >
+                Track Order
+              </Link>
             </div>
           </div>
         </div>

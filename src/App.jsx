@@ -25,6 +25,7 @@ import Returns from './pages/Returns'
 import ScrollToTop from './components/ScrollToTop'
 import ScrollToTopButton from './components/ScrollToTopButton'
 import AdminReviews from './pages/admin/AdminReviews'
+import OrderTracking from './pages/OrderTracking'
 
 
 
@@ -58,6 +59,7 @@ function App() {
         <Route path="/terms" element={<Terms />} />
         <Route path="/returns" element={<Returns />} />
         <Route path="/admin/reviews" element={<AdminRoute><AdminReviews /></AdminRoute>} />
+        <Route path="/track-order" element={<OrderTracking />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
