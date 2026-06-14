@@ -55,22 +55,23 @@ function Hero() {
           </Link>
         </div>
 
+        
         {/* Dynamic Stats */}
-        <div className="hidden sm:flex items-center gap-8 mt-12 sm:mt-16">
+        <div className="flex items-center gap-6 sm:gap-8 mt-10 sm:mt-16 flex-wrap">
           <div>
-            <p className="text-white text-2xl font-black">
+            <p className="text-white text-xl sm:text-2xl font-black">
               {productCount > 0 ? `${productCount}+` : '—'}
             </p>
             <p className="text-zinc-600 text-xs tracking-widest uppercase mt-1">Products</p>
           </div>
           <div className="w-px h-8 bg-zinc-800" />
           <div>
-            <p className="text-white text-2xl font-black">100%</p>
+            <p className="text-white text-xl sm:text-2xl font-black">100%</p>
             <p className="text-zinc-600 text-xs tracking-widest uppercase mt-1">Premium</p>
           </div>
           <div className="w-px h-8 bg-zinc-800" />
           <div>
-            <p className="text-white text-2xl font-black">2026</p>
+            <p className="text-white text-xl sm:text-2xl font-black">2026</p>
             <p className="text-zinc-600 text-xs tracking-widest uppercase mt-1">Limited Drop</p>
           </div>
         </div>

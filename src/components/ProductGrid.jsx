@@ -43,7 +43,12 @@ function ProductGrid({ limit = null }) {
     loadProducts()
   }, [activeTab])
 
-  const displayedProducts = limit ? products.slice(0, limit) : products
+  // After loading products, apply tab filter then limit
+  const filtered = activeTab === 'ALL'
+    ? products
+    : products.filter((p) => p.category === activeTab)
+
+  const displayedProducts = limit ? filtered.slice(0, limit) : filtered
 
   const handleAddToCart = (e, product) => {
     e.preventDefault()
@@ -184,16 +189,16 @@ function ProductGrid({ limit = null }) {
               </Link>
             ))}
           </div>
-          {limit && products.length > limit && (
-              <div className="text-center mt-12">
-                <Link
-                  to="/shop"
-                  className="border border-red-500 text-red-500 text-xs tracking-[0.3em] uppercase px-10 py-4 hover:bg-red-500 hover:text-black transition-all duration-300"
-                >
-                  View All {products.length} Products →
-                </Link>
-              </div>
-            )}
+          {limit && filtered.length > limit && (
+            <div className="text-center mt-12">
+              <Link
+                to="/shop"
+                className="border border-red-500 text-red-500 text-xs tracking-[0.3em] uppercase px-10 py-4 hover:bg-red-500 hover:text-black transition-all duration-300"
+              >
+                View All {filtered.length} Products →
+              </Link>
+            </div>
+          )}
           </>
         )}
       </div>
