@@ -1,16 +1,22 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Eye, EyeOff } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import { registerUser, loginUser } from '../api/authApi'
 import useAuthStore from '../store/authStore'
 
+
+
+
+
 function Auth() {
   const [mode, setMode] = useState('login')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [serverError, setServerError] = useState('')
+  const location = useLocation()
+  const from = location.state?.from || '/'
 
   const [form, setForm] = useState({
     firstName: '', lastName: '', email: '', password: '', confirmPassword: ''
@@ -63,6 +69,7 @@ function Auth() {
       }
       setUser(user)
       navigate('/')
+      navigate(from, { replace: true })
     } catch (err) {
       setServerError(err.message)
     } finally {

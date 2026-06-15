@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken'
 import User from '../models/User.js'
 import process from 'process'
 import crypto from 'crypto'
-import { sendPasswordResetEmail } from '../utils/emailService.js'
+import { sendPasswordResetEmail, sendWelcomeEmail } from '../utils/emailService.js'
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -15,7 +15,7 @@ const setCookie = (res, token) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     sameSite: 'none',
-    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+    maxAge: 30 * 24 * 60 * 60 * 1000,
   })
 }
 
@@ -33,6 +33,14 @@ const register = async (req, res) => {
   if (user) {
     const token = generateToken(user._id)
     setCookie(res, token)
+
+    // Send welcome email
+    try {
+      await sendWelcomeEmail(user)
+    } catch (err) {
+      console.error('Welcome email error:', err.message)
+    }
+
     res.status(201).json({
       _id: user._id,
       firstName: user.firstName,
@@ -116,7 +124,6 @@ const getAllUsers = async (req, res) => {
   res.json(users)
 }
 
-
 const forgotPassword = async (req, res) => {
   const { email } = req.body
 
@@ -127,14 +134,12 @@ const forgotPassword = async (req, res) => {
 
   const user = await User.findOne({ email })
   if (!user) {
-    // Don't reveal if email exists
     res.json({ message: 'If that email exists, a reset code has been sent' })
     return
   }
 
-  // Generate 6 digit OTP
   const otp = Math.floor(100000 + Math.random() * 900000).toString()
-  const otpExpiry = new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
+  const otpExpiry = new Date(Date.now() + 15 * 60 * 1000)
 
   user.resetOTP = crypto.createHash('sha256').update(otp).digest('hex')
   user.resetOTPExpiry = otpExpiry

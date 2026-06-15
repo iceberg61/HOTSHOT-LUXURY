@@ -17,7 +17,7 @@ export const sendOrderConfirmationEmail = async (order) => {
         <span style="color: #71717a; font-size: 11px;">Size: ${item.size} · Qty: ${item.quantity}</span>
       </td>
       <td style="padding: 12px; border-bottom: 1px solid #1a1a1a; text-align: right;">
-        <span style="color: #ef4444; font-size: 12px; font-weight: bold;">$${(item.price * item.quantity).toFixed(2)}</span>
+        <span style="color: #ef4444; font-size: 12px; font-weight: bold;">&#8358;${(item.price * item.quantity).toLocaleString()}</span>
       </td>
     </tr>
   `).join('')
@@ -43,7 +43,7 @@ export const sendOrderConfirmationEmail = async (order) => {
             <p style="color: #71717a; font-size: 13px; margin-bottom: 24px;">
               Hi ${order.shippingAddress.firstName}, your order has been received and is being processed.
             </p>
-            <div style="background-color: #0a0a0a; border: 1px solid #1a1a1a; padding: 16px; margin-bottom: 24px;">
+            <div style="background-color: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
               <p style="color: #71717a; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin: 0 0 4px;">Order ID</p>
               <p style="color: #ffffff; font-size: 13px; font-weight: bold; margin: 0;">
                 #${order._id.toString().slice(-8).toUpperCase()}
@@ -55,12 +55,12 @@ export const sendOrderConfirmationEmail = async (order) => {
               <tr>
                 <td style="padding: 16px 12px 0; text-align: right;" colspan="2">
                   <span style="color: #71717a; font-size: 12px;">Total: </span>
-                  <span style="color: #ef4444; font-size: 16px; font-weight: 900;">$${order.totalPrice.toFixed(2)}</span>
+                  <span style="color: #ef4444; font-size: 16px; font-weight: 900;">&#8358;${order.totalPrice.toLocaleString()}</span>
                 </td>
               </tr>
             </table>
             <p style="color: #71717a; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px;">Shipping To</p>
-            <div style="background-color: #0a0a0a; border: 1px solid #1a1a1a; padding: 16px; margin-bottom: 24px;">
+            <div style="background-color: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 8px; padding: 16px; margin-bottom: 24px;">
               <p style="color: #a1a1aa; font-size: 12px; line-height: 1.8; margin: 0;">
                 ${order.shippingAddress.firstName} ${order.shippingAddress.lastName}<br/>
                 ${order.shippingAddress.address}<br/>
@@ -69,9 +69,9 @@ export const sendOrderConfirmationEmail = async (order) => {
               </p>
             </div>
             <div style="text-align: center; margin-top: 32px;">
-              <a href="${process.env.CLIENT_URL}/orders"
-                style="background-color: #ef4444; color: #ffffff; text-decoration: none; padding: 14px 32px; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 3px; display: inline-block;">
-                VIEW MY ORDERS
+              <a href="${process.env.CLIENT_URL}/track-order"
+                style="background-color: #ef4444; color: #ffffff; text-decoration: none; padding: 14px 32px; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 3px; display: inline-block; border-radius: 8px;">
+                TRACK MY ORDER
               </a>
             </div>
           </div>
@@ -109,19 +109,19 @@ export const sendContactEmail = async ({ firstName, lastName, email, phone, mess
             <h2 style="color: #ffffff; font-size: 16px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 24px;">
               New Contact Message
             </h2>
-            <div style="background-color: #0a0a0a; border: 1px solid #1a1a1a; padding: 16px; margin-bottom: 16px;">
+            <div style="background-color: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
               <p style="color: #71717a; font-size: 11px; text-transform: uppercase; margin: 0 0 4px;">From</p>
               <p style="color: #ffffff; font-size: 13px; margin: 0;">${firstName} ${lastName}</p>
             </div>
-            <div style="background-color: #0a0a0a; border: 1px solid #1a1a1a; padding: 16px; margin-bottom: 16px;">
+            <div style="background-color: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
               <p style="color: #71717a; font-size: 11px; text-transform: uppercase; margin: 0 0 4px;">Email</p>
               <p style="color: #ffffff; font-size: 13px; margin: 0;">${email}</p>
             </div>
-            <div style="background-color: #0a0a0a; border: 1px solid #1a1a1a; padding: 16px; margin-bottom: 16px;">
+            <div style="background-color: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
               <p style="color: #71717a; font-size: 11px; text-transform: uppercase; margin: 0 0 4px;">Phone</p>
               <p style="color: #ffffff; font-size: 13px; margin: 0;">${phone || 'Not provided'}</p>
             </div>
-            <div style="background-color: #0a0a0a; border: 1px solid #1a1a1a; padding: 16px;">
+            <div style="background-color: #0a0a0a; border: 1px solid #1a1a1a; border-radius: 8px; padding: 16px;">
               <p style="color: #71717a; font-size: 11px; text-transform: uppercase; margin: 0 0 8px;">Message</p>
               <p style="color: #a1a1aa; font-size: 13px; line-height: 1.8; margin: 0;">${message}</p>
             </div>
@@ -159,7 +159,7 @@ export const sendNewsletterWelcomeEmail = async (email) => {
               Welcome to the Hotshot Luxury VIP list. You'll be the first to know about exclusive drops, limited releases and special offers.
             </p>
             <a href="${process.env.CLIENT_URL}/shop"
-              style="background-color: #ef4444; color: #ffffff; text-decoration: none; padding: 14px 32px; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 3px; display: inline-block;">
+              style="background-color: #ef4444; color: #ffffff; text-decoration: none; padding: 14px 32px; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 3px; display: inline-block; border-radius: 8px;">
               SHOP THE DROP
             </a>
           </div>
@@ -200,12 +200,54 @@ export const sendPasswordResetEmail = async (email, otp) => {
             <p style="color: #71717a; font-size: 13px; line-height: 1.8; margin-bottom: 32px;">
               Use the code below to reset your password. This code expires in 15 minutes.
             </p>
-            <div style="background-color: #0a0a0a; border: 1px solid #ef4444; padding: 24px; margin-bottom: 32px; letter-spacing: 8px;">
+            <div style="background-color: #0a0a0a; border: 1px solid #ef4444; border-radius: 8px; padding: 24px; margin-bottom: 32px; letter-spacing: 8px;">
               <span style="color: #ef4444; font-size: 32px; font-weight: 900;">${otp}</span>
             </div>
             <p style="color: #3f3f46; font-size: 11px;">
               If you didn't request this, ignore this email.
             </p>
+          </div>
+          <div style="padding: 24px 32px; border-top: 1px solid #1a1a1a; text-align: center;">
+            <p style="color: #3f3f46; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin: 0;">
+              © 2026 Hotshot Luxury. All Rights Reserved.
+            </p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `,
+  })
+}
+
+// ── Welcome Email (Registration) ─────────────────
+export const sendWelcomeEmail = async (user) => {
+  const resend = getResend()
+
+  await resend.emails.send({
+    from: process.env.EMAIL_FROM,
+    to: user.email,
+    subject: 'Welcome to Hotshot Luxury',
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <body style="margin: 0; padding: 0; background-color: #000000; font-family: Arial, sans-serif;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: #09090b; border: 1px solid #1a1a1a;">
+          <div style="background-color: #000000; padding: 32px; border-bottom: 1px solid #1a1a1a; text-align: center;">
+            <h1 style="color: #ffffff; font-size: 24px; font-weight: 900; letter-spacing: 4px; margin: 0;">
+              HOTSHOT <span style="color: #ef4444;">//</span> LUXURY
+            </h1>
+          </div>
+          <div style="padding: 40px 32px; text-align: center;">
+            <h2 style="color: #ffffff; font-size: 20px; font-weight: 900; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 16px;">
+              Welcome, ${user.firstName}.
+            </h2>
+            <p style="color: #71717a; font-size: 13px; line-height: 1.8; margin-bottom: 32px;">
+              Your account has been created. You now have access to exclusive drops, order tracking and members-only offers.
+            </p>
+            <a href="${process.env.CLIENT_URL}/shop"
+              style="background-color: #ef4444; color: #ffffff; text-decoration: none; padding: 14px 32px; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 3px; display: inline-block; border-radius: 8px;">
+              SHOP THE DROP
+            </a>
           </div>
           <div style="padding: 24px 32px; border-top: 1px solid #1a1a1a; text-align: center;">
             <p style="color: #3f3f46; font-size: 11px; text-transform: uppercase; letter-spacing: 2px; margin: 0;">
