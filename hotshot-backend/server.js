@@ -42,6 +42,8 @@ const corsOptions = {
       'http://localhost:5173',
       'http://localhost:4173',
       'https://hotshot-luxury.vercel.app',
+      'https://hotshotluxuryoriginals.com',
+      'https://www.hotshotluxuryoriginals.com',
       process.env.CLIENT_URL,
     ].filter(Boolean)
     if (!origin) return callback(null, true)
@@ -77,15 +79,6 @@ const apiLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 })
-
-// Auth limiter — 10 attempts per 15 minutes
-// const authLimiter = rateLimit({
-//   windowMs: 15 * 60 * 1000,
-//   max: 10,
-//   message: { message: 'Too many login attempts, please try again later' },
-//   standardHeaders: true,
-//   legacyHeaders: false,
-// })
 
 // Order limiter — 20 orders per hour
 const orderLimiter = rateLimit({
