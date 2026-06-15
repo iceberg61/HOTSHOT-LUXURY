@@ -2,6 +2,7 @@ import Navbar from '../components/Navbar'
 import Hero from '../components/Hero'
 import Collection from '../components/Collection'
 import ProductGrid from '../components/ProductGrid'
+import WearIt from '../components/WearIt'
 import CTA from '../components/CTA'
 import Footer from '../components/Footer'
 import SEO from '../components/SEO'
@@ -18,6 +19,7 @@ function Home() {
       <Hero />
       <Collection />
       <ProductGrid limit={8} />
+      <WearIt />
       <CTA />
       <Footer />
     </div>

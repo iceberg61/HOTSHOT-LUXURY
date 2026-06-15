@@ -38,7 +38,7 @@ function CTA() {
       <div className="relative z-10 max-w-7xl mx-auto flex flex-col lg:flex-row items-start lg:items-center justify-between gap-10">
 
         {/* Left — Text */}
-        <div className="max-w-lg">
+        <div className="max-w-lg  text-center sm:text-left">
           <p className="text-red-200 text-xs tracking-[0.4em] uppercase mb-3">
             Don't Miss The Drop
           </p>

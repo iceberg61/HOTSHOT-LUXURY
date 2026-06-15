@@ -109,7 +109,7 @@ function ProductGrid({ limit = null }) {
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-8 py-3 text-xs tracking-widest uppercase border transition-all duration-300 ${
+              className={`px-8 py-3 text-xs tracking-widest uppercase border rounded-lg transition-all duration-300 ${
                 activeTab === tab
                   ? 'bg-red-500 border-red-500 text-white'
                   : 'border-zinc-700 text-zinc-400 hover:border-white hover:text-white'
@@ -160,7 +160,7 @@ function ProductGrid({ limit = null }) {
                     }`}>
                       <button
                         onClick={(e) => handleWishlist(e, product)}
-                        className={`border p-2.5 transition-all duration-300 ${
+                        className={`border rounded-lg p-2.5 transition-all duration-300 ${
                           isWishlisted(product._id)
                             ? 'bg-red-500 border-red-500 text-white'
                             : 'bg-black border-zinc-600 text-zinc-400 hover:border-red-500 hover:text-red-500'
@@ -170,7 +170,7 @@ function ProductGrid({ limit = null }) {
                       </button>
                       <button
                         onClick={(e) => handleQuickView(e, product)}
-                        className="bg-black border border-zinc-600 p-2.5 hover:border-red-500 hover:text-red-500 text-zinc-400 transition-all duration-300"
+                        className="bg-black border rounded-lg border-zinc-600 p-2.5 hover:border-red-500 hover:text-red-500 text-zinc-400 transition-all duration-300"
                       >
                         <Eye size={18} />
                       </button>
@@ -212,7 +212,7 @@ function ProductGrid({ limit = null }) {
                             <button
                               key={size}
                               onClick={(e) => handleSizeSelect(e, product._id, size)}
-                              className={`px-2 py-1 text-[10px] tracking-widest uppercase border transition-all duration-200 ${
+                              className={`px-2 py-1 text-[10px] tracking-widest uppercase border rounded-lg transition-all duration-200 ${
                                 selectedSize === size
                                   ? 'border-red-500 text-red-500 bg-red-500/10'
                                   : 'border-zinc-700 text-zinc-500 hover:border-zinc-400 hover:text-zinc-300'
@@ -235,7 +235,7 @@ function ProductGrid({ limit = null }) {
                       <button
                         onClick={(e) => handleAddToCart(e, product)}
                         disabled={outOfStock}
-                        className={`w-full text-xs tracking-widest uppercase py-3 border transition-all duration-300 ${
+                        className={`w-full text-xs tracking-widest uppercase py-3 border rounded-lg transition-all duration-300 ${
                           outOfStock
                             ? 'border-zinc-700 text-zinc-600 cursor-not-allowed'
                             : addedId === product._id
@@ -256,7 +256,7 @@ function ProductGrid({ limit = null }) {
               <div className="text-center mt-12">
                 <Link
                   to="/shop"
-                  className="border border-red-500 text-red-500 text-xs tracking-[0.3em] uppercase px-10 py-4 hover:bg-red-500 hover:text-black transition-all duration-300"
+                  className="border rounded-lg border-red-500 text-red-500 text-xs tracking-[0.3em] uppercase px-10 py-4 hover:bg-red-500 hover:text-black transition-all duration-300"
                 >
                   View All {products.length} Products →
                 </Link>
