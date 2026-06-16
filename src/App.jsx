@@ -38,6 +38,7 @@ function App() {
       <Routes>
 
         {/* Public routes — no login needed */}
+        <Route path="/" element={<Home />} />
         <Route path="/login" element={<Auth />} />
         <Route path="/register" element={<Auth />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -46,7 +47,6 @@ function App() {
         <Route path="/returns" element={<Returns />} />
 
         {/* Protected routes — login required */}
-        <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
         <Route path="/shop" element={<ProtectedRoute><Shop /></ProtectedRoute>} />
         <Route path="/product/:id" element={<ProtectedRoute><ProductDetail /></ProtectedRoute>} />
         <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
