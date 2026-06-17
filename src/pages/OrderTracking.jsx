@@ -77,7 +77,7 @@ function OrderTracking() {
       <div className="flex-1 max-w-3xl mx-auto w-full px-4 sm:px-8 py-16">
 
         {/* Search Box */}
-        <div className="bg-zinc-950 border border-zinc-800 p-6 sm:p-8 mb-10">
+        <div className="bg-zinc-950 border rounded-lg border-zinc-800 p-6 sm:p-8 mb-10">
           <p className="text-red-500 text-xs tracking-[0.4em] uppercase mb-2">Order Lookup</p>
           <h2 className="text-white text-xl font-black uppercase tracking-wider mb-6">
             Enter Your Order ID
@@ -89,12 +89,12 @@ function OrderTracking() {
               onChange={(e) => { setOrderId(e.target.value); setError('') }}
               onKeyDown={(e) => e.key === 'Enter' && handleTrack()}
               placeholder="e.g. 6a2773fdab3acb489618fd6e"
-              className="flex-1 bg-zinc-900 border border-zinc-700 text-white text-xs px-5 py-4 tracking-wider placeholder-zinc-600 focus:outline-none focus:border-red-500 transition-colors"
+              className="flex-1 bg-zinc-900 border rounded-lg border-zinc-700 text-white text-xs px-5 py-4 tracking-wider placeholder-zinc-600 focus:outline-none focus:border-red-500 transition-colors"
             />
             <button
               onClick={handleTrack}
               disabled={loading}
-              className={`flex items-center justify-center gap-2 text-xs tracking-[0.3em] uppercase px-8 py-4 transition-all duration-300 shrink-0 ${
+              className={`flex items-center justify-center gap-2 text-xs rounded-lg tracking-[0.3em] uppercase px-8 py-4 transition-all duration-300 shrink-0 ${
                 loading
                   ? 'bg-zinc-700 text-zinc-400 cursor-not-allowed'
                   : 'bg-red-500 text-white hover:bg-red-600'
@@ -117,7 +117,7 @@ function OrderTracking() {
           <div className="flex flex-col gap-6">
 
             {/* Order Header */}
-            <div className="bg-zinc-950 border border-zinc-800 p-6">
+            <div className="bg-zinc-950 border rounded-lg border-zinc-800 p-6">
               <div className="flex items-start justify-between gap-4 flex-wrap">
                 <div>
                   <p className="text-zinc-500 text-xs tracking-widest uppercase mb-1">Order ID</p>
@@ -142,7 +142,7 @@ function OrderTracking() {
 
             {/* Status Timeline */}
             {order.status !== 'cancelled' ? (
-              <div className="bg-zinc-950 border border-zinc-800 p-6">
+              <div className="bg-zinc-950 border rounded-lg border-zinc-800 p-6">
                 <p className="text-white text-sm font-black uppercase tracking-wider mb-8">Order Status</p>
 
                 {/* Progress bar */}
@@ -178,7 +178,7 @@ function OrderTracking() {
                 </div>
 
                 {/* Current status message */}
-                <div className="bg-zinc-900 border border-zinc-800 p-4">
+                <div className="bg-zinc-900 border rounded-lg border-zinc-800 p-4">
                   <p className={`text-xs font-bold uppercase tracking-wider mb-1 ${statusInfo[order.status]?.color}`}>
                     {statusInfo[order.status]?.label}
                   </p>
@@ -188,7 +188,7 @@ function OrderTracking() {
                 </div>
               </div>
             ) : (
-              <div className="bg-zinc-950 border border-red-500/30 p-6">
+              <div className="bg-zinc-950 border rounded-lg border-red-500/30 p-6">
                 <p className="text-red-500 text-sm font-black uppercase tracking-wider mb-2">Order Cancelled</p>
                 <p className="text-zinc-400 text-xs tracking-wider">
                   This order has been cancelled. If you have any questions, please contact us.
@@ -197,7 +197,7 @@ function OrderTracking() {
             )}
 
             {/* Items */}
-            <div className="bg-zinc-950 border border-zinc-800 p-6">
+            <div className="bg-zinc-950 border rounded-lg border-zinc-800 p-6">
               <p className="text-white text-sm font-black uppercase tracking-wider mb-6">Items Ordered</p>
               <div className="flex flex-col gap-4">
                 {order.items.map((item, i) => (
@@ -222,7 +222,7 @@ function OrderTracking() {
             </div>
 
             {/* Shipping */}
-            <div className="bg-zinc-950 border border-zinc-800 p-6">
+            <div className="bg-zinc-950 border rounded-lg border-zinc-800 p-6">
               <p className="text-white text-sm font-black uppercase tracking-wider mb-4">Shipping To</p>
               <p className="text-zinc-400 text-xs tracking-wider leading-relaxed">
                 {order.shippingAddress.firstName} {order.shippingAddress.lastName}<br />
@@ -235,13 +235,13 @@ function OrderTracking() {
             <div className="flex items-center gap-4 flex-wrap">
               <Link
                 to="/contact"
-                className="border border-zinc-700 text-zinc-400 text-xs tracking-[0.3em] uppercase px-6 py-3 hover:border-white hover:text-white transition-all duration-300"
+                className="border rounded-lg border-zinc-700 text-zinc-400 text-xs tracking-[0.3em] uppercase px-6 py-3 hover:border-white hover:text-white transition-all duration-300"
               >
                 Need Help?
               </Link>
               <Link
                 to="/shop"
-                className="bg-red-500 text-white text-xs tracking-[0.3em] uppercase px-6 py-3 hover:bg-red-600 transition-all duration-300"
+                className="bg-red-500 rounded-lg text-white text-xs tracking-[0.3em] uppercase px-6 py-3 hover:bg-red-600 transition-all duration-300"
               >
                 Continue Shopping
               </Link>

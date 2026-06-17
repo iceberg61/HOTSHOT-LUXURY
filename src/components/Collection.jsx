@@ -50,33 +50,47 @@ function Collection() {
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 ">
 
-          {products.map((product) => (
-            <Link
-              to={`/product/${product._id}`}
-              key={product._id}
-              className="group cursor-pointer"
-            >
-              <div className="h-64 overflow-hidden rounded-lg border border-zinc-800 group-hover:border-red-500 transition-all duration-300">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
-                  className="group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <div className="mt-3 flex items-center justify-between">
-                <div>
-                  <p className="text-white text-xs tracking-widest uppercase font-bold">{product.name}</p>
-                  <p className="text-zinc-400 text-xs mt-1">₦{product.price}.00</p>
+          {products.map((product) => {
+            const outOfStock = !product.inStock || product.countInStock === 0
+            return (
+              <Link
+                to={`/product/${product._id}`}
+                key={product._id}
+                className="group cursor-pointer"
+              >
+                <div className="h-64 overflow-hidden rounded-lg border border-zinc-800 group-hover:border-red-500 transition-all duration-300 relative">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', opacity: outOfStock ? 0.5 : 1 }}
+                    className="group-hover:scale-105 transition-transform duration-500"
+                  />
+                  {outOfStock && (
+                    <span className="absolute top-3 left-3 bg-zinc-700 text-zinc-300 text-[10px] tracking-widest px-2 py-1 uppercase rounded-lg">
+                      Out of Stock
+                    </span>
+                  )}
                 </div>
-                {product.tag && (
-                  <span className="bg-red-500 text-white text-[10px] rounded-lg tracking-widest px-2 py-1 uppercase">
-                    {product.tag}
-                  </span>
-                )}
-              </div>
-            </Link>
-          ))}
+                <div className="mt-3 flex items-center justify-between">
+                  <div>
+                    <p className="text-white text-xs tracking-widest uppercase font-bold">{product.name}</p>
+                    <p className={`text-xs mt-1 ${outOfStock ? 'text-zinc-600' : 'text-zinc-400'}`}>
+                      ₦{product.price.toLocaleString()}.00
+                    </p>
+                  </div>
+                  {outOfStock ? (
+                    <span className="bg-zinc-800 text-zinc-500 text-[10px] rounded-lg tracking-widest px-2 py-1 uppercase">
+                      Sold Out
+                    </span>
+                  ) : product.tag && (
+                    <span className="bg-red-500 text-white text-[10px] rounded-lg tracking-widest px-2 py-1 uppercase">
+                      {product.tag}
+                    </span>
+                  )}
+                </div>
+              </Link>
+            )
+          })}
 
           {/* VIP Box */}
           <div className="border border-zinc-800 p-6 flex flex-col justify-center gap-4 rounded-lg">

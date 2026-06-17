@@ -57,43 +57,77 @@ function Wishlist() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {items.map((product) => (
-              <div key={product._id} className="group bg-zinc-950 border border-zinc-800 hover:border-red-500 transition-all duration-300 rounded-lg overflow-hidden">
-                <Link to={`/product/${product._id}`}>
-                  <div className="overflow-hidden" style={{ height: '250px' }}>
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }}
-                      className="group-hover:scale-105 transition-transform duration-500"
-                    />
-                  </div>
-                </Link>
-                <div className="p-4">
+            {items.map((product) => {
+              const outOfStock = !product.inStock || product.countInStock === 0;
+
+              return (
+                <div
+                  key={product._id}
+                  className="group bg-zinc-950 border border-zinc-800 hover:border-red-500 transition-all duration-300 rounded-lg overflow-hidden"
+                >
                   <Link to={`/product/${product._id}`}>
-                    <h3 className="text-white text-xs font-bold tracking-wider uppercase mb-1 hover:text-red-500 transition-colors">
-                      {product.name}
-                    </h3>
+                    <div className="overflow-hidden relative" style={{ height: '250px' }}>
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                          objectPosition: 'top',
+                          opacity: outOfStock ? 0.5 : 1
+                        }}
+                        className="group-hover:scale-105 transition-transform duration-500"
+                      />
+                      {outOfStock && (
+                        <span className="absolute top-3 left-3 bg-zinc-700 text-zinc-300 text-[10px] tracking-widest px-2 py-1 uppercase rounded-lg">
+                          Out of Stock
+                        </span>
+                      )}
+                    </div>
                   </Link>
-                  <p className="text-red-500 text-xs font-bold mb-4">₦{product.price}.00</p>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => { addToCart(product, product.sizes[0], 1) }}
-                      className="flex-1 flex items-center rounded-lg justify-center gap-2 bg-red-500 text-white text-xs tracking-widest uppercase py-3 hover:bg-red-600 transition-colors"
-                    >
-                      <ShoppingCart size={12} />
-                      Add to Cart
-                    </button>
-                    <button
-                      onClick={() => removeItem(user.token, product._id)}
-                      className="border border-zinc-700 p-3 text-zinc-400 hover:border-red-500 hover:text-red-500 transition-all duration-300 rounded-lg"
-                    >
-                      <Heart size={14} fill="currentColor" />
-                    </button>
+
+                  <div className="p-4">
+                    <Link to={`/product/${product._id}`}>
+                      <h3 className="text-white text-xs font-bold tracking-wider uppercase mb-1 hover:text-red-500 transition-colors">
+                        {product.name}
+                      </h3>
+                    </Link>
+
+                    <p className={`text-xs mb-4 ${outOfStock ? 'text-zinc-600' : 'text-red-500 font-bold'}`}>
+                      ₦{product.price}.00
+                    </p>
+
+                    <div className="flex items-center gap-2">
+                      {outOfStock ? (
+                        <button
+                          disabled
+                          className="flex-1 flex items-center rounded-lg justify-center gap-2 bg-zinc-800 text-zinc-500 text-xs tracking-widest uppercase py-3 cursor-not-allowed"
+                        >
+                          <ShoppingCart size={12} />
+                          Sold Out
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => addToCart(product, product.sizes?.[0], 1)}
+                          className="flex-1 flex items-center rounded-lg justify-center gap-2 bg-red-500 text-white text-xs tracking-widest uppercase py-3 hover:bg-red-600 transition-colors"
+                        >
+                          <ShoppingCart size={12} />
+                          Add to Cart
+                        </button>
+                      )}
+
+                      <button
+                        onClick={() => removeItem(user.token, product._id)}
+                        className="border border-zinc-700 p-3 text-zinc-400 hover:border-red-500 hover:text-red-500 transition-all duration-300 rounded-lg"
+                      >
+                        <Heart size={14} fill="currentColor" />
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

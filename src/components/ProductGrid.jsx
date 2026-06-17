@@ -45,20 +45,18 @@ function ProductGrid({ limit = null }) {
     loadProducts()
   }, [activeTab])
 
-  const displayedProducts = limit ? products.slice(0, limit) : products
+  const filtered = activeTab === 'ALL' ? products : products.filter((p) => p.category === activeTab)
+  const displayedProducts = limit ? filtered.slice(0, limit) : filtered
 
   const handleAddToCart = (e, product) => {
     e.preventDefault()
-    const outOfStock = product.countInStock === 0
-    if (outOfStock) return
-
+    if (!product.inStock || product.countInStock === 0) return
     const selectedSize = selectedSizes[product._id]
     if (!selectedSize) {
       setSizeError(product._id)
       setTimeout(() => setSizeError(null), 2000)
       return
     }
-
     addToCart(product, selectedSize, 1)
     setAddedId(product._id)
     setTimeout(() => setAddedId(null), 2000)
@@ -72,10 +70,7 @@ function ProductGrid({ limit = null }) {
 
   const handleWishlist = async (e, product) => {
     e.preventDefault()
-    if (!user) {
-      navigate('/login')
-      return
-    }
+    if (!user) { navigate('/login'); return }
     if (isWishlisted(product._id)) {
       await removeItem(user.token, product._id)
     } else {
@@ -92,7 +87,6 @@ function ProductGrid({ limit = null }) {
     <section className="bg-black py-20 px-4 sm:px-8">
       <div className="max-w-7xl mx-auto">
 
-        {/* Header */}
         <div className="text-center mb-12">
           <p className="text-red-500 text-xs tracking-[0.4em] uppercase mb-3">Best Selling</p>
           <h2 className="text-white text-4xl font-black uppercase tracking-wider mb-4">The Drop</h2>
@@ -103,7 +97,6 @@ function ProductGrid({ limit = null }) {
           </div>
         </div>
 
-        {/* Tabs */}
         <div className="flex items-center justify-center gap-3 mb-12 flex-wrap">
           {tabs.map((tab) => (
             <button
@@ -128,7 +121,7 @@ function ProductGrid({ limit = null }) {
           <>
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {displayedProducts.map((product) => {
-                const outOfStock = product.countInStock === 0
+                const outOfStock = !product.inStock || product.countInStock === 0
                 const selectedSize = selectedSizes[product._id]
                 const showSizeError = sizeError === product._id
 
@@ -140,17 +133,14 @@ function ProductGrid({ limit = null }) {
                     onMouseEnter={() => setHoveredId(product._id)}
                     onMouseLeave={() => setHoveredId(null)}
                   >
-                    {/* Tag */}
-                    {product.tag && !outOfStock && (
-                      <span className="absolute top-3 left-3 z-10 bg-red-500 text-white text-[10px] tracking-widest px-2 py-1 uppercase">
-                        {product.tag}
-                      </span>
-                    )}
-
-                    {/* Out of stock badge */}
-                    {outOfStock && (
-                      <span className="absolute top-3 left-3 z-10 bg-zinc-700 text-zinc-300 text-[10px] tracking-widest px-2 py-1 uppercase">
+                    {/* Badge */}
+                    {outOfStock ? (
+                      <span className="absolute top-3 left-3 z-10 bg-zinc-700 text-zinc-300 text-[10px] tracking-widest px-2 py-1 uppercase rounded-lg">
                         Out of Stock
+                      </span>
+                    ) : product.tag && (
+                      <span className="absolute top-3 left-3 z-10 bg-red-500 text-white text-[10px] tracking-widest px-2 py-1 uppercase rounded-lg">
+                        {product.tag}
                       </span>
                     )}
 
@@ -188,31 +178,27 @@ function ProductGrid({ limit = null }) {
 
                     {/* Info */}
                     <div className="p-4">
-                      <h3 className="text-white text-sm font-bold tracking-wider uppercase mb-1">
-                        {product.name}
-                      </h3>
+                      <h3 className="text-white text-sm font-bold tracking-wider uppercase mb-1">{product.name}</h3>
 
                       {product.numReviews > 0 && (
                         <div className="flex items-center gap-1 mb-2">
-                          {[1, 2, 3, 4, 5].map((star) => (
+                          {[1,2,3,4,5].map((star) => (
                             <span key={star} className={`text-xs ${star <= Math.round(product.rating) ? 'text-yellow-500' : 'text-zinc-700'}`}>★</span>
                           ))}
                           <span className="text-zinc-600 text-xs ml-1">({product.numReviews})</span>
                         </div>
                       )}
 
-                      <p className="text-red-500 text-sm font-medium mb-3">
-                        ₦{product.price.toLocaleString()}.00
-                      </p>
+                      <p className="text-red-500 text-sm font-medium mb-3">₦{product.price.toLocaleString()}.00</p>
 
-                      {/* Size selector — only if in stock */}
-                      {!outOfStock && product.sizes && product.sizes.length > 0 && (
+                      {/* Size selector — hidden when out of stock */}
+                      {!outOfStock && product.sizes?.length > 0 && (
                         <div className="flex items-center gap-1 mb-3 flex-wrap">
                           {product.sizes.map((size) => (
                             <button
                               key={size}
                               onClick={(e) => handleSizeSelect(e, product._id, size)}
-                              className={`px-2 py-1 text-[10px] tracking-widest uppercase border rounded-lg transition-all duration-200 ${
+                              className={`px-2 py-1 text-[10px] rounded-lg tracking-widest uppercase border transition-all duration-200 ${
                                 selectedSize === size
                                   ? 'border-red-500 text-red-500 bg-red-500/10'
                                   : 'border-zinc-700 text-zinc-500 hover:border-zinc-400 hover:text-zinc-300'
@@ -224,20 +210,18 @@ function ProductGrid({ limit = null }) {
                         </div>
                       )}
 
-                      {/* Size error hint */}
                       {showSizeError && (
                         <p className="text-yellow-500 text-[10px] tracking-widest uppercase mb-2">
                           Please select a size
                         </p>
                       )}
 
-                      {/* Add to cart button */}
                       <button
                         onClick={(e) => handleAddToCart(e, product)}
                         disabled={outOfStock}
                         className={`w-full text-xs tracking-widest uppercase py-3 border rounded-lg transition-all duration-300 ${
                           outOfStock
-                            ? 'border-zinc-700 text-zinc-600 cursor-not-allowed'
+                            ? 'border-zinc-700 text-zinc-600 cursor-not-allowed bg-zinc-900'
                             : addedId === product._id
                             ? 'border-green-500 text-green-500'
                             : 'border-red-500 text-red-500 hover:bg-red-500 hover:text-black'
@@ -251,14 +235,13 @@ function ProductGrid({ limit = null }) {
               })}
             </div>
 
-            {/* View All button */}
-            {limit && products.length > limit && (
+            {limit && filtered.length > limit && (
               <div className="text-center mt-12">
                 <Link
                   to="/shop"
                   className="border rounded-lg border-red-500 text-red-500 text-xs tracking-[0.3em] uppercase px-10 py-4 hover:bg-red-500 hover:text-black transition-all duration-300"
                 >
-                  View All {products.length} Products →
+                  View All {filtered.length} Products →
                 </Link>
               </div>
             )}
@@ -266,12 +249,8 @@ function ProductGrid({ limit = null }) {
         )}
       </div>
 
-      {/* Quick View Modal */}
       {quickViewProduct && (
-        <QuickView
-          product={quickViewProduct}
-          onClose={() => setQuickViewProduct(null)}
-        />
+        <QuickView product={quickViewProduct} onClose={() => setQuickViewProduct(null)} />
       )}
     </section>
   )

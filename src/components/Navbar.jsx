@@ -1,6 +1,4 @@
-
-
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Search, User, ShoppingCart, Menu, X } from 'lucide-react'
 import { Link, useLocation } from 'react-router-dom'
 import useCartStore from '../store/cartStore'
@@ -23,13 +21,25 @@ function Navbar() {
   const location = useLocation()
   const [searchOpen, setSearchOpen] = useState(false)
 
+  const user = useAuthStore((state) => state.user)
+  const logout = useAuthStore((state) => state.logout)
+
   const handleLinkClick = () => {
     setMenuOpen(false)
     setProfileOpen(false)
   }
 
-  const user = useAuthStore((state) => state.user)
-  const logout = useAuthStore((state) => state.logout)
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileOpen && !event.target.closest('.profile-dropdown-container')) {
+        setProfileOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [profileOpen])
 
   return (
     <>
@@ -68,11 +78,11 @@ function Navbar() {
             </button>
 
             {user ? (
-              <div className="relative group">
-                {/* Desktop: hover dropdown */}
+              <div className="relative profile-dropdown-container">
+                {/* Profile Button */}
                 <button
-                  className="flex items-center gap-2"
                   onClick={() => setProfileOpen((prev) => !prev)}
+                  className="flex items-center gap-2 focus:outline-none"
                 >
                   <div className="w-7 h-7 bg-red-500 flex items-center justify-center rounded-full">
                     <span className="text-white text-xs font-black">
@@ -83,39 +93,60 @@ function Navbar() {
 
                 {/* Desktop Dropdown */}
                 <div
-                  className={`absolute right-0 top-10 w-48 bg-zinc-950 border rounded-lg border-zinc-800 flex-col z-50 transition-all duration-200 ${
-                    profileOpen
-                      ? "flex opacity-100 visible"
-                      : "hidden opacity-0 invisible"
-                    }`}
-                  >                  
+                  className={`absolute right-0 top-12 w-48 bg-zinc-950 border rounded-lg border-zinc-800 flex-col z-50 transition-all duration-200 shadow-xl ${
+                    profileOpen ? "flex opacity-100 visible" : "hidden opacity-0 invisible"
+                  }`}
+                >
                   <p className="text-zinc-400 text-xs px-4 py-3 border-b border-zinc-800 tracking-wider">
-                    {user.firstName} 
+                    {user.firstName}
                   </p>
-                  <Link to="/orders" onClick={handleLinkClick} className="text-zinc-400 text-xs px-4 py-3 hover:text-red-500 hover:bg-zinc-900 tracking-wider transition-colors">
+                  <Link
+                    to="/orders"
+                    onClick={handleLinkClick}
+                    className="text-zinc-400 text-xs px-4 py-3 hover:text-red-500 hover:bg-zinc-900 tracking-wider transition-colors"
+                  >
                     My Orders
                   </Link>
-                  <Link to="/wishlist" onClick={handleLinkClick} className="text-zinc-400 text-xs px-4 py-3 hover:text-red-500 hover:bg-zinc-900 tracking-wider transition-colors">
+                  <Link
+                    to="/wishlist"
+                    onClick={handleLinkClick}
+                    className="text-zinc-400 text-xs px-4 py-3 hover:text-red-500 hover:bg-zinc-900 tracking-wider transition-colors"
+                  >
                     My Wishlist
                   </Link>
-                  <Link to="/track-order" onClick={handleLinkClick} className="text-zinc-400 text-xs px-4 py-3 hover:text-red-500 hover:bg-zinc-900 tracking-wider transition-colors">
+                  <Link
+                    to="/track-order"
+                    onClick={handleLinkClick}
+                    className="text-zinc-400 text-xs px-4 py-3 hover:text-red-500 hover:bg-zinc-900 tracking-wider transition-colors"
+                  >
                     Track Order
                   </Link>
                   {user.isAdmin && (
-                    <Link to="/admin" onClick={handleLinkClick} className="text-zinc-400 text-xs px-4 py-3 hover:text-red-500 hover:bg-zinc-900 tracking-wider transition-colors border-t border-zinc-800">
+                    <Link
+                      to="/admin"
+                      onClick={handleLinkClick}
+                      className="text-zinc-400 text-xs px-4 py-3 hover:text-red-500 hover:bg-zinc-900 tracking-wider transition-colors border-t border-zinc-800"
+                    >
                       Admin Dashboard
                     </Link>
                   )}
                   <button
-                    onClick={() => { logout(); handleLinkClick() }}
-                    className="text-left text-zinc-400 text-xs px-4 py-3 hover:text-red-500 hover:bg-zinc-900 tracking-wider transition-colors border-t border-zinc-800"
+                    onClick={() => {
+                      logout()
+                      handleLinkClick()
+                    }}
+                    className="text-left text-zinc-400 text-xs px-4 py-3 hover:text-red-500 hover:bg-zinc-900 tracking-wider transition-colors border-t border-zinc-800 w-full"
                   >
                     Logout
                   </button>
                 </div>
 
                 {/* Mobile Profile Dropdown */}
-                <div className={`md:hidden absolute right-0 top-8 w-56 bg-zinc-950 border rounded-lg border-zinc-800 flex flex-col z-50 ${profileOpen ? 'flex' : 'hidden'}`}>
+                <div
+                  className={`md:hidden absolute right-0 top-12 w-56 bg-zinc-950 border rounded-lg border-zinc-800 flex flex-col z-50 shadow-xl ${
+                    profileOpen ? 'flex' : 'hidden'
+                  }`}
+                >
                   <div className="flex items-center gap-3 px-4 py-3 border-b border-zinc-800">
                     <div className="w-8 h-8 bg-red-500 flex items-center justify-center rounded-full shrink-0">
                       <span className="text-white text-xs font-black">
@@ -126,23 +157,45 @@ function Navbar() {
                       <p className="text-white text-xs font-bold tracking-wider">{user.firstName}</p>
                     </div>
                   </div>
-                  <Link to="/orders" onClick={handleLinkClick} className="text-zinc-400 text-xs px-4 py-3 hover:text-red-500 hover:bg-zinc-900 tracking-wider transition-colors">
+
+                  <Link
+                    to="/orders"
+                    onClick={handleLinkClick}
+                    className="text-zinc-400 text-xs px-4 py-3 hover:text-red-500 hover:bg-zinc-900 tracking-wider transition-colors"
+                  >
                     My Orders
                   </Link>
-                  <Link to="/wishlist" onClick={handleLinkClick} className="text-zinc-400 text-xs px-4 py-3 hover:text-red-500 hover:bg-zinc-900 tracking-wider transition-colors">
+                  <Link
+                    to="/wishlist"
+                    onClick={handleLinkClick}
+                    className="text-zinc-400 text-xs px-4 py-3 hover:text-red-500 hover:bg-zinc-900 tracking-wider transition-colors"
+                  >
                     My Wishlist
                   </Link>
-                  <Link to="/track-order" onClick={handleLinkClick} className="text-zinc-400 text-xs px-4 py-3 hover:text-red-500 hover:bg-zinc-900 tracking-wider transition-colors">
+                  <Link
+                    to="/track-order"
+                    onClick={handleLinkClick}
+                    className="text-zinc-400 text-xs px-4 py-3 hover:text-red-500 hover:bg-zinc-900 tracking-wider transition-colors"
+                  >
                     Track Order
                   </Link>
+
                   {user.isAdmin && (
-                    <Link to="/admin" onClick={handleLinkClick} className="text-zinc-400 text-xs px-4 py-3 hover:text-red-500 hover:bg-zinc-900 tracking-wider transition-colors border-t border-zinc-800">
+                    <Link
+                      to="/admin"
+                      onClick={handleLinkClick}
+                      className="text-zinc-400 text-xs px-4 py-3 hover:text-red-500 hover:bg-zinc-900 tracking-wider transition-colors border-t border-zinc-800"
+                    >
                       Admin Dashboard
                     </Link>
                   )}
+
                   <button
-                    onClick={() => { logout(); handleLinkClick() }}
-                    className="text-left text-zinc-400 text-xs px-4 py-3 hover:text-red-500 hover:bg-zinc-900 tracking-wider transition-colors border-t border-zinc-800"
+                    onClick={() => {
+                      logout()
+                      handleLinkClick()
+                    }}
+                    className="text-left text-zinc-400 text-xs px-4 py-3 hover:text-red-500 hover:bg-zinc-900 tracking-wider transition-colors border-t border-zinc-800 w-full"
                   >
                     Logout
                   </button>
@@ -163,9 +216,12 @@ function Navbar() {
               )}
             </button>
 
-            {/* Hamburger — mobile only, nav links only */}
+            {/* Hamburger */}
             <button
-              onClick={() => { setMenuOpen(!menuOpen); setProfileOpen(false) }}
+              onClick={() => { 
+                setMenuOpen(!menuOpen)
+                setProfileOpen(false)
+              }}
               className="md:hidden text-zinc-400 hover:text-white transition-colors"
             >
               {menuOpen ? <X size={22} /> : <Menu size={22} />}
@@ -174,7 +230,7 @@ function Navbar() {
 
         </div>
 
-        {/* Mobile Menu — nav links only */}
+        {/* Mobile Menu */}
         <div className={`md:hidden overflow-hidden transition-all duration-300 ${
           menuOpen ? 'max-h-screen border-t border-zinc-900' : 'max-h-0'
         }`}>
@@ -194,7 +250,6 @@ function Navbar() {
               </Link>
             ))}
 
-            {/* Login/Register for guests */}
             {!user && (
               <div className="flex items-center gap-4 pt-6 px-4">
                 <Link
@@ -214,10 +269,13 @@ function Navbar() {
               </div>
             )}
 
-            {/* Search on mobile */}
+            {/* Mobile Search */}
             <div
               className="flex items-center border rounded-lg border-zinc-800 mt-4 mx-0 cursor-pointer"
-              onClick={() => { setSearchOpen(true); setMenuOpen(false) }}
+              onClick={() => { 
+                setSearchOpen(true)
+                setMenuOpen(false)
+              }}
             >
               <div className="flex-1 text-zinc-600 text-xs px-4 py-3 tracking-wider">
                 Search products...

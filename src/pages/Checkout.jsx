@@ -17,7 +17,6 @@ function Checkout() {
     email: user?.email || '',
     phone: '',
     address: '', city: '', state: '', zip: '', country: '',
-    paymentMethod: 'card',
   })
 
   const [errors, setErrors] = useState({})
@@ -161,7 +160,7 @@ function Checkout() {
           zip: form.zip,
           country: form.country,
         },
-        paymentMethod: form.paymentMethod,
+        paymentMethod: 'card',
         totalPrice: getTotalPrice(),
       }
 
@@ -208,7 +207,7 @@ function Checkout() {
       <div className="flex-1 max-w-7xl mx-auto w-full px-8 py-16">
 
         {serverError && (
-          <div className="bg-red-500/10 border border-red-500 px-4 py-3 mb-8">
+          <div className="bg-red-500/10 border border-red-500 rounded-lg px-4 py-3 mb-8">
             <p className="text-red-500 text-xs tracking-wider">{serverError}</p>
           </div>
         )}
@@ -267,49 +266,19 @@ function Checkout() {
             <div>
               <div className="flex items-center gap-4 mb-6">
                 <span className="bg-red-500 rounded-lg text-white text-xs w-6 h-6 flex items-center justify-center font-black">2</span>
-                <h2 className="text-white text-sm font-black tracking-[0.3em] uppercase">Payment Method</h2>
+                <h2 className="text-white text-sm font-black tracking-[0.3em] uppercase">Payment</h2>
               </div>
-
-              <div className="flex gap-3 mb-6 flex-wrap">
-                {['card', 'transfer'].map((method) => (
-                  <button
-                    key={method}
-                    onClick={() => setForm({ ...form, paymentMethod: method })}
-                    className={`px-6 py-3 text-xs tracking-widest uppercase border rounded-lg transition-all duration-300 ${
-                      form.paymentMethod === method
-                        ? 'bg-red-500 border-red-500 text-white'
-                        : 'border-zinc-700 text-zinc-400 hover:border-white hover:text-white'
-                    }`}
-                  >
-                    {method === 'card' ? '💳 Pay with Flutterwave' : '🏦 Bank Transfer'}
-                  </button>
-                ))}
+              <div className="bg-zinc-950 border rounded-lg border-zinc-800 p-6">
+                <p className="text-zinc-400 text-xs tracking-wider leading-relaxed">
+                  You will be redirected to Flutterwave's secure payment page. We accept cards, bank transfers and USSD.
+                </p>
+                <div className="flex items-center gap-2 mt-4">
+                  <div className="w-2 h-2 bg-green-500 rounded-full" />
+                  <p className="text-green-500 text-xs tracking-wider">Secured by Flutterwave</p>
+                </div>
               </div>
-
-              {form.paymentMethod === 'card' && (
-                <div className="bg-zinc-950 border rounded-lg border-zinc-800 p-6">
-                  <p className="text-zinc-400 text-xs tracking-wider leading-relaxed">
-                    You will be redirected to Flutterwave's secure payment page to complete your payment. We accept cards, USSD, and bank transfers.
-                  </p>
-                  <div className="flex items-center gap-2 mt-4">
-                    <div className="w-2 h-2 bg-green-500 rounded-full" />
-                    <p className="text-green-500 text-xs tracking-wider">Secured by Flutterwave</p>
-                  </div>
-                </div>
-              )}
-
-              {form.paymentMethod === 'transfer' && (
-                <div className="bg-zinc-950 border rounded-lg border-zinc-800 p-6">
-                  <p className="text-zinc-400 text-xs tracking-wider leading-relaxed">
-                    You will be redirected to Flutterwave's secure payment page where you can complete your payment via bank transfer, USSD, or card.
-                  </p>
-                  <div className="flex items-center gap-2 mt-4">
-                    <div className="w-2 h-2 bg-green-500 rounded-full" />
-                    <p className="text-green-500 text-xs tracking-wider">Secured by Flutterwave</p>
-                  </div>
-                </div>
-              )}
             </div>
+
           </div>
 
           {/* Right — Order Summary */}
@@ -334,7 +303,7 @@ function Checkout() {
                       <p className="text-zinc-500 text-xs">Size: {item.size} · Qty: {item.quantity}</p>
                     </div>
                     <p className="text-red-500 text-xs font-bold shrink-0">
-                      ₦{(item.price * item.quantity).toFixed(2)}
+                      ₦{(item.price * item.quantity).toLocaleString()}
                     </p>
                   </div>
                 ))}
@@ -343,7 +312,7 @@ function Checkout() {
               <div className="flex flex-col gap-3 border-t border-zinc-800 pt-4 mb-6">
                 <div className="flex items-center justify-between">
                   <p className="text-zinc-400 text-xs tracking-wider">Subtotal</p>
-                  <p className="text-white text-xs font-bold">₦{getTotalPrice().toFixed(2)}</p>
+                  <p className="text-white text-xs font-bold">₦{getTotalPrice().toLocaleString()}</p>
                 </div>
                 <div className="flex items-center justify-between">
                   <p className="text-zinc-400 text-xs tracking-wider">Shipping</p>
@@ -351,7 +320,7 @@ function Checkout() {
                 </div>
                 <div className="flex items-center justify-between border-t border-zinc-800 pt-3">
                   <p className="text-white text-xs font-black tracking-widest uppercase">Total</p>
-                  <p className="text-red-500 text-lg font-black">₦{getTotalPrice().toFixed(2)}</p>
+                  <p className="text-red-500 text-lg font-black">₦{getTotalPrice().toLocaleString()}</p>
                 </div>
               </div>
 
@@ -366,7 +335,7 @@ function Checkout() {
                     : 'bg-red-500 text-white hover:bg-red-600'
                 }`}
               >
-                {placing ? 'Processing...' : form.paymentMethod === 'card' ? 'Pay Now' : 'Place Order'}
+                {placing ? 'Processing...' : 'Pay with Flutterwave'}
               </button>
 
               <p className="text-zinc-600 text-xs tracking-wider text-center mt-4">

@@ -72,7 +72,7 @@ function AdminLayout({ children }) {
             </div>
             <div>
               <p className="text-white text-xs font-bold tracking-wider">
-                {user?.firstName} {user?.lastName}
+                {user?.firstName} 
               </p>
               <p className="text-zinc-600 text-xs tracking-wider">Admin</p>
             </div>

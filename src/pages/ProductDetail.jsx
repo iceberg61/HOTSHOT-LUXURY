@@ -5,7 +5,7 @@ import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import useCartStore from '../store/cartStore'
 import useAuthStore from '../store/authStore'
-import { fetchProductById, fetchProducts } from '../api/productApi'
+import { fetchProductById } from '../api/productApi'
 import SEO from '../components/SEO'
 import { getProductReviews, createReview } from '../api/reviewApi'
 import useWishlistStore from '../store/wishlistStore'
@@ -14,7 +14,6 @@ function ProductDetail() {
   const { id } = useParams()
 
   const [product, setProduct] = useState(null)
-  const [related, setRelated] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [selectedSize, setSelectedSize] = useState(null)
@@ -25,11 +24,10 @@ function ProductDetail() {
   const [reviewLoading, setReviewLoading] = useState(false)
   const [reviewError, setReviewError] = useState('')
   const [reviewSuccess, setReviewSuccess] = useState('')
+
   const { fetchWishlist, addItem, removeItem, isWishlisted } = useWishlistStore()
   const user = useAuthStore((state) => state.user)
   const addToCart = useCartStore((state) => state.addToCart)
-
-
 
   useEffect(() => {
     if (user) fetchWishlist(user.token)
@@ -43,7 +41,6 @@ function ProductDetail() {
         setSelectedSize(null)
         setQuantity(1)
 
-        // Load product and reviews in parallel
         const [data, reviewsData] = await Promise.all([
           fetchProductById(id),
           getProductReviews(id),
@@ -52,9 +49,7 @@ function ProductDetail() {
         setProduct(data)
         setReviews(reviewsData)
 
-        // Load related separately after product is set
-        const all = await fetchProducts({ category: data.category })
-        setRelated(all.filter((p) => p._id !== id).slice(0, 4))
+        // related products loading removed — not used in this component
 
       } catch (err) {
         setError(err.message)
@@ -65,8 +60,13 @@ function ProductDetail() {
     loadProduct()
   }, [id])
 
+  const outOfStock = product ? (!product.inStock || product.countInStock === 0) : true
+
   const handleWishlist = async () => {
-    if (!user) { window.location.href = '/login'; return }
+    if (!user) { 
+      window.location.href = '/login'; 
+      return 
+    }
     if (isWishlisted(product._id)) {
       await removeItem(user.token, product._id)
     } else {
@@ -95,16 +95,24 @@ function ProductDetail() {
   }
 
   const handleAddToCart = () => {
+    if (outOfStock) return
     if (!selectedSize) {
       alert('Please select a size')
       return
     }
-    addToCart(product, selectedSize, quantity)
+
+    const available = product.countInStock || 0
+    const finalQuantity = Math.min(quantity, available)
+
+    if (finalQuantity <= 0) {
+      alert('Sorry, this product is out of stock')
+      return
+    }
+
+    addToCart(product, selectedSize, finalQuantity)
     setAdded(true)
     setTimeout(() => setAdded(false), 2000)
   }
-
-  
 
   if (loading) {
     return (
@@ -201,9 +209,17 @@ function ProductDetail() {
             </p>
 
             {/* Stock status */}
-            <p className={`text-xs tracking-widest uppercase ${product.inStock ? 'text-green-500' : 'text-red-500'}`}>
-              {product.inStock ? `In Stock (${product.countInStock} left)` : 'Out of Stock'}
-            </p>
+            <div className="flex items-center">
+              {!outOfStock ? (
+                <p className="text-xs tracking-widest uppercase font-bold text-green-500">
+                  In Stock — {product.countInStock} left
+                </p>
+              ) : (
+                <span className="rounded-lg bg-zinc-700 text-zinc-300 text-[10px] tracking-widest px-3 py-1 uppercase">
+                  Out of Stock
+                </span>
+              )}
+            </div>
 
             <div className="border-t border-zinc-800" />
 
@@ -211,21 +227,24 @@ function ProductDetail() {
             <div>
               <div className="flex items-center justify-between mb-4">
                 <p className="text-white text-xs font-bold tracking-[0.3em] uppercase">Select Size</p>
-                {[{ name: 'Size Guide', path: '/size-guide' },].map((item) => (
-                  <li key={item.name}>
-                    <Link to={item.path} className="text-zinc-500 text-xs tracking-wider hover:text-red-500 transition-colors duration-300">
-                      {item.name}
-                    </Link>
-                  </li>
-                ))}
+                <Link 
+                  to="/size-guide" 
+                  className="text-zinc-500 text-xs tracking-wider hover:text-red-500 transition-colors duration-300"
+                >
+                  Size Guide
+                </Link>
               </div>
+
               <div className="flex items-center gap-2 flex-wrap">
-                {product.sizes.map((size) => (
+                {product.sizes?.map((size) => (
                   <button
                     key={size}
-                    onClick={() => setSelectedSize(size)}
+                    onClick={() => !outOfStock && setSelectedSize(size)}
+                    disabled={outOfStock}
                     className={`px-4 py-2 text-xs rounded-lg tracking-widest uppercase border transition-all duration-300 ${
-                      selectedSize === size
+                      outOfStock
+                        ? 'border-zinc-800 text-zinc-600 bg-zinc-900 cursor-not-allowed'
+                        : selectedSize === size
                         ? 'bg-red-500 border-red-500 text-white'
                         : 'border-zinc-700 text-zinc-400 hover:border-white hover:text-white'
                     }`}
@@ -234,7 +253,8 @@ function ProductDetail() {
                   </button>
                 ))}
               </div>
-              {!selectedSize && (
+
+              {!selectedSize && !outOfStock && (
                 <p className="text-zinc-600 text-xs tracking-wider mt-2">Please select a size</p>
               )}
             </div>
@@ -242,35 +262,46 @@ function ProductDetail() {
             {/* Quantity */}
             <div>
               <p className="text-white text-xs font-bold tracking-[0.3em] uppercase mb-4">Quantity</p>
-              <div className="flex items-center w-fit border rounded-lg border-zinc-700">
+              <div className={`flex items-center w-fit border rounded-lg border-zinc-700 ${outOfStock ? 'opacity-40 pointer-events-none' : ''}`}>
                 <button
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                   className="px-4 py-3 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-all text-sm"
                 >−</button>
                 <span className="px-6 py-3 text-white text-xs border-x border-zinc-700">{quantity}</span>
                 <button
-                  onClick={() => setQuantity((q) => Math.min(product.countInStock, q + 1))}
+                  onClick={() => setQuantity((q) => Math.min(product.countInStock || 1, q + 1))}
                   className="px-4 py-3 text-zinc-400 hover:text-white hover:bg-zinc-900 transition-all text-sm"
                 >+</button>
               </div>
+
+              {quantity > (product.countInStock || 0) && (
+                <p className="text-yellow-500 text-xs mt-2 tracking-wider">
+                  Only {product.countInStock} left in stock
+                </p>
+              )}
             </div>
 
             {/* Buttons */}
             <div className="flex items-center gap-4">
               <button
                 onClick={handleAddToCart}
-                disabled={!product.inStock}
+                disabled={outOfStock}
                 className={`flex-1 flex items-center justify-center gap-3 text-xs tracking-[0.3em] uppercase py-4 transition-all duration-300 rounded-lg ${
                   added
                     ? 'bg-green-600 text-white'
-                    : product.inStock
+                    : !outOfStock
                     ? 'bg-red-500 text-white hover:bg-red-600'
                     : 'bg-zinc-800 text-zinc-600 cursor-not-allowed'
                 }`}
               >
                 <ShoppingCart size={16} />
-                {added ? 'Added to Cart ✓' : product.inStock ? 'Add to Cart' : 'Out of Stock'}
+                {added
+                  ? 'Added to Cart ✓'
+                  : !outOfStock
+                  ? 'Add to Cart'
+                  : 'Out of Stock'}
               </button>
+
               <button
                 onClick={handleWishlist}
                 className={`border rounded-lg p-4 transition-all duration-300 ${
@@ -295,161 +326,127 @@ function ProductDetail() {
         </div>
       </div>
 
-      {/* Related Products */}
-      {related.length > 0 && (
-        <div className="border-t border-zinc-900 px-8 py-16">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-12">
-              <p className="text-red-500 text-xs tracking-[0.4em] uppercase mb-3">More Like This</p>
-              <h2 className="text-white text-3xl font-black uppercase tracking-wider">Related Products</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {related.map((item) => (
-                <Link
-                  to={`/product/${item._id}`}
-                  key={item._id}
-                  className="group block bg-zinc-950 border border-zinc-800 hover:border-red-500 transition-all duration-300 rounded-lg overflow-hidden"
-                >
-                  <div className="overflow-hidden" style={{ height: '220px' }}>
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }}
-                      className="group-hover:scale-105 transition-transform duration-500"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <h3 className="text-white text-xs font-bold tracking-wider uppercase mb-1">{item.name}</h3>
-                    <p className="text-red-500 text-xs font-medium">₦{item.price}.00</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
+      
 
       {/* Reviews Section */}
-        <div className="border-t border-zinc-900 px-4 sm:px-8 py-16">
-          <div className="max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <div className="border-t border-zinc-900 px-4 sm:px-8 py-16">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
 
-              {/* Left — Reviews List */}
-              <div>
-                <h2 className="text-white text-2xl font-black uppercase tracking-wider mb-2">
-                  Reviews
-                </h2>
-                <p className="text-zinc-500 text-xs tracking-wider mb-8">
-                  {reviews.length} {reviews.length === 1 ? 'review' : 'reviews'}
-                  {product.numReviews > 0 && (
-                    <span className="ml-2 text-yellow-500">
-                      {'★'.repeat(Math.round(product.rating))}{'☆'.repeat(5 - Math.round(product.rating))}
-                      {' '}{product.rating?.toFixed(1)}
-                    </span>
-                  )}
+            {/* Left — Reviews List */}
+            <div>
+              <h2 className="text-white text-2xl font-black uppercase tracking-wider mb-2">
+                Reviews
+              </h2>
+              <p className="text-zinc-500 text-xs tracking-wider mb-8">
+                {reviews.length} {reviews.length === 1 ? 'review' : 'reviews'}
+                {product.numReviews > 0 && (
+                  <span className="ml-2 text-yellow-500">
+                    {'★'.repeat(Math.round(product.rating))}{'☆'.repeat(5 - Math.round(product.rating))}
+                    {' '}{product.rating?.toFixed(1)}
+                  </span>
+                )}
+              </p>
+
+              {reviews.length === 0 ? (
+                <p className="text-zinc-600 text-xs tracking-widest uppercase">
+                  No reviews yet — be the first!
                 </p>
-
-                {reviews.length === 0 ? (
-                  <p className="text-zinc-600 text-xs tracking-widest uppercase">
-                    No reviews yet — be the first!
-                  </p>
-                ) : (
-                  <div className="flex flex-col gap-6">
-                    {reviews.map((review) => (
-                      <div key={review._id} className="border-b border-zinc-900 pb-6">
-                        <div className="flex items-center justify-between mb-2">
-                          <p className="text-white text-xs font-bold tracking-wider uppercase">
-                            {review.name}
-                          </p>
-                          <p className="text-zinc-600 text-xs">
-                            {new Date(review.createdAt).toLocaleDateString()}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-1 mb-3">
-                          {[1,2,3,4,5].map((star) => (
-                            <span key={star} className={`text-sm ${star <= review.rating ? 'text-yellow-500' : 'text-zinc-700'}`}>★</span>
-                          ))}
-                        </div>
-                        <p className="text-zinc-400 text-xs tracking-wider leading-relaxed">
-                          {review.comment}
+              ) : (
+                <div className="flex flex-col gap-6">
+                  {reviews.map((review) => (
+                    <div key={review._id} className="border-b border-zinc-900 pb-6">
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="text-white text-xs font-bold tracking-wider uppercase">
+                          {review.name}
+                        </p>
+                        <p className="text-zinc-600 text-xs">
+                          {new Date(review.createdAt).toLocaleDateString()}
                         </p>
                       </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Right — Write Review */}
-              <div>
-                <h2 className="text-white text-2xl font-black uppercase tracking-wider mb-8">
-                  Write a Review
-                </h2>
-
-                {reviewSuccess && (
-                  <div className="bg-green-500/10 border rounded-lg border-green-500 px-4 py-3 mb-4">
-                    <p className="text-green-500 text-xs tracking-wider">{reviewSuccess}</p>
-                  </div>
-                )}
-                {reviewError && (
-                  <div className="bg-red-500/10 border rounded-lg border-red-500 px-4 py-3 mb-4">
-                    <p className="text-red-500 text-xs tracking-wider">{reviewError}</p>
-                  </div>
-                )}
-
-                <div className="flex flex-col gap-4">
-                  <div>
-                    <label className="text-zinc-500 text-xs tracking-widest uppercase mb-2 block">Your Name *</label>
-                    <input
-                      value={reviewForm.name}
-                      onChange={(e) => setReviewForm({ ...reviewForm, name: e.target.value })}
-                      placeholder="John Doe"
-                      className="w-full bg-zinc-900 border rounded-lg border-zinc-800 text-white text-xs px-4 py-3 tracking-wider placeholder-zinc-600 focus:outline-none focus:border-red-500 transition-colors"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="text-zinc-500 text-xs tracking-widest uppercase mb-2 block">Rating *</label>
-                    <div className="flex items-center gap-2">
-                      {[1,2,3,4,5].map((star) => (
-                        <button
-                          key={star}
-                          onClick={() => setReviewForm({ ...reviewForm, rating: star })}
-                          className={`text-2xl transition-colors ${star <= reviewForm.rating ? 'text-yellow-500' : 'text-zinc-700 hover:text-yellow-500'}`}
-                        >
-                          ★
-                        </button>
-                      ))}
-                      <span className="text-zinc-500 text-xs ml-2">{reviewForm.rating}/5</span>
+                      <div className="flex items-center gap-1 mb-3">
+                        {[1,2,3,4,5].map((star) => (
+                          <span key={star} className={`text-sm ${star <= review.rating ? 'text-yellow-500' : 'text-zinc-700'}`}>★</span>
+                        ))}
+                      </div>
+                      <p className="text-zinc-400 text-xs tracking-wider leading-relaxed">
+                        {review.comment}
+                      </p>
                     </div>
-                  </div>
-
-                  <div>
-                    <label className="text-zinc-500 text-xs tracking-widest uppercase mb-2 block">Comment *</label>
-                    <textarea
-                      value={reviewForm.comment}
-                      onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
-                      placeholder="Share your experience with this product..."
-                      rows={5}
-                      className="w-full bg-zinc-900 border rounded-lg border-zinc-800 text-white text-xs px-4 py-3 tracking-wider placeholder-zinc-600 focus:outline-none focus:border-red-500 transition-colors resize-none"
-                    />
-                  </div>
-
-                  <button
-                    onClick={handleReviewSubmit}
-                    disabled={reviewLoading}
-                    className={`w-full text-xs tracking-[0.3em] rounded-lg uppercase py-4 transition-all duration-300 ${
-                      reviewLoading ? 'bg-zinc-700 text-zinc-400 cursor-not-allowed' : 'bg-red-500 text-white hover:bg-red-600'
-                    }`}
-                  >
-                    {reviewLoading ? 'Submitting...' : 'Submit Review'}
-                  </button>
+                  ))}
                 </div>
-              </div>
+              )}
+            </div>
 
+            {/* Right — Write Review */}
+            <div>
+              <h2 className="text-white text-2xl font-black uppercase tracking-wider mb-8">
+                Write a Review
+              </h2>
+
+              {reviewSuccess && (
+                <div className="bg-green-500/10 border rounded-lg border-green-500 px-4 py-3 mb-4">
+                  <p className="text-green-500 text-xs tracking-wider">{reviewSuccess}</p>
+                </div>
+              )}
+              {reviewError && (
+                <div className="bg-red-500/10 border rounded-lg border-red-500 px-4 py-3 mb-4">
+                  <p className="text-red-500 text-xs tracking-wider">{reviewError}</p>
+                </div>
+              )}
+
+              <div className="flex flex-col gap-4">
+                <div>
+                  <label className="text-zinc-500 text-xs tracking-widest uppercase mb-2 block">Your Name *</label>
+                  <input
+                    value={reviewForm.name}
+                    onChange={(e) => setReviewForm({ ...reviewForm, name: e.target.value })}
+                    placeholder="John Doe"
+                    className="w-full bg-zinc-900 border rounded-lg border-zinc-800 text-white text-xs px-4 py-3 tracking-wider placeholder-zinc-600 focus:outline-none focus:border-red-500 transition-colors"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-zinc-500 text-xs tracking-widest uppercase mb-2 block">Rating *</label>
+                  <div className="flex items-center gap-2">
+                    {[1,2,3,4,5].map((star) => (
+                      <button
+                        key={star}
+                        onClick={() => setReviewForm({ ...reviewForm, rating: star })}
+                        className={`text-2xl transition-colors ${star <= reviewForm.rating ? 'text-yellow-500' : 'text-zinc-700 hover:text-yellow-500'}`}
+                      >
+                        ★
+                      </button>
+                    ))}
+                    <span className="text-zinc-500 text-xs ml-2">{reviewForm.rating}/5</span>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-zinc-500 text-xs tracking-widest uppercase mb-2 block">Comment *</label>
+                  <textarea
+                    value={reviewForm.comment}
+                    onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
+                    placeholder="Share your experience with this product..."
+                    rows={5}
+                    className="w-full bg-zinc-900 border rounded-lg border-zinc-800 text-white text-xs px-4 py-3 tracking-wider placeholder-zinc-600 focus:outline-none focus:border-red-500 transition-colors resize-none"
+                  />
+                </div>
+
+                <button
+                  onClick={handleReviewSubmit}
+                  disabled={reviewLoading}
+                  className={`w-full text-xs tracking-[0.3em] rounded-lg uppercase py-4 transition-all duration-300 ${
+                    reviewLoading ? 'bg-zinc-700 text-zinc-400 cursor-not-allowed' : 'bg-red-500 text-white hover:bg-red-600'
+                  }`}
+                >
+                  {reviewLoading ? 'Submitting...' : 'Submit Review'}
+                </button>
+              </div>
             </div>
           </div>
         </div>
-
+      </div>
       <Footer />
     </div>
   )
